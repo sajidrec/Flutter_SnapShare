@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:snapshare/presentation/screens/signup_screen.dart';
+import 'package:snapshare/presentation/screens/login_screen.dart';
 import 'package:snapshare/utils/app_colors.dart';
 
 class SnapShare extends StatelessWidget {
@@ -10,7 +10,7 @@ class SnapShare extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const SignupScreen(),
+      home: const LoginScreen(),
       theme: ThemeData(
         inputDecorationTheme: InputDecorationTheme(
           fillColor: Colors.transparent,
