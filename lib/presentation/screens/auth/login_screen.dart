@@ -16,8 +16,23 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  late TextEditingController emailController = TextEditingController();
+  late TextEditingController passwordController = TextEditingController();
+  bool isButtonActive = false;
+
+  @override
+  void initState() {
+    super.initState();
+    passwordController = TextEditingController();
+    passwordController.addListener(() {
+      final isButtonActive = passwordController.text.isNotEmpty;
+      setState(() {
+        this.isButtonActive = isButtonActive;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -110,6 +125,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 );
         }),
+
       ),
     );
   }
@@ -144,5 +160,6 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
     emailController.dispose();
     passwordController.dispose();
+
   }
 }

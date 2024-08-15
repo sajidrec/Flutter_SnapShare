@@ -224,7 +224,9 @@ class _SignupScreenState extends State<SignupScreen> {
               color: Colors.blueGrey),
         ),
         TextButton(
-          onPressed: () {},
+          onPressed: () {
+            Get.offAll(const LoginScreen());
+          },
           child: const Text(
             'Log In',
             style: TextStyle(
