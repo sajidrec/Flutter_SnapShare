@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:snapshare/presentation/screens/auth/login_screen.dart';
 import 'package:snapshare/presentation/screens/auth/signup_or_login_screen.dart';
 import 'package:snapshare/presentation/screens/bottom_nav_bar.dart';
 import 'package:snapshare/widgets/text_field.dart';
@@ -179,7 +180,9 @@ class _SignupScreenState extends State<SignupScreen> {
               color: Colors.blueGrey),
         ),
         TextButton(
-          onPressed: () {},
+          onPressed: () {
+            Get.offAll(const LoginScreen());
+          },
           child: const Text(
             'Log In',
             style: TextStyle(
