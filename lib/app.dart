@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:snapshare/controller_binder.dart';
 import 'package:snapshare/presentation/screens/auth/signup_or_login_screen.dart';
 import 'package:snapshare/utils/app_colors.dart';
 
@@ -10,6 +11,7 @@ class SnapShare extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
+      initialBinding: ControllerBinder(),
       home: const SignupOrLoginScreen(),
       theme: _buildThemeData(),
     );
@@ -71,7 +73,7 @@ class SnapShare extends StatelessWidget {
 
   BottomNavigationBarThemeData _buildBottomNavBarThemeData() {
     return const BottomNavigationBarThemeData(
-      selectedIconTheme: const IconThemeData(color: AppColor.themeColor),
+      selectedIconTheme: IconThemeData(color: AppColor.themeColor),
       backgroundColor: Colors.white,
       selectedItemColor: AppColor.themeColor,
       unselectedItemColor: Colors.black87,
