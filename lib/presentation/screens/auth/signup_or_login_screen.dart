@@ -1,30 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:snapshare/presentation/screens/login_screen.dart';
-import 'package:snapshare/presentation/screens/signup_screen.dart';
+import 'package:snapshare/presentation/screens/auth/login_screen.dart';
+import 'package:snapshare/presentation/screens/auth/signup_screen.dart';
 import 'package:snapshare/utils/app_colors.dart';
 
-class SignupOrLoginScreen extends StatelessWidget {
+class SignupOrLoginScreen extends StatefulWidget {
   const SignupOrLoginScreen({super.key});
 
   @override
+  State<SignupOrLoginScreen> createState() => _SignupOrLoginScreenState();
+}
+
+class _SignupOrLoginScreenState extends State<SignupOrLoginScreen> {
+  @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: Padding(
-          padding: EdgeInsets.symmetric(horizontal: Get.width / 10),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                _buildHeaderLogo(),
-                const SizedBox(height: 22),
-                _buildCreateAccountButton(),
-                const SizedBox(height: 14),
-                _buildLoginButton(),
-              ],
-            ),
+    return Scaffold(
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: Get.width / 10),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _buildHeaderLogo(),
+              const SizedBox(height: 22),
+              _buildCreateAccountButton(),
+              const SizedBox(height: 14),
+              _buildLoginButton(),
+            ],
           ),
         ),
       ),

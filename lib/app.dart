@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:snapshare/presentation/screens/signup_or_login_screen.dart';
+import 'package:snapshare/presentation/screens/auth/signup_or_login_screen.dart';
 import 'package:snapshare/utils/app_colors.dart';
 
 class SnapShare extends StatelessWidget {
@@ -21,6 +21,7 @@ class SnapShare extends StatelessWidget {
       appBarTheme: _buildAppbarTheme(),
       inputDecorationTheme: _buildInputDecorationTheme(),
       elevatedButtonTheme: _buildElevatedButtonThemeData(),
+      bottomNavigationBarTheme: _buildBottomNavBarThemeData(),
     );
   }
 
@@ -65,6 +66,17 @@ class SnapShare extends StatelessWidget {
           width: 1.5,
         ),
       ),
+    );
+  }
+
+  BottomNavigationBarThemeData _buildBottomNavBarThemeData() {
+    return const BottomNavigationBarThemeData(
+      selectedIconTheme: const IconThemeData(color: AppColor.themeColor),
+      backgroundColor: Colors.white,
+      selectedItemColor: AppColor.themeColor,
+      unselectedItemColor: Colors.black87,
+      showSelectedLabels: false,
+      showUnselectedLabels: false,
     );
   }
 }

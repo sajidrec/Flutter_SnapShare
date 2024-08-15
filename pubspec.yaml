@@ -19,6 +19,7 @@ dependencies:
 
   cupertino_icons: ^1.0.6
   get: ^4.6.6
+  shared_preferences: ^2.3.1
 
 
 
