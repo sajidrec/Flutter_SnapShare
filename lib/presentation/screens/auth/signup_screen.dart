@@ -51,7 +51,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   children: [
                     const SizedBox(height: 60),
                     const Text(
-                      'Inter your phone number and password',
+                      'Enter your phone number and password',
                       style: TextStyle(fontSize: 24),
                     ),
                     const SizedBox(height: 20),
