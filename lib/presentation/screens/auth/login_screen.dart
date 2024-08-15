@@ -1,23 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:snapshare/presentation/screens/auth/signup_or_login_screen.dart';
+import 'package:snapshare/presentation/screens/auth/signup_screen.dart';
+import 'package:snapshare/presentation/screens/bottom_nav_bar.dart';
 import 'package:snapshare/widgets/check_box.dart';
 import 'package:snapshare/widgets/text_field.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<LoginScreen> {
-  @override
   Widget build(BuildContext context) {
     final TextEditingController emailController = TextEditingController();
-    final TextEditingController passwordController = TextEditingController();
 
     return Scaffold(
       appBar: AppBar(
-        leading: const Icon(Icons.arrow_back_ios_new),
+        leading: IconButton(
+          onPressed: () {
+            Get.to(() => const SignupOrLoginScreen());
+          },
+          icon: const Icon(Icons.arrow_back_ios_new),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(30),
@@ -27,7 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
             children: [
               const SizedBox(height: 64),
               const Text(
-                "Enter your phone number\nand password",
+                "Enter your phone number\n and password",
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.w400),
               ),
               const SizedBox(height: 32),
@@ -46,18 +49,50 @@ class _LoginScreenState extends State<LoginScreen> {
                   isPassword: true,
                   hintText: 'Password',
                   icon: const Icon(Icons.lock_open_outlined),
-                  controller: passwordController),
+                  controller: emailController),
               const SizedBox(height: 10),
               const CheckBox(),
               const SizedBox(height: 18),
               SizedBox(
-                  width: double.maxFinite,
-                  child: ElevatedButton(
-                      onPressed: () {}, child: const Text("Login")))
+                width: double.maxFinite,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Get.offAll(() => const BottomNavBar());
+                  },
+                  child: const Text("Login"),
+                ),
+              ),
+              const SizedBox(height: 10),
+              _buildTextButton()
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildTextButton() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text(
+          'Don\'t have an account?',
+          style: TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 16,
+              color: Colors.blueGrey),
+        ),
+        TextButton(
+          onPressed: () {
+            Get.to(() => const SignupScreen());
+          },
+          child: const Text(
+            'Sign Up',
+            style: TextStyle(
+                fontWeight: FontWeight.w600, fontSize: 16, color: Colors.blue),
+          ),
+        )
+      ],
     );
   }
 }
