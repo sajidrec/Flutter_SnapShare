@@ -15,7 +15,6 @@ class _SignupScreenState extends State<SignupScreen> {
     final TextEditingController passwordController = TextEditingController();
     final TextEditingController confirmPasswordController =
         TextEditingController();
-
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(30.0),

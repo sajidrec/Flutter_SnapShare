@@ -2,12 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:snapshare/widgets/check_box.dart';
 import 'package:snapshare/widgets/text_field.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  @override
   Widget build(BuildContext context) {
     final TextEditingController emailController = TextEditingController();
+    final TextEditingController passwordController = TextEditingController();
 
     return Scaffold(
       appBar: AppBar(
@@ -40,13 +46,14 @@ class LoginScreen extends StatelessWidget {
                   isPassword: true,
                   hintText: 'Password',
                   icon: const Icon(Icons.lock_open_outlined),
-                  controller: emailController),
+                  controller: passwordController),
               const SizedBox(height: 10),
               const CheckBox(),
               const SizedBox(height: 18),
               SizedBox(
                   width: double.maxFinite,
-                  child: ElevatedButton(onPressed: () {}, child: const Text("Login")))
+                  child: ElevatedButton(
+                      onPressed: () {}, child: const Text("Login")))
             ],
           ),
         ),
