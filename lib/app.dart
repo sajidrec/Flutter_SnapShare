@@ -26,6 +26,7 @@ class SnapShare extends StatelessWidget {
     return const SignupOrLoginScreen();
   }
 
+
   ThemeData _buildThemeData() {
     return ThemeData(
       scaffoldBackgroundColor: Colors.white,
