@@ -30,14 +30,7 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {
-            Get.to(() => const SignupOrLoginScreen());
-          },
-          icon: const Icon(Icons.arrow_back_ios_new),
-        ),
-      ),
+      appBar: _buildAppBar(),
       body: SingleChildScrollView(
         child: Stack(
           children: [
@@ -108,15 +101,16 @@ class _SignupScreenState extends State<SignupScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                          onPressed: _passwordValid != false
-                              ? () {
-                                  if (_formKey.currentState?.validate() ??
-                                      false) {
-                                    Get.offAll(() => const BottomNavBar());
-                                  }
+                        onPressed: _passwordValid != false
+                            ? () {
+                                if (_formKey.currentState?.validate() ??
+                                    false) {
+                                  Get.offAll(() => const BottomNavBar());
                                 }
-                              : null,
-                          child: const Text('Sign Up')),
+                              }
+                            : null,
+                        child: const Text('Sign Up'),
+                      ),
                     ),
                     const SizedBox(height: 10),
                     _buildTextButton()
@@ -126,6 +120,17 @@ class _SignupScreenState extends State<SignupScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  AppBar _buildAppBar() {
+    return AppBar(
+      leading: IconButton(
+        onPressed: () {
+          Get.to(() => const SignupOrLoginScreen());
+        },
+        icon: const Icon(Icons.arrow_back_ios_new),
       ),
     );
   }

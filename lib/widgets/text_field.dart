@@ -4,7 +4,7 @@ class TextFields extends StatefulWidget {
   const TextFields({
     super.key,
     required this.hintText,
-    required this.icon,
+    this.icon,
     this.isPassword = false,
     required this.controller,
     this.validator,
@@ -12,7 +12,7 @@ class TextFields extends StatefulWidget {
 
   final TextEditingController controller;
   final String hintText;
-  final Icon icon;
+  final Icon? icon;
   final bool isPassword;
   final String? Function(String?)? validator;
 
