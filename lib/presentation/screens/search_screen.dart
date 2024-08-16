@@ -36,10 +36,14 @@ class _SearchScreenState extends State<SearchScreen> {
                   crossAxisCount: 3, crossAxisSpacing: 10, mainAxisSpacing: 10),
               itemBuilder: (context, index) {
                 return GridTile(
-                    child: Image.network(
-                  "https://img.freepik.com/free-photo/bearded-man-with-striped-shirt_273609-7180.jpg",
-                  fit: BoxFit.cover,
-                ));
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10.0), // Adjust radius as needed
+                    child:Image.network(
+                      "https://img.freepik.com/free-photo/bearded-man-with-striped-shirt_273609-7180.jpg",
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                );
               },
             ),
           )
