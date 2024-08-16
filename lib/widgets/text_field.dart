@@ -4,15 +4,17 @@ class TextFields extends StatefulWidget {
   const TextFields({
     super.key,
     required this.hintText,
-    required this.icon,
+    this.icon,
     this.isPassword = false,
     required this.controller,
+    this.validator,
   });
 
   final TextEditingController controller;
   final String hintText;
-  final Icon icon;
+  final Icon? icon;
   final bool isPassword;
+  final String? Function(String?)? validator;
 
   @override
   State<TextFields> createState() => _TextFieldsState();
@@ -24,6 +26,7 @@ class _TextFieldsState extends State<TextFields> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      validator: widget.validator,
       controller: widget.controller,
       obscureText: widget.isPassword ? _isObscured : false,
       style: TextStyle(color: Colors.grey.shade700),
