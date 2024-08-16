@@ -19,7 +19,7 @@ class _SearchScreenState extends State<SearchScreen> {
       child: Column(
         children: [
           const SizedBox(height: 45),
-          const TextField(
+           const TextField(
             decoration: InputDecoration(
                 isDense: true,
                 contentPadding: EdgeInsets.symmetric(vertical: 5),
@@ -37,8 +37,9 @@ class _SearchScreenState extends State<SearchScreen> {
               itemBuilder: (context, index) {
                 return GridTile(
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10.0), // Adjust radius as needed
-                    child:Image.network(
+                    borderRadius: BorderRadius.circular(10.0),
+                    // Adjust radius as needed
+                    child: Image.network(
                       "https://img.freepik.com/free-photo/bearded-man-with-striped-shirt_273609-7180.jpg",
                       fit: BoxFit.cover,
                     ),
