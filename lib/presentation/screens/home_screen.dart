@@ -190,7 +190,7 @@ class _HomeScreenState extends State<HomeScreen> {
               CupertinoIcons.chat_bubble,
               size: 22,
             )),
-        Text(
+        const Text(
           '20 Comments',
           style: TextStyle(
               fontSize: 17, color: Colors.black87, fontWeight: FontWeight.w400),
