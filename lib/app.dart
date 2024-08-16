@@ -1,6 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:snapshare/controller_binder.dart';
 import 'package:snapshare/presentation/screens/auth/signup_or_login_screen.dart';
+import 'package:snapshare/presentation/screens/bottom_nav_bar.dart';
 import 'package:snapshare/utils/app_colors.dart';
 
 class SnapShare extends StatelessWidget {
@@ -10,10 +13,19 @@ class SnapShare extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const SignupOrLoginScreen(),
+      initialBinding: ControllerBinder(),
+      home: _moveToNextScreen(),
       theme: _buildThemeData(),
     );
   }
+
+  Widget _moveToNextScreen() {
+    if (FirebaseAuth.instance.currentUser?.email != null) {
+      return const BottomNavBar();
+    }
+    return const SignupOrLoginScreen();
+  }
+
 
   ThemeData _buildThemeData() {
     return ThemeData(
@@ -66,12 +78,26 @@ class SnapShare extends StatelessWidget {
           width: 1.5,
         ),
       ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(
+          color: AppColor.inputBorderColor,
+          width: 1.5,
+        ),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(
+          color: Colors.red,
+          width: 1.5,
+        ),
+      ),
     );
   }
 
   BottomNavigationBarThemeData _buildBottomNavBarThemeData() {
     return const BottomNavigationBarThemeData(
-      selectedIconTheme: const IconThemeData(color: AppColor.themeColor),
+      selectedIconTheme: IconThemeData(color: AppColor.themeColor),
       backgroundColor: Colors.white,
       selectedItemColor: AppColor.themeColor,
       unselectedItemColor: Colors.black87,
