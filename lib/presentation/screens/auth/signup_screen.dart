@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:snapshare/presentation/controller/auth_controller/registration_controller.dart';
-import 'package:snapshare/presentation/screens/auth/login_screen.dart';
 import 'package:snapshare/presentation/screens/auth/signup_or_login_screen.dart';
-import 'package:snapshare/utils/app_colors.dart';
+import 'package:snapshare/presentation/screens/bottom_nav_bar.dart';
 import 'package:snapshare/widgets/text_field.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -32,146 +30,108 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {
-            Get.to(() => const SignupOrLoginScreen());
-          },
-          icon: const Icon(Icons.arrow_back_ios_new),
-        ),
-      ),
-      body: GetBuilder<RegistrationController>(builder: (
-        registrationController,
-      ) {
-        return registrationController.inProgress
-            ? const Center(
-                child: CircularProgressIndicator(
-                  color: AppColor.themeColor,
-                ),
-              )
-            : SingleChildScrollView(
-                child: Stack(
+      appBar: _buildAppBar(),
+      body: SingleChildScrollView(
+        child: Stack(
+          children: [
+            Form(
+              key: _formKey,
+              child: Padding(
+                padding: const EdgeInsets.all(30.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Form(
-                      key: _formKey,
-                      child: Padding(
-                        padding: const EdgeInsets.all(30.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 60),
-                            const Text(
-                              'Enter your phone number and password',
-                              style: TextStyle(fontSize: 24),
-                            ),
-                            const SizedBox(height: 20),
-                            const Text('Email', style: TextStyle(fontSize: 16)),
-                            const SizedBox(height: 10),
-                            TextFields(
-                              hintText: 'Email',
-                              icon: const Icon(Icons.email_outlined),
-                              controller: emailController,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your email';
-                                } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
-                                    .hasMatch(value)) {
-                                  return 'Please enter a valid email';
+                    const SizedBox(height: 60),
+                    const Text(
+                      'Enter your phone number and password',
+                      style: TextStyle(fontSize: 24),
+                    ),
+                    const SizedBox(height: 20),
+                    const Text('Email', style: TextStyle(fontSize: 16)),
+                    const SizedBox(height: 10),
+                    TextFields(
+                      hintText: 'Email',
+                      icon: const Icon(Icons.email_outlined),
+                      controller: emailController,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your email';
+                        } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
+                            .hasMatch(value)) {
+                          return 'Please enter a valid email';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    const Text('Passwords', style: TextStyle(fontSize: 16)),
+                    const SizedBox(height: 10),
+                    TextFields(
+                      hintText: 'Passwords',
+                      icon: const Icon(Icons.lock_outline),
+                      isPassword: true,
+                      controller: passwordController,
+                      validator: (value) {
+                        if (value == null || value.length < 6) {
+                          return 'Password must be at least 6 characters';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    const Text('Confirm Passwords',
+                        style: TextStyle(fontSize: 16)),
+                    const SizedBox(height: 10),
+                    TextFields(
+                      hintText: 'Confirm Passwords',
+                      icon: const Icon(Icons.lock_outline),
+                      isPassword: true,
+                      controller: confirmPasswordController,
+                      validator: (value) {
+                        if (value == null || value != passwordController.text) {
+                          return 'Passwords do not match';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    _buildCheckBox(_savePassword),
+                    const SizedBox(height: 30),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: _passwordValid != false
+                            ? () {
+                                if (_formKey.currentState?.validate() ??
+                                    false) {
+                                  Get.offAll(() => const BottomNavBar());
                                 }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 10),
-                            const Text('Passwords',
-                                style: TextStyle(fontSize: 16)),
-                            const SizedBox(height: 10),
-                            TextFields(
-                              hintText: 'Passwords',
-                              icon: const Icon(Icons.lock_outline),
-                              isPassword: true,
-                              controller: passwordController,
-                              validator: (value) {
-                                if (value == null || value.length < 6) {
-                                  return 'Password must be at least 6 characters';
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 10),
-                            const Text('Confirm Passwords',
-                                style: TextStyle(fontSize: 16)),
-                            const SizedBox(height: 10),
-                            TextFields(
-                              hintText: 'Confirm Passwords',
-                              icon: const Icon(Icons.lock_outline),
-                              isPassword: true,
-                              controller: confirmPasswordController,
-                              validator: (value) {
-                                if (value == null ||
-                                    value != passwordController.text) {
-                                  return 'Passwords do not match';
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 10),
-                            _buildCheckBox(_savePassword),
-                            const SizedBox(height: 30),
-                            SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                onPressed: _passwordValid != false
-                                    ? () async {
-                                        FocusScope.of(context)
-                                            .requestFocus(FocusNode());
-
-                                        if (_formKey.currentState?.validate() ??
-                                            false) {
-                                          bool registrationStatus =
-                                              await registrationController
-                                                  .registerNewUser(
-                                            email: emailController.text.trim(),
-                                            password: passwordController.text,
-                                          );
-
-                                          if (registrationStatus) {
-                                            if (mounted) {
-                                              Get.snackbar(
-                                                "Sucess",
-                                                "Registration successful please login",
-                                                backgroundColor: Colors.green,
-                                                colorText: Colors.white,
-                                              );
-                                              Get.offAll(
-                                                () => const LoginScreen(),
-                                              );
-                                            }
-                                          } else {
-                                            Get.snackbar(
-                                              "Failed",
-                                              registrationController
-                                                  .errorMessage,
-                                              backgroundColor: Colors.red,
-                                              colorText: Colors.white,
-                                            );
-                                          }
-                                        }
-                                      }
-                                    : null,
-                                child: const Text('Sign Up'),
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            _buildTextButton()
-                          ],
-                        ),
+                              }
+                            : null,
+                        child: const Text('Sign Up'),
                       ),
                     ),
+                    const SizedBox(height: 10),
+                    _buildTextButton()
                   ],
                 ),
-              );
-      }),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  AppBar _buildAppBar() {
+    return AppBar(
+      leading: IconButton(
+        onPressed: () {
+          Get.to(() => const SignupOrLoginScreen());
+        },
+        icon: const Icon(Icons.arrow_back_ios_new),
+      ),
     );
   }
 
@@ -224,9 +184,7 @@ class _SignupScreenState extends State<SignupScreen> {
               color: Colors.blueGrey),
         ),
         TextButton(
-          onPressed: () {
-            Get.offAll(const LoginScreen());
-          },
+          onPressed: () {},
           child: const Text(
             'Log In',
             style: TextStyle(
