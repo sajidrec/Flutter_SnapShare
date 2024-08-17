@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:snapshare/presentation/screens/notification_screen.dart';
 import 'package:snapshare/presentation/screens/profile_screen.dart';
 import 'package:snapshare/utils/assets_path.dart';
 import 'package:snapshare/widgets/comment_bottom_sheet.dart';
@@ -90,7 +91,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 _buildHeaderLogo(),
                 Row(
                   children: [
-                    _buildCircularIconButton(Icons.notifications_none, () {}),
+                    _buildCircularIconButton(Icons.notifications_none, () {
+                      Get.to(const NotificationScreen());
+                    }),
                     _buildCircularIconButton(Icons.message_outlined, () {})
                   ],
                 )
@@ -202,16 +205,17 @@ class _HomeScreenState extends State<HomeScreen> {
               size: 22,
             )),
         TextButton(
-            onPressed: () {
-              CommentBottomSheet.show();
-            },
-            child: const Text(
-              '20 Comments',
-              style: TextStyle(
-                  fontSize: 17,
-                  color: Colors.black87,
-                  fontWeight: FontWeight.w400),
-            )),
+          onPressed: () {
+            CommentBottomSheet.show();
+          },
+          child: const Text(
+            '20 Comments',
+            style: TextStyle(
+                fontSize: 17,
+                color: Colors.black87,
+                fontWeight: FontWeight.w400),
+          ),
+        ),
       ],
     );
   }
