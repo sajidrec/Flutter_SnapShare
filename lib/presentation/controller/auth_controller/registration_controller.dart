@@ -32,7 +32,7 @@ class RegistrationController extends GetxController {
 
       final storageRef = FirebaseStorage.instance.ref();
       final profileImageRef =
-          storageRef.child("images/${fAuth.currentUser?.uid}");
+          storageRef.child("userProfilePictures/${fAuth.currentUser?.uid}");
       File imageFile = File(profilePicturePath);
       await profileImageRef.putFile(imageFile);
 
