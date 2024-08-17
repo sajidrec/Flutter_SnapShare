@@ -118,9 +118,9 @@ class CommentBottomSheet {
             radius: 20,
           ),
           const SizedBox(width: 10),
-          Expanded(
+          const Expanded(
             child: TextField(
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: 'Add comments',
                 border: InputBorder.none,
               ),
