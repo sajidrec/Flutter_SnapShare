@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:snapshare/utils/assets_path.dart';
+import 'package:snapshare/widgets/comment_bottom_sheet.dart';
 import 'package:snapshare/widgets/profile_image_button.dart';
 import 'package:snapshare/widgets/story_section.dart';
 
@@ -190,11 +191,17 @@ class _HomeScreenState extends State<HomeScreen> {
               CupertinoIcons.chat_bubble,
               size: 22,
             )),
-        const Text(
-          '20 Comments',
-          style: TextStyle(
-              fontSize: 17, color: Colors.black87, fontWeight: FontWeight.w400),
-        )
+        TextButton(
+            onPressed: () {
+              CommentBottomSheet.show();
+            },
+            child: const Text(
+              '20 Comments',
+              style: TextStyle(
+                  fontSize: 17,
+                  color: Colors.black87,
+                  fontWeight: FontWeight.w400),
+            )),
       ],
     );
   }
@@ -248,8 +255,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildHeaderLogo() {
     return const Text(
-      "Snapshare",
-      style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+      'SnapShare',
+      style: TextStyle(
+          fontSize: 28, fontWeight: FontWeight.w500, fontFamily: 'Lobster'),
     );
   }
 
