@@ -268,6 +268,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   AppBar _buildAppbar() {
     return AppBar(
+      backgroundColor: Colors.transparent,
       centerTitle: true,
       title: const Text(
         "My Profile",
