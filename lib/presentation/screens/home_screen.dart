@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:snapshare/presentation/screens/profile_screen.dart';
 import 'package:snapshare/utils/assets_path.dart';
 import 'package:snapshare/widgets/comment_bottom_sheet.dart';
 import 'package:snapshare/widgets/profile_image_button.dart';
@@ -47,6 +49,14 @@ class _HomeScreenState extends State<HomeScreen> {
       'profileImage': AssetsPath.profileImage
     },
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, () {
+      showProfileUpdateDialog(context);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -272,6 +282,70 @@ class _HomeScreenState extends State<HomeScreen> {
           borderRadius: BorderRadius.circular(20),
         ),
         child: Icon(icon, size: 28, color: Colors.grey.shade800),
+      ),
+    );
+  }
+
+  void showProfileUpdateDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        contentPadding: EdgeInsets.zero,
+        content: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: SizedBox(
+            width: 300,
+            height: 300,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.network('https://i.imgur.com/BgdbRIQ.png'),
+                const SizedBox(height: 16),
+                const Text(
+                  'Profile Created',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Update your name, profile image,\nadditional number',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    Get.to(() => const ProfileScreen());
+                  },
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 36),
+                  ),
+                  child: const Text('Update'),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                        onPressed: () {
+                          Get.back();
+                        },
+                        child: const Text(
+                          'Skip',
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.blue),
+                        )),
+                    const Icon(
+                      Icons.keyboard_arrow_down,
+                      color: Colors.blue,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
