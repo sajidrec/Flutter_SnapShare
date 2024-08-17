@@ -1,7 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_rx/src/rx_typedefs/rx_typedefs.dart';
 import 'package:snapshare/presentation/controller/grid_or_listview_switch_controller.dart';
+import 'package:snapshare/presentation/screens/auth/signup_or_login_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -179,17 +181,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 5),
-        const Text(
-          "MD. Sajid Hossain",
-          style: TextStyle(
+        Text(
+          FirebaseAuth.instance.currentUser?.displayName ?? "Unknown",
+          style: const TextStyle(
             fontWeight: FontWeight.w700,
             fontSize: 18,
           ),
         ),
         const SizedBox(height: 5),
-        const Text(
-          "sajidrec@gmail.com",
-          style: TextStyle(
+        Text(
+          FirebaseAuth.instance.currentUser?.email ?? "Not available",
+          style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w400,
           ),
@@ -254,8 +256,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _buildProfilePicture() {
     return CircleAvatar(
       radius: Get.width / 9,
-      foregroundImage: const NetworkImage(
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSL8_98miJlqFcEFVdx3zM0tQypsL7pRG71VQ&s",
+      foregroundImage: NetworkImage(
+        FirebaseAuth.instance.currentUser?.photoURL ?? "",
       ),
       backgroundColor: Colors.grey.shade500,
       child: Icon(
@@ -270,6 +272,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return AppBar(
       backgroundColor: Colors.transparent,
       centerTitle: true,
+      actions: [
+        IconButton(
+          onPressed: () async {
+            Get.defaultDialog(
+              title: "Are you sure want to logout?",
+              middleText: "",
+              backgroundColor: Colors.white,
+              cancel: TextButton(
+                onPressed: () {
+                  Get.back();
+                },
+                child: const Text(
+                  "NO",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              confirm: TextButton(
+                onPressed: () async {
+                  await FirebaseAuth.instance.signOut();
+                  Get.offAll(const SignupOrLoginScreen());
+                },
+                child: const Text(
+                  "YES",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+            );
+            // await FirebaseAuth.instance.signOut();
+            // Get.offAll(() => const SignupOrLoginScreen());
+          },
+          icon: const Icon(Icons.logout),
+        )
+      ],
       title: const Text(
         "My Profile",
         style: TextStyle(
