@@ -227,7 +227,7 @@ class _HomeScreenState extends State<HomeScreen> {
         image,
         fit: BoxFit.cover,
         width: double.infinity,
-        height: 200,
+        height: 300,
       ),
     );
   }
