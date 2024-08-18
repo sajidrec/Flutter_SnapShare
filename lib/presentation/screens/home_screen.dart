@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:snapshare/presentation/screens/chat_screen.dart';
 import 'package:snapshare/presentation/screens/notification_screen.dart';
 import 'package:snapshare/presentation/screens/profile_screen.dart';
 import 'package:snapshare/utils/assets_path.dart';
@@ -94,7 +95,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     _buildCircularIconButton(Icons.notifications_none, () {
                       Get.to(const NotificationScreen());
                     }),
-                    _buildCircularIconButton(Icons.message_outlined, () {})
+                    _buildCircularIconButton(Icons.message_outlined, () {
+                      Get.to(() => ChatScreen());
+                    })
                   ],
                 )
               ],
@@ -165,16 +168,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildComment() {
     return Expanded(
-        child: TextFormField(
-      decoration: const InputDecoration(
-        hintText: 'Your Comments',
-        border: InputBorder.none,
-        focusedBorder: InputBorder.none,
-        enabledBorder: InputBorder.none,
-        disabledBorder: InputBorder.none,
+      child: TextFormField(
+        decoration: const InputDecoration(
+          hintText: 'Your Comments',
+          border: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          disabledBorder: InputBorder.none,
+        ),
+        controller: _commentController,
       ),
-      controller: _commentController,
-    ));
+    );
   }
 
   Widget _buildReactAndComment() {

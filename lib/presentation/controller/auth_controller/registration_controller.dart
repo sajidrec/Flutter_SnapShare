@@ -46,7 +46,7 @@ class RegistrationController extends GetxController {
       return true;
     } on FirebaseAuthException catch (e) {
       _inProgress = false;
-      _errorMessage = e.message?.toString() ?? "Reason unkown";
+      _errorMessage = e.message?.toString() ?? "Reason unknown";
       update();
       return false;
     }
