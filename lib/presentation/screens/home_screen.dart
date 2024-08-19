@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -86,8 +87,13 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                ProfileImageButton(
-                  profileImage: userData[0]['profileImage'],
+                GestureDetector(
+                  onTap: () => Get.to(() => const ProfileScreen()),
+                  child: ProfileImageButton(
+                    // profileImage: userData[0]['profileImage'],
+                    profileImage:
+                        FirebaseAuth.instance.currentUser?.photoURL ?? "",
+                  ),
                 ),
                 _buildHeaderLogo(),
                 Row(
