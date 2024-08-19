@@ -102,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Get.to(const NotificationScreen());
                     }),
                     _buildCircularIconButton(Icons.message_outlined, () {
-                      Get.to(() => ChatScreen());
+                      Get.to(() => const ChatScreen());
                     })
                   ],
                 )

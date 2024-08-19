@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:snapshare/presentation/screens/others_profile_screen.dart';
 import 'package:snapshare/utils/app_colors.dart';
 import 'package:snapshare/utils/assets_path.dart';
 import 'package:snapshare/widgets/profile_image_button.dart';
@@ -69,7 +70,8 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
             ),
           ),
           Expanded(
-              child: isFollowing ? _buildFollowingList() : _buildFollowerList())
+            child: isFollowing ? _buildFollowingList() : _buildFollowerList(),
+          ),
         ],
       ),
     );
@@ -100,7 +102,7 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
             setState(() {});
             isFollowing = true;
           }),
-          SizedBox(width: 10),
+          const SizedBox(width: 10),
           _buildTabButton('Followers', !isFollowing, () {
             setState(() {});
             isFollowing = false;
@@ -136,27 +138,39 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
     return ListView.builder(
       itemCount: searchUsers.length,
       itemBuilder: (context, index) {
-        return ListTile(
-          leading: const CircleAvatar(
-            backgroundImage: AssetImage(AssetsPath.photo2),
+        return InkWell(
+          onTap: () {
+            FocusScope.of(context).requestFocus(FocusNode());
+            Get.to(
+              OthersProfileScreen(
+                username: searchUsers[index]['username'],
+                following: searchUsers[index]['isFollowing'],
+                userFullName: searchUsers[index]['name'],
+              ),
+            );
+          },
+          child: ListTile(
+            leading: const CircleAvatar(
+              backgroundImage: AssetImage(AssetsPath.photo2),
+            ),
+            title: Text(searchUsers[index]['name']),
+            subtitle: Text(searchUsers[index]['username']),
+            trailing: ElevatedButton(
+                onPressed: () {
+                  setState(() {});
+                  searchUsers[index]['isFollowing'] =
+                      !searchUsers[index]['isFollowing'];
+                },
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: searchUsers[index]['isFollowing']
+                        ? AppColor.themeColor
+                        : Colors.grey.shade400),
+                child: Text(
+                  searchUsers[index]['isFollowing'] ? 'Unfollow' : 'Follow',
+                  style: const TextStyle(
+                      color: Colors.black87, fontWeight: FontWeight.w600),
+                )),
           ),
-          title: Text(searchUsers[index]['name']),
-          subtitle: Text(searchUsers[index]['username']),
-          trailing: ElevatedButton(
-              onPressed: () {
-                setState(() {});
-                searchUsers[index]['isFollowing'] =
-                    !searchUsers[index]['isFollowing'];
-              },
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: searchUsers[index]['isFollowing']
-                      ? AppColor.themeColor
-                      : Colors.grey.shade400),
-              child: Text(
-                searchUsers[index]['isFollowing'] ? 'Unfollow' : 'Follow',
-                style: const TextStyle(
-                    color: Colors.black87, fontWeight: FontWeight.w600),
-              )),
         );
       },
     );
@@ -166,23 +180,35 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
     return ListView.builder(
       itemCount: searchUsers.length,
       itemBuilder: (context, index) {
-        return ListTile(
-          leading: const CircleAvatar(
-            backgroundImage: AssetImage(AssetsPath.photo2),
+        return InkWell(
+          onTap: () {
+            FocusScope.of(context).requestFocus(FocusNode());
+            Get.to(
+              OthersProfileScreen(
+                username: searchUsers[index]['username'],
+                following: searchUsers[index]['isFollowing'],
+                userFullName: searchUsers[index]['name'],
+              ),
+            );
+          },
+          child: ListTile(
+            leading: const CircleAvatar(
+              backgroundImage: AssetImage(AssetsPath.photo2),
+            ),
+            title: Text(searchUsers[index]['name']),
+            subtitle: Text(searchUsers[index]['username']),
+            trailing: ElevatedButton(
+                onPressed: () {
+                  _showRemoveBottomSheet(index);
+                },
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey.shade400),
+                child: const Text(
+                  'Remove',
+                  style: TextStyle(
+                      color: Colors.black87, fontWeight: FontWeight.w600),
+                )),
           ),
-          title: Text(searchUsers[index]['name']),
-          subtitle: Text(searchUsers[index]['username']),
-          trailing: ElevatedButton(
-              onPressed: () {
-                _showRemoveBottomSheet(index);
-              },
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey.shade400),
-              child: const Text(
-                'Remove',
-                style: TextStyle(
-                    color: Colors.black87, fontWeight: FontWeight.w600),
-              )),
         );
       },
     );

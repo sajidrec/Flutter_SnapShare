@@ -3,18 +3,26 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_rx/src/rx_typedefs/rx_typedefs.dart';
 import 'package:snapshare/presentation/controller/grid_or_listview_switch_controller.dart';
-import 'package:snapshare/presentation/screens/auth/signup_or_login_screen.dart';
+import 'package:snapshare/presentation/screens/chat_screen.dart';
 import 'package:snapshare/presentation/screens/follow_unfollow_screen.dart';
 
-class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+class OthersProfileScreen extends StatefulWidget {
+  final String username;
+  final bool following;
+  final String userFullName;
+
+  const OthersProfileScreen({
+    super.key,
+    required this.username,
+    required this.following,
+    required this.userFullName,
+  });
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  State<OthersProfileScreen> createState() => _OthersProfileScreenState();
 }
 
-
-class _ProfileScreenState extends State<ProfileScreen> {
+class _OthersProfileScreenState extends State<OthersProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -183,22 +191,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 5),
-        Text(
-          FirebaseAuth.instance.currentUser?.displayName ?? "Unknown",
-          style: const TextStyle(
-            fontWeight: FontWeight.w700,
-            fontSize: 18,
-          ),
-        ),
-        const SizedBox(height: 5),
-        Text(
-          FirebaseAuth.instance.currentUser?.email ?? "Not available",
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-        const SizedBox(height: 5),
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -221,6 +213,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
               statusQuantity: 99,
               placeDotTrailing: false,
               onTap: () {},
+            ),
+          ],
+        ),
+        const SizedBox(height: 5),
+        Text(
+          widget.username,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+          ),
+        ),
+        Row(
+          children: [
+            ElevatedButton(
+              onPressed: () {},
+              style: const ButtonStyle(
+                backgroundColor: WidgetStatePropertyAll(Color(0XFFEAECF0)),
+                foregroundColor: WidgetStatePropertyAll(Colors.black),
+              ),
+              child: Text(widget.following ? "Unfollow" : "Follow"),
+            ),
+            const SizedBox(width: 8),
+            ElevatedButton(
+              onPressed: () {
+                Get.to(
+                  const ChatScreen(),
+                );
+              },
+              style: const ButtonStyle(
+                backgroundColor: WidgetStatePropertyAll(Color(0XFFEAECF0)),
+                foregroundColor: WidgetStatePropertyAll(Colors.black),
+              ),
+              child: const Text("Message"),
             ),
           ],
         ),
@@ -282,49 +307,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   AppBar _buildAppbar() {
     return AppBar(
       backgroundColor: Colors.transparent,
-      centerTitle: true,
-      actions: [
-        IconButton(
-          onPressed: () async {
-            Get.defaultDialog(
-              title: "Are you sure want to logout?",
-              middleText: "",
-              backgroundColor: Colors.white,
-              cancel: TextButton(
-                onPressed: () {
-                  Get.back();
-                },
-                child: const Text(
-                  "NO",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-              confirm: TextButton(
-                onPressed: () async {
-                  await FirebaseAuth.instance.signOut();
-                  Get.offAll(const SignupOrLoginScreen());
-                },
-                child: const Text(
-                  "YES",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w700,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-            );
-            // await FirebaseAuth.instance.signOut();
-            // Get.offAll(() => const SignupOrLoginScreen());
-          },
-          icon: const Icon(Icons.logout),
-        )
-      ],
-      title: const Text(
-        "My Profile",
-        style: TextStyle(
+      title: Text(
+        widget.userFullName,
+        style: const TextStyle(
           fontWeight: FontWeight.w700,
           fontSize: 20,
         ),
