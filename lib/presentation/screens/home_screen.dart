@@ -1,6 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:snapshare/presentation/screens/chat_screen.dart';
+import 'package:snapshare/presentation/screens/notification_screen.dart';
+import 'package:snapshare/presentation/screens/profile_screen.dart';
 import 'package:snapshare/utils/assets_path.dart';
+import 'package:snapshare/widgets/comment_bottom_sheet.dart';
 import 'package:snapshare/widgets/profile_image_button.dart';
 import 'package:snapshare/widgets/story_section.dart';
 
@@ -48,6 +54,14 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, () {
+      showProfileUpdateDialog(context);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey.shade200,
@@ -73,14 +87,23 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                ProfileImageButton(
-                  profileImage: userData[0]['profileImage'],
+                GestureDetector(
+                  onTap: () => Get.to(() => const ProfileScreen()),
+                  child: ProfileImageButton(
+                    // profileImage: userData[0]['profileImage'],
+                    profileImage:
+                        FirebaseAuth.instance.currentUser?.photoURL ?? "",
+                  ),
                 ),
                 _buildHeaderLogo(),
                 Row(
                   children: [
-                    _buildCircularIconButton(Icons.notifications_none, () {}),
-                    _buildCircularIconButton(Icons.message_outlined, () {})
+                    _buildCircularIconButton(Icons.notifications_none, () {
+                      Get.to(const NotificationScreen());
+                    }),
+                    _buildCircularIconButton(Icons.message_outlined, () {
+                      Get.to(() => const ChatScreen());
+                    })
                   ],
                 )
               ],
@@ -151,16 +174,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildComment() {
     return Expanded(
-        child: TextFormField(
-      decoration: const InputDecoration(
-        hintText: 'Your Comments',
-        border: InputBorder.none,
-        focusedBorder: InputBorder.none,
-        enabledBorder: InputBorder.none,
-        disabledBorder: InputBorder.none,
+      child: TextFormField(
+        decoration: const InputDecoration(
+          hintText: 'Your Comments',
+          border: InputBorder.none,
+          focusedBorder: InputBorder.none,
+          enabledBorder: InputBorder.none,
+          disabledBorder: InputBorder.none,
+        ),
+        controller: _commentController,
       ),
-      controller: _commentController,
-    ));
+    );
   }
 
   Widget _buildReactAndComment() {
@@ -190,11 +214,18 @@ class _HomeScreenState extends State<HomeScreen> {
               CupertinoIcons.chat_bubble,
               size: 22,
             )),
-        const Text(
-          '20 Comments',
-          style: TextStyle(
-              fontSize: 17, color: Colors.black87, fontWeight: FontWeight.w400),
-        )
+        TextButton(
+          onPressed: () {
+            CommentBottomSheet.show();
+          },
+          child: const Text(
+            '20 Comments',
+            style: TextStyle(
+                fontSize: 17,
+                color: Colors.black87,
+                fontWeight: FontWeight.w400),
+          ),
+        ),
       ],
     );
   }
@@ -206,7 +237,7 @@ class _HomeScreenState extends State<HomeScreen> {
         image,
         fit: BoxFit.cover,
         width: double.infinity,
-        height: 200,
+        height: 300,
       ),
     );
   }
@@ -248,8 +279,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildHeaderLogo() {
     return const Text(
-      "Snapshare",
-      style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+      'SnapShare',
+      style: TextStyle(
+          fontSize: 28, fontWeight: FontWeight.w500, fontFamily: 'Lobster'),
     );
   }
 
@@ -264,6 +296,70 @@ class _HomeScreenState extends State<HomeScreen> {
           borderRadius: BorderRadius.circular(20),
         ),
         child: Icon(icon, size: 28, color: Colors.grey.shade800),
+      ),
+    );
+  }
+
+  void showProfileUpdateDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        contentPadding: EdgeInsets.zero,
+        content: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: SizedBox(
+            width: 300,
+            height: 300,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.network('https://i.imgur.com/BgdbRIQ.png'),
+                const SizedBox(height: 16),
+                const Text(
+                  'Profile Created',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Update your name, profile image,\nadditional number',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    Get.to(() => const ProfileScreen());
+                  },
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 36),
+                  ),
+                  child: const Text('Update'),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                        onPressed: () {
+                          Get.back();
+                        },
+                        child: const Text(
+                          'Skip',
+                          style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.blue),
+                        )),
+                    const Icon(
+                      Icons.keyboard_arrow_down,
+                      color: Colors.blue,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

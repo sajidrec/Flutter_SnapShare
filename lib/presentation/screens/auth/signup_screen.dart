@@ -1,7 +1,13 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get/get_rx/src/rx_typedefs/rx_typedefs.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:snapshare/presentation/controller/auth_controller/registration_controller.dart';
+import 'package:snapshare/presentation/controller/auth_controller/selected_image_name_controller.dart';
+import 'package:snapshare/presentation/screens/auth/login_screen.dart';
 import 'package:snapshare/presentation/screens/auth/signup_or_login_screen.dart';
-import 'package:snapshare/presentation/screens/bottom_nav_bar.dart';
+import 'package:snapshare/utils/app_colors.dart';
 import 'package:snapshare/widgets/text_field.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -13,12 +19,16 @@ class SignupScreen extends StatefulWidget {
 
 class _SignupScreenState extends State<SignupScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
       TextEditingController();
+  final TextEditingController nameTeController = TextEditingController();
   late bool _savePassword = false;
   bool _passwordValid = false;
+
+  XFile? profileImage;
 
   @override
   void initState() {
@@ -30,107 +40,241 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildAppBar(),
-      body: SingleChildScrollView(
-        child: Stack(
-          children: [
-            Form(
-              key: _formKey,
-              child: Padding(
-                padding: const EdgeInsets.all(30.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 60),
-                    const Text(
-                      'Enter your phone number and password',
-                      style: TextStyle(fontSize: 24),
-                    ),
-                    const SizedBox(height: 20),
-                    const Text('Email', style: TextStyle(fontSize: 16)),
-                    const SizedBox(height: 10),
-                    TextFields(
-                      hintText: 'Email',
-                      icon: const Icon(Icons.email_outlined),
-                      controller: emailController,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your email';
-                        } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
-                            .hasMatch(value)) {
-                          return 'Please enter a valid email';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 10),
-                    const Text('Passwords', style: TextStyle(fontSize: 16)),
-                    const SizedBox(height: 10),
-                    TextFields(
-                      hintText: 'Passwords',
-                      icon: const Icon(Icons.lock_outline),
-                      isPassword: true,
-                      controller: passwordController,
-                      validator: (value) {
-                        if (value == null || value.length < 6) {
-                          return 'Password must be at least 6 characters';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 10),
-                    const Text('Confirm Passwords',
-                        style: TextStyle(fontSize: 16)),
-                    const SizedBox(height: 10),
-                    TextFields(
-                      hintText: 'Confirm Passwords',
-                      icon: const Icon(Icons.lock_outline),
-                      isPassword: true,
-                      controller: confirmPasswordController,
-                      validator: (value) {
-                        if (value == null || value != passwordController.text) {
-                          return 'Passwords do not match';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 10),
-                    _buildCheckBox(_savePassword),
-                    const SizedBox(height: 30),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: _passwordValid != false
-                            ? () {
-                                if (_formKey.currentState?.validate() ??
-                                    false) {
-                                  Get.offAll(() => const BottomNavBar());
-                                }
-                              }
-                            : null,
-                        child: const Text('Sign Up'),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    _buildTextButton()
-                  ],
-                ),
-              ),
-            ),
-          ],
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Get.to(() => const SignupOrLoginScreen());
+          },
+          icon: const Icon(Icons.arrow_back_ios_new),
         ),
       ),
+      body: GetBuilder<RegistrationController>(builder: (
+        registrationController,
+      ) {
+        return registrationController.inProgress
+            ? const Center(
+                child: CupertinoActivityIndicator(
+                  color: AppColor.themeColor,
+                ),
+              )
+            : SingleChildScrollView(
+                child: Stack(
+                  children: [
+                    Form(
+                      key: _formKey,
+                      child: Padding(
+                        padding: const EdgeInsets.all(30.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 60),
+                            const Text(
+                              'Enter your details',
+                              style: TextStyle(fontSize: 24),
+                            ),
+                            const SizedBox(height: 10),
+                            GetBuilder<SelectedImageNameController>(
+                                builder: (selectedImageNameController) {
+                              return Text(
+                                selectedImageNameController.pickedImageName,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              );
+                            }),
+                            const SizedBox(height: 10),
+                            GetBuilder<SelectedImageNameController>(
+                                builder: (selectedImageNameController) {
+                              return _buildSelectPicture(
+                                onTapFunc: () async {
+                                  ImagePicker imagePicker = ImagePicker();
+                                  profileImage = await imagePicker.pickImage(
+                                    source: ImageSource.gallery,
+                                  );
+                                  selectedImageNameController.provideFileName(
+                                    pickedImage: profileImage,
+                                  );
+                                },
+                              );
+                            }),
+                            const SizedBox(height: 10),
+                            const Text('Full Name',
+                                style: TextStyle(fontSize: 16)),
+                            const SizedBox(height: 10),
+                            TextFields(
+                              hintText: "Your name",
+                              controller: nameTeController,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "Enter your name";
+                                }
+                                return null;
+                              },
+                              icon: const Icon(Icons.person),
+                            ),
+                            const SizedBox(height: 10),
+                            const Text('Email', style: TextStyle(fontSize: 16)),
+                            const SizedBox(height: 10),
+                            TextFields(
+                              hintText: 'Email',
+                              icon: const Icon(Icons.email_outlined),
+                              controller: emailController,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter your email';
+                                } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+')
+                                    .hasMatch(value)) {
+                                  return 'Please enter a valid email';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 10),
+                            const Text('Passwords',
+                                style: TextStyle(fontSize: 16)),
+                            const SizedBox(height: 10),
+                            TextFields(
+                              hintText: 'Passwords',
+                              icon: const Icon(Icons.lock_outline),
+                              isPassword: true,
+                              controller: passwordController,
+                              validator: (value) {
+                                if (value == null || value.length < 6) {
+                                  return 'Password must be at least 6 characters';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 10),
+                            const Text('Confirm Passwords',
+                                style: TextStyle(fontSize: 16)),
+                            const SizedBox(height: 10),
+                            TextFields(
+                              hintText: 'Confirm Passwords',
+                              icon: const Icon(Icons.lock_outline),
+                              isPassword: true,
+                              controller: confirmPasswordController,
+                              validator: (value) {
+                                if (value == null ||
+                                    value != passwordController.text) {
+                                  return 'Passwords do not match';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 10),
+                            _buildCheckBox(_savePassword),
+                            const SizedBox(height: 30),
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: _passwordValid != false
+                                    ? () async {
+                                        FocusScope.of(context)
+                                            .requestFocus(FocusNode());
+
+                                        if (profileImage == null) {
+                                          Get.snackbar(
+                                            "Select profile picture",
+                                            "",
+                                          );
+                                        }
+
+                                        if ((_formKey.currentState
+                                                    ?.validate() ??
+                                                false) &&
+                                            profileImage != null) {
+                                          bool registrationStatus =
+                                              await registrationController
+                                                  .registerNewUser(
+                                            userName:
+                                                nameTeController.text.trim(),
+                                            profilePicturePath:
+                                                profileImage!.path,
+                                            email: emailController.text.trim(),
+                                            password: passwordController.text,
+                                          );
+
+                                          if (registrationStatus) {
+                                            if (mounted) {
+                                              Get.snackbar(
+                                                "Sucess",
+                                                "Registration successful please login",
+                                                backgroundColor: Colors.green,
+                                                colorText: Colors.white,
+                                              );
+                                              Get.offAll(
+                                                () => const LoginScreen(),
+                                              );
+                                            }
+                                          } else {
+                                            Get.snackbar(
+                                              "Failed",
+                                              registrationController
+                                                  .errorMessage,
+                                              backgroundColor: Colors.red,
+                                              colorText: Colors.white,
+                                            );
+                                          }
+                                        }
+                                      }
+                                    : null,
+                                child: const Text('Sign Up'),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            _buildTextButton()
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+      }),
     );
   }
 
-  AppBar _buildAppBar() {
-    return AppBar(
-      leading: IconButton(
-        onPressed: () {
-          Get.to(() => const SignupOrLoginScreen());
-        },
-        icon: const Icon(Icons.arrow_back_ios_new),
+  InkWell _buildSelectPicture({
+    required Callback onTapFunc,
+  }) {
+    return InkWell(
+      onTap: onTapFunc,
+      child: Row(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              color: Colors.black,
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(12),
+                topLeft: Radius.circular(12),
+              ),
+            ),
+            width: Get.width / 3,
+            height: 40,
+            child: const Center(
+              child: Text(
+                "Select Profile Picture",
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Container(
+              height: 40,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: const BorderRadius.only(
+                  topRight: Radius.circular(12),
+                  bottomRight: Radius.circular(12),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -184,7 +328,9 @@ class _SignupScreenState extends State<SignupScreen> {
               color: Colors.blueGrey),
         ),
         TextButton(
-          onPressed: () {},
+          onPressed: () {
+            Get.offAll(const LoginScreen());
+          },
           child: const Text(
             'Log In',
             style: TextStyle(
@@ -197,9 +343,10 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   void dispose() {
+    super.dispose();
+    nameTeController.dispose();
     emailController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
-    super.dispose();
   }
 }
