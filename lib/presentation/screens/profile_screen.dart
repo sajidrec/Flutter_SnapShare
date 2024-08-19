@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:get/get_rx/src/rx_typedefs/rx_typedefs.dart';
 import 'package:snapshare/presentation/controller/grid_or_listview_switch_controller.dart';
 import 'package:snapshare/presentation/screens/auth/signup_or_login_screen.dart';
+import 'package:snapshare/presentation/screens/follow_unfollow_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -202,18 +203,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
           children: [
             _buildStatus(
               statusTitle: "Post",
-              statusQuantity: 999,
+              statusQuantity: 50,
               placeDotTrailing: true,
+              onTap: () {},
             ),
             _buildStatus(
               statusTitle: "Following",
-              statusQuantity: 999,
+              statusQuantity: 99,
               placeDotTrailing: true,
+              onTap: () {
+                Get.to(() => const FollowUnfollowScreen());
+              },
             ),
             _buildStatus(
               statusTitle: "Follower",
-              statusQuantity: 999,
+              statusQuantity: 99,
               placeDotTrailing: false,
+              onTap: () {},
             ),
           ],
         ),
@@ -225,31 +231,35 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required String statusTitle,
     required int statusQuantity,
     required bool placeDotTrailing,
+    required VoidCallback onTap,
   }) {
-    return Row(
-      children: [
-        Text(
-          statusQuantity.toString(),
-          style: const TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 14,
-          ),
-        ),
-        const Text(" "),
-        Text(statusTitle),
-        if (placeDotTrailing) ...[
-          const SizedBox(width: 8),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.grey,
-              borderRadius: BorderRadius.circular(50),
+    return GestureDetector(
+      onTap: onTap,
+      child: Row(
+        children: [
+          Text(
+            statusQuantity.toString(),
+            style: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
             ),
-            width: 5,
-            height: 5,
           ),
-          const SizedBox(width: 8),
-        ]
-      ],
+          const Text(" "),
+          Text(statusTitle),
+          if (placeDotTrailing) ...[
+            const SizedBox(width: 8),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.grey,
+                borderRadius: BorderRadius.circular(50),
+              ),
+              width: 5,
+              height: 5,
+            ),
+            const SizedBox(width: 8),
+          ]
+        ],
+      ),
     );
   }
 
