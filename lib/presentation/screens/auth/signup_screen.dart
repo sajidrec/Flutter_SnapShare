@@ -25,6 +25,7 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController confirmPasswordController =
       TextEditingController();
   final TextEditingController nameTeController = TextEditingController();
+  final TextEditingController usernameTeController = TextEditingController();
   late bool _savePassword = false;
   bool _passwordValid = false;
 
@@ -98,8 +99,31 @@ class _SignupScreenState extends State<SignupScreen> {
                               );
                             }),
                             const SizedBox(height: 10),
-                            const Text('Full Name',
-                                style: TextStyle(fontSize: 16)),
+                            const Text(
+                              'Username',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            const SizedBox(height: 10),
+                            TextFields(
+                              hintText: "Only lowercase letter allowed",
+                              controller: usernameTeController,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "Can't be empty";
+                                } else if (RegExp(r'^[a-z]+$')
+                                    .hasMatch(value)) {
+                                  return null;
+                                }
+
+                                return "Enter valid username";
+                              },
+                              icon: const Icon(Icons.person_outline),
+                            ),
+                            const SizedBox(height: 10),
+                            const Text(
+                              'Full Name',
+                              style: TextStyle(fontSize: 16),
+                            ),
                             const SizedBox(height: 10),
                             TextFields(
                               hintText: "Your name",
@@ -348,5 +372,6 @@ class _SignupScreenState extends State<SignupScreen> {
     emailController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
+    usernameTeController.dispose();
   }
 }
