@@ -233,13 +233,16 @@ class _SignupScreenState extends State<SignupScreen> {
                                             bool registrationStatus =
                                                 await registrationController
                                                     .registerNewUser(
-                                              userName:
+                                              userFullName:
                                                   nameTeController.text.trim(),
                                               profilePicturePath:
                                                   profileImage!.path,
                                               email:
                                                   emailController.text.trim(),
                                               password: passwordController.text,
+                                              userName: usernameTeController
+                                                  .text
+                                                  .trim(),
                                             );
 
                                             if (registrationStatus) {
