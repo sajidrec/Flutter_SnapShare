@@ -5,6 +5,7 @@ import 'package:get/get_rx/src/rx_typedefs/rx_typedefs.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:snapshare/presentation/controller/auth_controller/registration_controller.dart';
 import 'package:snapshare/presentation/controller/auth_controller/selected_image_name_controller.dart';
+import 'package:snapshare/presentation/controller/auth_controller/upload_user_info_db_controller.dart';
 import 'package:snapshare/presentation/screens/auth/login_screen.dart';
 import 'package:snapshare/presentation/screens/auth/signup_or_login_screen.dart';
 import 'package:snapshare/utils/app_colors.dart';
@@ -25,6 +26,7 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController confirmPasswordController =
       TextEditingController();
   final TextEditingController nameTeController = TextEditingController();
+  final TextEditingController usernameTeController = TextEditingController();
   late bool _savePassword = false;
   bool _passwordValid = false;
 
@@ -98,8 +100,31 @@ class _SignupScreenState extends State<SignupScreen> {
                               );
                             }),
                             const SizedBox(height: 10),
-                            const Text('Full Name',
-                                style: TextStyle(fontSize: 16)),
+                            const Text(
+                              'Username',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            const SizedBox(height: 10),
+                            TextFields(
+                              hintText: "Only lowercase letter allowed",
+                              controller: usernameTeController,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "Can't be empty";
+                                } else if (RegExp(r'^[a-z]+$')
+                                    .hasMatch(value)) {
+                                  return null;
+                                }
+
+                                return "Enter valid username";
+                              },
+                              icon: const Icon(Icons.person_outline),
+                            ),
+                            const SizedBox(height: 10),
+                            const Text(
+                              'Full Name',
+                              style: TextStyle(fontSize: 16),
+                            ),
                             const SizedBox(height: 10),
                             TextFields(
                               hintText: "Your name",
@@ -167,60 +192,86 @@ class _SignupScreenState extends State<SignupScreen> {
                             const SizedBox(height: 30),
                             SizedBox(
                               width: double.infinity,
-                              child: ElevatedButton(
-                                onPressed: _passwordValid != false
-                                    ? () async {
-                                        FocusScope.of(context)
-                                            .requestFocus(FocusNode());
+                              child: GetBuilder<UploadUserInfoDbController>(
+                                  builder: (uploadUserInfoDbController) {
+                                return ElevatedButton(
+                                  onPressed: _passwordValid != false
+                                      ? () async {
+                                          FocusScope.of(context)
+                                              .requestFocus(FocusNode());
 
-                                        if (profileImage == null) {
-                                          Get.snackbar(
-                                            "Select profile picture",
-                                            "",
-                                          );
-                                        }
-
-                                        if ((_formKey.currentState
-                                                    ?.validate() ??
-                                                false) &&
-                                            profileImage != null) {
-                                          bool registrationStatus =
-                                              await registrationController
-                                                  .registerNewUser(
-                                            userName:
+                                          bool userInfoUploaded =
+                                              await uploadUserInfoDbController
+                                                  .uploadUserInfo(
+                                            username: usernameTeController.text
+                                                .trim(),
+                                            userFullName:
                                                 nameTeController.text.trim(),
-                                            profilePicturePath:
-                                                profileImage!.path,
-                                            email: emailController.text.trim(),
-                                            password: passwordController.text,
+                                            userEmail:
+                                                emailController.text.trim(),
                                           );
 
-                                          if (registrationStatus) {
-                                            if (mounted) {
-                                              Get.snackbar(
-                                                "Sucess",
-                                                "Registration successful please login",
-                                                backgroundColor: Colors.green,
-                                                colorText: Colors.white,
-                                              );
-                                              Get.offAll(
-                                                () => const LoginScreen(),
-                                              );
-                                            }
-                                          } else {
+                                          if (!userInfoUploaded) {
+                                            usernameTeController.text = "";
                                             Get.snackbar(
                                               "Failed",
-                                              registrationController
-                                                  .errorMessage,
-                                              backgroundColor: Colors.red,
-                                              colorText: Colors.white,
+                                              "try different username",
                                             );
                                           }
+
+                                          if (profileImage == null) {
+                                            Get.snackbar(
+                                              "Select profile picture",
+                                              "",
+                                            );
+                                          }
+
+                                          if ((_formKey.currentState
+                                                      ?.validate() ??
+                                                  false) &&
+                                              profileImage != null) {
+                                            bool registrationStatus =
+                                                await registrationController
+                                                    .registerNewUser(
+                                              userFullName:
+                                                  nameTeController.text.trim(),
+                                              profilePicturePath:
+                                                  profileImage!.path,
+                                              email:
+                                                  emailController.text.trim(),
+                                              password: passwordController.text,
+                                              userName: usernameTeController
+                                                  .text
+                                                  .trim(),
+                                            );
+
+                                            if (registrationStatus) {
+                                              if (mounted) {
+                                                Get.snackbar(
+                                                  "Sucess",
+                                                  "Registration successful please login",
+                                                  backgroundColor: Colors.green,
+                                                  colorText: Colors.white,
+                                                );
+                                                Get.offAll(
+                                                  () => const LoginScreen(),
+                                                );
+                                              }
+                                            } else {
+                                              Get.snackbar(
+                                                "Failed",
+                                                registrationController
+                                                    .errorMessage,
+                                                backgroundColor: Colors.red,
+                                                colorText: Colors.white,
+                                              );
+                                            }
+                                          }
                                         }
-                                      }
-                                    : null,
-                                child: const Text('Sign Up'),
-                              ),
+                                      : null,
+                                  child: const Text('Sign Up'),
+                                );
+                              }),
                             ),
                             const SizedBox(height: 10),
                             _buildTextButton()
@@ -348,5 +399,6 @@ class _SignupScreenState extends State<SignupScreen> {
     emailController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
+    usernameTeController.dispose();
   }
 }
