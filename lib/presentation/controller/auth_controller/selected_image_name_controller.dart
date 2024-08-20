@@ -6,11 +6,21 @@ class SelectedImageNameController extends GetxController {
 
   String get pickedImageName => _pickedImageName;
 
+  // void provideFileName({required XFile? pickedImage}) {
+  //   if (pickedImage == null) {
+  //     _pickedImageName = "Nothing selected";
+  //   } else {
+  //     _pickedImageName = pickedImage.name;
+  //   }
+  //   update();
+  // }
+
   void provideFileName({required XFile? pickedImage}) {
-    if (pickedImage == null) {
-      _pickedImageName = "Nothing selected";
+
+    if (pickedImage != null) {
+      _pickedImageName = pickedImage.name; // or any other logic
     } else {
-      _pickedImageName = pickedImage.name;
+      _pickedImageName = '';
     }
     update();
   }
