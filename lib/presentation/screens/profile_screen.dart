@@ -2,9 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_rx/src/rx_typedefs/rx_typedefs.dart';
+import 'package:snapshare/presentation/controller/get_userinfo_by_email_controller.dart';
 import 'package:snapshare/presentation/controller/grid_or_listview_switch_controller.dart';
 import 'package:snapshare/presentation/screens/auth/signup_or_login_screen.dart';
 import 'package:snapshare/presentation/screens/follow_unfollow_screen.dart';
+import 'package:snapshare/utils/app_colors.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -13,8 +15,18 @@ class ProfileScreen extends StatefulWidget {
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-
 class _ProfileScreenState extends State<ProfileScreen> {
+  @override
+  void initState() {
+    super.initState();
+    fetchUserData();
+  }
+
+  Future<void> fetchUserData() async {
+    await Get.find<GetUserinfoByEmailController>()
+        .fetchUserData(email: FirebaseAuth.instance.currentUser?.email ?? "");
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -179,53 +191,68 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildProfileStatusSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 5),
-        Text(
-          FirebaseAuth.instance.currentUser?.displayName ?? "Unknown",
-          style: const TextStyle(
-            fontWeight: FontWeight.w700,
-            fontSize: 18,
-          ),
-        ),
-        const SizedBox(height: 5),
-        Text(
-          FirebaseAuth.instance.currentUser?.email ?? "Not available",
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-        const SizedBox(height: 5),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _buildStatus(
-              statusTitle: "Post",
-              statusQuantity: 50,
-              placeDotTrailing: true,
-              onTap: () {},
-            ),
-            _buildStatus(
-              statusTitle: "Following",
-              statusQuantity: 99,
-              placeDotTrailing: true,
-              onTap: () {
-                Get.to(() => const FollowUnfollowScreen());
-              },
-            ),
-            _buildStatus(
-              statusTitle: "Follower",
-              statusQuantity: 99,
-              placeDotTrailing: false,
-              onTap: () {},
-            ),
-          ],
-        ),
-      ],
-    );
+    return GetBuilder<GetUserinfoByEmailController>(
+        builder: (getUserinfoByEmailController) {
+      return getUserinfoByEmailController.inProgress
+          ? const Center(
+              child: CircularProgressIndicator(
+                color: AppColor.themeColor,
+              ),
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 5),
+                Text(
+                  FirebaseAuth.instance.currentUser?.displayName ?? "Unknown",
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  "@${getUserinfoByEmailController.getUserData["username"] ?? "Not available"}",
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    _buildStatus(
+                      statusTitle: "Post",
+                      statusQuantity: getUserinfoByEmailController
+                              .getUserData["posts"].length ??
+                          0,
+                      placeDotTrailing: true,
+                      onTap: () {},
+                    ),
+                    _buildStatus(
+                      statusTitle: "Following",
+                      statusQuantity: getUserinfoByEmailController
+                              .getUserData["following"].length ??
+                          0,
+                      placeDotTrailing: true,
+                      onTap: () {
+                        Get.to(() => const FollowUnfollowScreen());
+                      },
+                    ),
+                    _buildStatus(
+                      statusTitle: "Follower",
+                      statusQuantity: getUserinfoByEmailController
+                              .getUserData["followers"].length ??
+                          0,
+                      placeDotTrailing: false,
+                      onTap: () {},
+                    ),
+                  ],
+                ),
+              ],
+            );
+    });
   }
 
   Widget _buildStatus({
