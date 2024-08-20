@@ -128,8 +128,7 @@ class CommentBottomSheet {
           ),
           TextButton(
             onPressed: () {
-              // Handle comment submission
-              Get.back(); // Close the bottom sheet after posting
+              Get.back();
             },
             child: const Text('Post', style: TextStyle(color: Colors.blue)),
           ),
