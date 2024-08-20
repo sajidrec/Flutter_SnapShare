@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:snapshare/presentation/screens/chat_screen.dart';
 import 'package:snapshare/presentation/screens/notification_screen.dart';
 import 'package:snapshare/presentation/screens/profile_screen.dart';
+import 'package:snapshare/presentation/screens/update_profile_screen.dart';
 import 'package:snapshare/utils/assets_path.dart';
 import 'package:snapshare/widgets/comment_bottom_sheet.dart';
 import 'package:snapshare/widgets/profile_image_button.dart';
@@ -328,7 +329,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
-                    Get.to(() => const ProfileScreen());
+                    Get.to(() => const UpdateProfileScreen());
                   },
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(double.infinity, 36),
