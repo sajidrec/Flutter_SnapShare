@@ -11,7 +11,7 @@ class LocationScreen extends StatefulWidget {
 
 class _LocationScreenState extends State<LocationScreen> {
   Future<void> _placeListFromApi(String query) async {
-    var apiKey = 'AIzaSyAd82MdYr_CD_FTd6tMZPWgdYMDWgdqqwM';
+    var apiKey = 'AIzaSyAd82MdYr_CD_FTd6tMZPWgdYMDWgdqqwM'; //not valid key
     Uri url =
         Uri.https('maps.googleapis.com', 'maps/api/place/autocomplete/json', {
       'input': query,
