@@ -36,72 +36,74 @@ class _NewPostScreenState extends State<NewPostScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(),
-      body: Center(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: _buildImageAndTextField(),
-            ),
-            const SizedBox(height: 10),
-            const Divider(),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: InkWell(
-                  onTap: _openLocationScreen,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Add Location',
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.w600),
-                      ),
-                      if (selectedLocations.isNotEmpty) ...[
-                        const SizedBox(height: 8),
-                        Wrap(
-                          spacing: 8.0,
-                          runSpacing: 4.0,
-                          children: selectedLocations.map((location) {
-                            return Chip(
-                              label: Text(location),
-                              avatar: const Icon(
-                                Icons.location_on,
-                                color: Colors.red,
-                              ),
-                              deleteIcon: const Icon(
-                                Icons.close,
-                                color: Colors.black,
-                              ),
-                              onDeleted: () => _removeLocation(location),
-                            );
-                          }).toList(),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: _buildImageAndTextField(),
+              ),
+              const SizedBox(height: 10),
+              const Divider(),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: InkWell(
+                    onTap: _openLocationScreen,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Add Location',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.w600),
                         ),
+                        if (selectedLocations.isNotEmpty) ...[
+                          const SizedBox(height: 8),
+                          Wrap(
+                            spacing: 8.0,
+                            runSpacing: 4.0,
+                            children: selectedLocations.map((location) {
+                              return Chip(
+                                label: Text(location),
+                                avatar: const Icon(
+                                  Icons.location_on,
+                                  color: Colors.red,
+                                ),
+                                deleteIcon: const Icon(
+                                  Icons.close,
+                                  color: Colors.black,
+                                ),
+                                onDeleted: () => _removeLocation(location),
+                              );
+                            }).toList(),
+                          ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            const Divider(),
-            const SizedBox(height: 80),
-            const Divider(),
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Add Music',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+              const Divider(),
+              const SizedBox(height: 80),
+              const Divider(),
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Add Music',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                  ),
                 ),
               ),
-            ),
-            const Divider(),
-            const SizedBox(height: 80),
-            const Divider(),
-          ],
+              const Divider(),
+              const SizedBox(height: 80),
+              const Divider(),
+            ],
+          ),
         ),
       ),
     );
