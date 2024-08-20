@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:snapshare/presentation/screens/home_screen.dart';
 import 'package:snapshare/presentation/screens/new_post_screen.dart';
 import 'package:snapshare/presentation/screens/profile_screen.dart';
 import 'package:snapshare/presentation/screens/search_screen.dart';
+
+import 'home_screen.dart';
 
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({super.key});
