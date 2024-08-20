@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:snapshare/presentation/screens/add_screen.dart';
-import 'package:snapshare/presentation/screens/home_screen.dart'; // Assuming you have a HomeScreen
+import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:snapshare/presentation/screens/home_screen.dart';
+import 'package:snapshare/presentation/screens/new_post_screen.dart';
 import 'package:snapshare/presentation/screens/profile_screen.dart';
 import 'package:snapshare/presentation/screens/search_screen.dart';
 
@@ -13,18 +15,29 @@ class BottomNavBar extends StatefulWidget {
 
 class _BottomNavBarState extends State<BottomNavBar> {
   int _selectedPage = 0;
+  XFile? _pickedImage;
+
+  Future<void> pickImageFromGallery() async {
+    ImagePicker imagePicker = ImagePicker();
+    _pickedImage = await imagePicker.pickImage(source: ImageSource.gallery);
+    setState(() {});
+  }
 
   final List<Widget> _screenList = [
     const HomeScreen(),
     const SearchScreen(),
-    const AddScreen(),
-    const ProfileScreen()
+    const Placeholder(),
+    const ProfileScreen(),
   ];
 
   void _onItemClicked(int index) {
-    setState(() {
-      _selectedPage = index;
-    });
+    if (index == 2) {
+      showAddDialog();
+    } else {
+      setState(() {
+        _selectedPage = index;
+      });
+    }
   }
 
   @override
@@ -53,15 +66,84 @@ class _BottomNavBarState extends State<BottomNavBar> {
           ? Container(
               padding:
                   const EdgeInsets.only(left: 15, top: 8, right: 15, bottom: 8),
-              // Padding around the icon
               decoration: BoxDecoration(
-                color: Colors.blue.shade100, // Light blue background
-                borderRadius: BorderRadius.circular(2), // Rounded corners
+                color: Colors.blue.shade100,
+                borderRadius: BorderRadius.circular(2),
               ),
-              child: Icon(iconData, color: Colors.blue), // Icon color
+              child: Icon(iconData, color: Colors.blue),
             )
           : Icon(iconData),
       label: '',
+    );
+  }
+
+  void showAddDialog() {
+    Get.dialog(
+      AlertDialog(
+        contentPadding: EdgeInsets.zero,
+        content: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: SizedBox(
+            width: 300,
+            height: 200,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  'Select Image',
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Column(
+                      children: [
+                        IconButton(
+                          onPressed: () {},
+                          icon: const Icon(
+                            Icons.camera_alt_outlined,
+                            size: 100,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        const Text(
+                          'Camera',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w500),
+                        ),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        IconButton(
+                          onPressed: () async {
+                            await pickImageFromGallery();
+                            _pickedImage != null
+                                ? Get.to(() => NewPostScreen(
+                                      imagePath: _pickedImage!.path,
+                                    ))
+                                : null;
+                          },
+                          icon: const Icon(
+                            Icons.image_outlined,
+                            size: 100,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        const Text(
+                          'Gallery',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w500),
+                        ),
+                      ],
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
