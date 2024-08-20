@@ -18,6 +18,7 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
   final TextEditingController _searchController = TextEditingController();
 
   List<Map<String, dynamic>> users = [
+    {'name': 'Sajid', 'username': 'sajidrec', 'isFollowing': true},
     {'name': 'Sagor Ahmed', 'username': '@shagor.a', 'isFollowing': true},
     {'name': 'John Doe', 'username': '@johnd', 'isFollowing': false},
     {'name': 'Jane Smith', 'username': '@janes', 'isFollowing': true},

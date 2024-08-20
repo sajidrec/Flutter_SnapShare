@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_rx/src/rx_typedefs/rx_typedefs.dart';
+import 'package:snapshare/presentation/controller/get_userinfo_by_username_controller.dart';
 import 'package:snapshare/presentation/controller/grid_or_listview_switch_controller.dart';
 import 'package:snapshare/presentation/screens/chat_screen.dart';
 import 'package:snapshare/presentation/screens/follow_unfollow_screen.dart';
@@ -23,6 +24,18 @@ class OthersProfileScreen extends StatefulWidget {
 }
 
 class _OthersProfileScreenState extends State<OthersProfileScreen> {
+  @override
+  void initState() {
+    super.initState();
+    fetchUserData();
+  }
+
+  Future<void> fetchUserData() async {
+    await Get.find<GetUserinfoByUsernameController>().fetchUserData(
+      username: widget.username,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -187,70 +200,85 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
   }
 
   Widget _buildProfileStatusSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 5),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _buildStatus(
-              statusTitle: "Post",
-              statusQuantity: 50,
-              placeDotTrailing: true,
-              onTap: () {},
-            ),
-            _buildStatus(
-              statusTitle: "Following",
-              statusQuantity: 99,
-              placeDotTrailing: true,
-              onTap: () {
-                Get.to(() => const FollowUnfollowScreen());
-              },
-            ),
-            _buildStatus(
-              statusTitle: "Follower",
-              statusQuantity: 99,
-              placeDotTrailing: false,
-              onTap: () {},
-            ),
-          ],
-        ),
-        const SizedBox(height: 5),
-        Text(
-          widget.username,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-        Row(
-          children: [
-            ElevatedButton(
-              onPressed: () {},
-              style: const ButtonStyle(
-                backgroundColor: WidgetStatePropertyAll(Color(0XFFEAECF0)),
-                foregroundColor: WidgetStatePropertyAll(Colors.black),
-              ),
-              child: Text(widget.following ? "Unfollow" : "Follow"),
-            ),
-            const SizedBox(width: 8),
-            ElevatedButton(
-              onPressed: () {
-                Get.to(
-                  const ChatScreen(),
-                );
-              },
-              style: const ButtonStyle(
-                backgroundColor: WidgetStatePropertyAll(Color(0XFFEAECF0)),
-                foregroundColor: WidgetStatePropertyAll(Colors.black),
-              ),
-              child: const Text("Message"),
-            ),
-          ],
-        ),
-      ],
-    );
+    return GetBuilder<GetUserinfoByUsernameController>(
+        builder: (getUserinfoByUsernameController) {
+      return getUserinfoByUsernameController.inProgress
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 5),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    _buildStatus(
+                      statusTitle: "Post",
+                      statusQuantity: getUserinfoByUsernameController
+                              .getUserData["posts"].length ??
+                          0,
+                      placeDotTrailing: true,
+                      onTap: () {},
+                    ),
+                    _buildStatus(
+                      statusTitle: "Following",
+                      statusQuantity: getUserinfoByUsernameController
+                              .getUserData["following"].length ??
+                          0,
+                      placeDotTrailing: true,
+                      onTap: () {
+                        Get.to(() => const FollowUnfollowScreen());
+                      },
+                    ),
+                    _buildStatus(
+                      statusTitle: "Follower",
+                      statusQuantity: getUserinfoByUsernameController
+                              .getUserData["followers"].length ??
+                          0,
+                      placeDotTrailing: false,
+                      onTap: () {},
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  widget.username,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                Row(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {},
+                      style: const ButtonStyle(
+                        backgroundColor:
+                            WidgetStatePropertyAll(Color(0XFFEAECF0)),
+                        foregroundColor: WidgetStatePropertyAll(Colors.black),
+                      ),
+                      child: Text(widget.following ? "Unfollow" : "Follow"),
+                    ),
+                    const SizedBox(width: 8),
+                    ElevatedButton(
+                      onPressed: () {
+                        Get.to(
+                          const ChatScreen(),
+                        );
+                      },
+                      style: const ButtonStyle(
+                        backgroundColor:
+                            WidgetStatePropertyAll(Color(0XFFEAECF0)),
+                        foregroundColor: WidgetStatePropertyAll(Colors.black),
+                      ),
+                      child: const Text("Message"),
+                    ),
+                  ],
+                ),
+              ],
+            );
+    });
   }
 
   Widget _buildStatus({
