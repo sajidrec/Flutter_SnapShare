@@ -16,8 +16,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late TextEditingController emailController = TextEditingController();
   late TextEditingController passwordController = TextEditingController();
   bool isButtonActive = false;
@@ -125,7 +123,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 );
         }),
-
       ),
     );
   }
@@ -160,6 +157,5 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
     emailController.dispose();
     passwordController.dispose();
-
   }
 }
