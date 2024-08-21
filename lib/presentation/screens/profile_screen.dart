@@ -314,7 +314,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       backgroundColor: Colors.transparent,
       centerTitle: true,leading: IconButton(onPressed: (){
       Get.offAll(()=>const BottomNavBar());
-      print(Get.currentRoute);
     }, icon: const Icon(Icons.arrow_back_ios)),
       actions: [
         IconButton(

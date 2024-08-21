@@ -112,7 +112,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                           TextField(
                             decoration: InputDecoration(prefixIcon: const Icon(Icons.email_outlined),
                               hintText: FirebaseAuth.instance.currentUser?.email,
-                              enabled: false,border:OutlineInputBorder()
+                              enabled: false,border:const OutlineInputBorder()
                             ),
                           ),
 
@@ -161,7 +161,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                                       // Passwords match and are not empty
                                       bool updateStatus = await updateProfileController.updateUserProfile(
                                         userName: newName,
-                                        profilePicturePath: profileImage?.path ?? null,
+                                        profilePicturePath: profileImage?.path,
                                         password: newPassword,
                                       );
 
@@ -185,7 +185,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                                       // No password provided, update without changing the password
                                       bool updateStatus = await updateProfileController.updateUserProfile(
                                         userName: newName,
-                                        profilePicturePath: profileImage?.path ?? null,
+                                        profilePicturePath: profileImage?.path,
                                       );
 
                                       if (updateStatus) {
