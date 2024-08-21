@@ -8,6 +8,8 @@ import 'package:snapshare/presentation/screens/auth/signup_or_login_screen.dart'
 import 'package:snapshare/presentation/screens/follow_unfollow_screen.dart';
 import 'package:snapshare/utils/app_colors.dart';
 
+import 'bottom_nav_bar.dart';
+
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -20,6 +22,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     fetchUserData();
+
   }
 
   Future<void> fetchUserData() async {
@@ -309,7 +312,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   AppBar _buildAppbar() {
     return AppBar(
       backgroundColor: Colors.transparent,
-      centerTitle: true,
+      centerTitle: true,leading: IconButton(onPressed: (){
+      Get.offAll(()=>const BottomNavBar());
+      print(Get.currentRoute);
+    }, icon: const Icon(Icons.arrow_back_ios)),
       actions: [
         IconButton(
           onPressed: () async {
@@ -343,8 +349,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
             );
-            // await FirebaseAuth.instance.signOut();
-            // Get.offAll(() => const SignupOrLoginScreen());
+
           },
           icon: const Icon(Icons.logout),
         )
