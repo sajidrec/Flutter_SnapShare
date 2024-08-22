@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -429,18 +428,21 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
   }
 
   Widget _buildProfilePicture() {
-    return CircleAvatar(
-      radius: Get.width / 9,
-      foregroundImage: NetworkImage(
-        FirebaseAuth.instance.currentUser?.photoURL ?? "",
-      ),
-      backgroundColor: Colors.grey.shade500,
-      child: Icon(
-        Icons.person,
-        color: Colors.white,
-        size: Get.width / 7,
-      ),
-    );
+    return GetBuilder<GetUserinfoByUsernameController>(
+        builder: (getUserinfoByUsernameController) {
+      return CircleAvatar(
+        radius: Get.width / 9,
+        foregroundImage: NetworkImage(
+          getUserinfoByUsernameController.getUserData["profilePic"] ?? "",
+        ),
+        backgroundColor: Colors.grey.shade500,
+        child: Icon(
+          Icons.person,
+          color: Colors.white,
+          size: Get.width / 7,
+        ),
+      );
+    });
   }
 
   AppBar _buildAppbar() {
