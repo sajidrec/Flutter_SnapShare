@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
 import 'package:get/get_rx/src/rx_typedefs/rx_typedefs.dart';
 import 'package:snapshare/presentation/controller/get_userinfo_by_email_controller.dart';
@@ -18,11 +20,29 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  List<String> imageUrls = [
+    "https://shorturl.at/uytTh",
+    "https://shorturl.at/AoU19",
+    "https://shorturl.at/P6J6r",
+    "https://shorturl.at/ZRQ9e",
+    "https://shorturl.at/ukFeK",
+    "https://rb.gy/bd6llr",
+    "https://rb.gy/bd6llr",
+    "https://shorturl.at/uytTh",
+    "https://shorturl.at/AoU19",
+    "https://shorturl.at/P6J6r",
+    "https://shorturl.at/ZRQ9e",
+    "https://shorturl.at/ZRQ9e",
+    "https://shorturl.at/ukFeK",
+    "https://rb.gy/bd6llr",
+    "https://rb.gy/bd6llr",
+    "https://shorturl.at/uytTh",
+  ];
+
   @override
   void initState() {
     super.initState();
     fetchUserData();
-
   }
 
   Future<void> fetchUserData() async {
@@ -69,30 +89,120 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  // Widget _buildPostSection() {
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(horizontal: 16),
+  //     child: GetBuilder<GridOrListviewSwitchController>(
+  //         builder: (gridOrListViewController) {
+  //       return GridView.builder(
+  //         primary: false,
+  //         shrinkWrap: true,
+  //         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+  //           crossAxisCount: gridOrListViewController.gridViewActive ? 2 : 1,
+  //         ),
+  //         itemBuilder: (context, index) => Padding(
+  //           padding: const EdgeInsets.all(5.0),
+  //           child: ClipRRect(
+  //             borderRadius: BorderRadius.circular(10),
+  //             child: Image.network(
+  //               "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9GwY4ejWID3BOyuYZFpLQa746bRb6eoSMmQ&s",
+  //               fit: BoxFit.cover,
+  //             ),
+  //           ),
+  //         ),
+  //         itemCount: 21,
+  //       );
+  //     }),
+  //   );
+  // }
+
   Widget _buildPostSection() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: GetBuilder<GridOrListviewSwitchController>(
-          builder: (gridOrListViewController) {
-        return GridView.builder(
-          primary: false,
-          shrinkWrap: true,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: gridOrListViewController.gridViewActive ? 2 : 1,
-          ),
-          itemBuilder: (context, index) => Padding(
-            padding: const EdgeInsets.all(5.0),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.network(
-                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9GwY4ejWID3BOyuYZFpLQa746bRb6eoSMmQ&s",
-                fit: BoxFit.cover,
-              ),
+        builder: (gridOrListViewController) {
+          return SingleChildScrollView(
+            child: StaggeredGrid.count(
+              crossAxisCount: gridOrListViewController.gridViewActive ? 4 : 1,
+              mainAxisSpacing: 4,
+              crossAxisSpacing: 4,
+              children: List.generate(imageUrls.length, (index) {
+                return StaggeredGridTile.count(
+                  crossAxisCellCount: _getCrossAxisCellCount(
+                      index, gridOrListViewController.gridViewActive),
+                  mainAxisCellCount: _getMainAxisCellCount(index),
+                  child: _buildTile(imageUrls[index]),
+                );
+              }),
             ),
-          ),
-          itemCount: 21,
-        );
-      }),
+          );
+        },
+      ),
+    );
+  }
+
+  int _getCrossAxisCellCount(int index, bool gridViewActive) {
+    // Repeat pattern for mainAxisCellCount
+
+    if (!gridViewActive) return 1;
+
+    switch (index % 6) {
+      case 0:
+      case 4:
+        return 2;
+      case 1:
+      case 2:
+      case 3:
+      case 5:
+        return 1;
+      default:
+        return 1;
+    }
+  }
+
+  int _getMainAxisCellCount(int index) {
+    // Repeat pattern for mainAxisCellCount
+    switch (index % 6) {
+      case 0:
+      case 4:
+        return 2;
+      case 1:
+      case 2:
+      case 3:
+      case 5:
+        return 1;
+      default:
+        return 1;
+    }
+  }
+
+  Widget _buildTile(String imageUrl) {
+    return Padding(
+      padding: const EdgeInsets.all(5.0),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Image.network(
+          imageUrl,
+          fit: BoxFit.cover,
+          loadingBuilder: (context, child, progress) {
+            if (progress == null) {
+              return child;
+            } else {
+              return const Center(
+                child: CupertinoActivityIndicator(
+                  animating: true,
+                  radius: 15.0,
+                ),
+              );
+            }
+          },
+          errorBuilder: (context, error, stackTrace) {
+            return const Center(
+              child: Icon(Icons.error),
+            );
+          },
+        ),
+      ),
     );
   }
 
@@ -183,13 +293,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildProfileHeader() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildProfilePicture(),
-        const SizedBox(width: 12),
-        _buildProfileStatusSection(),
-      ],
+    return Center(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildProfilePicture(),
+          const SizedBox(width: 12),
+          _buildProfileStatusSection(),
+        ],
+      ),
     );
   }
 
@@ -198,7 +310,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         builder: (getUserinfoByEmailController) {
       return getUserinfoByEmailController.inProgress
           ? const Center(
-              child: CircularProgressIndicator(
+              child: CupertinoActivityIndicator(
                 color: AppColor.themeColor,
               ),
             )
@@ -312,9 +424,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   AppBar _buildAppbar() {
     return AppBar(
       backgroundColor: Colors.transparent,
-      centerTitle: true,leading: IconButton(onPressed: (){
-      Get.offAll(()=>const BottomNavBar());
-    }, icon: const Icon(Icons.arrow_back_ios)),
+      centerTitle: true,
+      leading: IconButton(
+          onPressed: () {
+            Get.offAll(() => const BottomNavBar());
+          },
+          icon: const Icon(Icons.arrow_back_ios)),
       actions: [
         IconButton(
           onPressed: () async {
@@ -348,7 +463,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
             );
-
           },
           icon: const Icon(Icons.logout),
         )
