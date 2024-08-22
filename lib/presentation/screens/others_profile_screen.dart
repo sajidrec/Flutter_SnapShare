@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:get/get_rx/src/rx_typedefs/rx_typedefs.dart';
 import 'package:snapshare/presentation/controller/get_userinfo_by_username_controller.dart';
 import 'package:snapshare/presentation/controller/grid_or_listview_switch_controller.dart';
+import 'package:snapshare/presentation/controller/others_profile_screen_controller.dart';
 import 'package:snapshare/presentation/screens/chat_screen.dart';
 import 'package:snapshare/presentation/screens/follow_unfollow_screen.dart';
 
@@ -361,15 +362,22 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
                 ),
                 Row(
                   children: [
-                    ElevatedButton(
-                      onPressed: () {},
-                      style: const ButtonStyle(
-                        backgroundColor:
-                            WidgetStatePropertyAll(Color(0XFFEAECF0)),
-                        foregroundColor: WidgetStatePropertyAll(Colors.black),
-                      ),
-                      child: Text(widget.following ? "Unfollow" : "Follow"),
-                    ),
+                    GetBuilder<OthersProfileScreenController>(
+                        builder: (othersProfileScreenController) {
+                      return ElevatedButton(
+                        onPressed: () async {
+                          await othersProfileScreenController.followUser(
+                            username: widget.username,
+                          );
+                        },
+                        style: const ButtonStyle(
+                          backgroundColor:
+                              WidgetStatePropertyAll(Color(0XFFEAECF0)),
+                          foregroundColor: WidgetStatePropertyAll(Colors.black),
+                        ),
+                        child: Text(widget.following ? "Unfollow" : "Follow"),
+                      );
+                    }),
                     const SizedBox(width: 8),
                     ElevatedButton(
                       onPressed: () {
