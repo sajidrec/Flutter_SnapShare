@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:snapshare/presentation/controller/auth_controller/login_controller.dart';
+import 'package:snapshare/presentation/controller/auth_controller/new_post_controller.dart';
 import 'package:snapshare/presentation/controller/auth_controller/registration_controller.dart';
 import 'package:snapshare/presentation/controller/auth_controller/selected_image_name_controller.dart';
 import 'package:snapshare/presentation/controller/auth_controller/update_profile_controller.dart';
@@ -21,5 +22,6 @@ class ControllerBinder extends Bindings {
     Get.put(GetUserinfoByUsernameController());
     Get.put(UpdateProfileController());
     Get.put(SearchScreenController());
+    Get.put(NewPostController());
   }
 }

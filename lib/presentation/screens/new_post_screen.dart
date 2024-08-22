@@ -1,7 +1,10 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:snapshare/presentation/controller/auth_controller/new_post_controller.dart';
+import 'package:snapshare/presentation/controller/get_post_info_controller.dart';
 import 'package:snapshare/utils/app_colors.dart';
 import 'package:snapshare/widgets/location_screen.dart';
 
@@ -15,6 +18,8 @@ class NewPostScreen extends StatefulWidget {
 }
 
 class _NewPostScreenState extends State<NewPostScreen> {
+  final TextEditingController _captionController = TextEditingController();
+
   List<String> selectedLocations = [];
 
   void _openLocationScreen() async {
@@ -35,7 +40,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildAppBar(),
+      appBar: _buildAppBar(File(widget.imagePath), _captionController.text,
+          selectedLocations.join()),
       body: SingleChildScrollView(
         child: Center(
           child: Column(
@@ -119,6 +125,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
         ),
         Expanded(
           child: TextFormField(
+            controller: _captionController,
             maxLines: 4,
             decoration: const InputDecoration(
               border: InputBorder.none,
@@ -130,7 +137,40 @@ class _NewPostScreenState extends State<NewPostScreen> {
     );
   }
 
-  AppBar _buildAppBar() {
+  //
+  // AppBar _buildAppBar() {
+  //   return AppBar(
+  //     leading: IconButton(
+  //       onPressed: () {
+  //         Get.back();
+  //       },
+  //       icon: const Icon(Icons.arrow_back_ios),
+  //     ),
+  //     title: const Text(
+  //       'New Post',
+  //       style: TextStyle(fontWeight: FontWeight.w600),
+  //     ),
+  //     actions: [
+  //       TextButton(
+  //         onPressed: () {},
+  //         child: const Text(
+  //           'Post',
+  //           style: TextStyle(
+  //             color: AppColor.themeColor,
+  //             fontSize: 20,
+  //             fontWeight: FontWeight.w700,
+  //           ),
+  //         ),
+  //       ),
+  //       const Icon(
+  //         Icons.arrow_forward_ios,
+  //         color: AppColor.inputBorderColor,
+  //       ),
+  //     ],
+  //   );
+  // }
+
+  AppBar _buildAppBar(File postImage, String caption, String location) {
     return AppBar(
       leading: IconButton(
         onPressed: () {
@@ -143,18 +183,45 @@ class _NewPostScreenState extends State<NewPostScreen> {
         style: TextStyle(fontWeight: FontWeight.w600),
       ),
       actions: [
-        TextButton(
-          onPressed: () {
-            // Add your post functionality here
+        GetBuilder<GetPostInfoController>(
+          init: GetPostInfoController(),
+          builder: (getPostInfoController) {
+            return TextButton(
+              onPressed: getPostInfoController.inProgress
+                  ? null
+                  : () async {
+                      String? imageUrl = await getPostInfoController
+                          .uploadPostImage(postImage);
+                      if (imageUrl != null) {
+                        NewPostController newPostController = Get.find();
+                        bool success = await newPostController.addNewPost(
+                          postImage: imageUrl,
+                          caption: caption,
+                          location: location,
+                        );
+                        if (success) {
+                          // Navigate to the home screen
+                          Get.offAllNamed(
+                              '/home'); // Replace '/home' with your home route name
+                        } else {
+                          // Handle error, show a message, etc.
+                        }
+                      } else {
+                        // Handle error, show a message, etc.
+                      }
+                    },
+              child: getPostInfoController.inProgress
+                  ? const CupertinoActivityIndicator()
+                  : const Text(
+                      'Post',
+                      style: TextStyle(
+                        color: AppColor.themeColor,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+            );
           },
-          child: const Text(
-            'Post',
-            style: TextStyle(
-              color: AppColor.themeColor,
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
         ),
         const Icon(
           Icons.arrow_forward_ios,

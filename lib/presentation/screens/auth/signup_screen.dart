@@ -209,7 +209,9 @@ class _SignupScreenState extends State<SignupScreen> {
                                                 nameTeController.text.trim(),
                                             userEmail:
                                                 emailController.text.trim(),
+                                            uid: '',
                                           );
+                                          // uid needed
 
                                           if (!userInfoUploaded) {
                                             usernameTeController.text = "";
