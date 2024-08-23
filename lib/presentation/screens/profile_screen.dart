@@ -355,6 +355,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Get.to(
                           () => FollowUnfollowScreen(
                             showFollowingList: true,
+                            userFullName: FirebaseAuth
+                                    .instance.currentUser?.displayName ??
+                                "Unknown",
                           ),
                         );
                       },
@@ -369,6 +372,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Get.to(
                           () => FollowUnfollowScreen(
                             showFollowingList: false,
+                            userFullName: FirebaseAuth
+                                    .instance.currentUser?.displayName ??
+                                "Unknown",
                           ),
                         );
                       },

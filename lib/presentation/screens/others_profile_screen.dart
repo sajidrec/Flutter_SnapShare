@@ -341,6 +341,7 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
                         Get.to(
                           () => FollowUnfollowScreen(
                             showFollowingList: true,
+                            userFullName: widget.userFullName,
                           ),
                         );
                       },
@@ -351,7 +352,14 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
                               .getUserData["followers"].length ??
                           0,
                       placeDotTrailing: false,
-                      onTap: () {},
+                      onTap: () {
+                        Get.to(
+                          () => FollowUnfollowScreen(
+                            showFollowingList: false,
+                            userFullName: widget.userFullName,
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),

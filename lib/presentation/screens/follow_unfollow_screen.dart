@@ -8,10 +8,12 @@ import 'package:snapshare/widgets/profile_image_button.dart';
 
 class FollowUnfollowScreen extends StatefulWidget {
   final bool showFollowingList;
+  final String userFullName;
 
   const FollowUnfollowScreen({
     super.key,
     required this.showFollowingList,
+    required this.userFullName,
   });
 
   @override
@@ -78,7 +80,7 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
   AppBar _buildAppBar() {
     return AppBar(
       title: Text(
-        FirebaseAuth.instance.currentUser?.displayName ?? "Unknown",
+        widget.userFullName,
         style: const TextStyle(
           fontWeight: FontWeight.w700,
           fontSize: 18,
@@ -96,12 +98,12 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
       padding: const EdgeInsets.all(8.0),
       child: Row(
         children: [
-          _buildTabButton('Following', widget.showFollowingList, () {
+          _buildTabButton('Following', showFollowingList, () {
             setState(() {});
             showFollowingList = true;
           }),
           const SizedBox(width: 10),
-          _buildTabButton('Followers', !widget.showFollowingList, () {
+          _buildTabButton('Followers', !showFollowingList, () {
             setState(() {});
             showFollowingList = false;
           }),
