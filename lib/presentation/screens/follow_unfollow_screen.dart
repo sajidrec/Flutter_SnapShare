@@ -7,29 +7,23 @@ import 'package:snapshare/utils/assets_path.dart';
 import 'package:snapshare/widgets/profile_image_button.dart';
 
 class FollowUnfollowScreen extends StatefulWidget {
-  const FollowUnfollowScreen({super.key});
+  final bool showFollowingList;
+
+  const FollowUnfollowScreen({
+    super.key,
+    required this.showFollowingList,
+  });
 
   @override
   State<FollowUnfollowScreen> createState() => _FollowUnfollowScreenState();
 }
 
 class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
-  bool isFollowing = false;
   final TextEditingController _searchController = TextEditingController();
 
-  List<Map<String, dynamic>> users = [
-    {'name': 'Sajid', 'username': 'sajidrec', 'isFollowing': true},
-    {'name': 'Sagor Ahmed', 'username': '@shagor.a', 'isFollowing': true},
-    {'name': 'John Doe', 'username': '@johnd', 'isFollowing': false},
-    {'name': 'Jane Smith', 'username': '@janes', 'isFollowing': true},
-    {'name': 'Henry Civil', 'username': '@henry', 'isFollowing': false},
-    {'name': 'Nicolas Caidge', 'username': '@nicolas', 'isFollowing': true},
-    {'name': 'Tom Cruse', 'username': '@cruse', 'isFollowing': true},
-    {'name': 'Cory Anderson', 'username': '@anderson', 'isFollowing': true},
-    {'name': 'Alice Brown', 'username': '@aliceb', 'isFollowing': true},
-    {'name': 'Bob Johnson', 'username': '@bobj', 'isFollowing': true},
-    {'name': 'Charlie Davis', 'username': '@charlied', 'isFollowing': true},
-  ];
+  bool showFollowingList = true;
+
+  List<Map<String, dynamic>> users = [];
 
   List<Map<String, dynamic>> searchUsers = [];
 
@@ -37,6 +31,7 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
   void initState() {
     super.initState();
     searchUsers = users;
+    showFollowingList = widget.showFollowingList;
   }
 
   void _searchUsersList() {
@@ -71,7 +66,9 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
             ),
           ),
           Expanded(
-            child: isFollowing ? _buildFollowingList() : _buildFollowerList(),
+            child: widget.showFollowingList
+                ? _buildFollowingList()
+                : _buildFollowerList(),
           ),
         ],
       ),
@@ -99,14 +96,14 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
       padding: const EdgeInsets.all(8.0),
       child: Row(
         children: [
-          _buildTabButton('Following', isFollowing, () {
+          _buildTabButton('Following', widget.showFollowingList, () {
             setState(() {});
-            isFollowing = true;
+            showFollowingList = true;
           }),
           const SizedBox(width: 10),
-          _buildTabButton('Followers', !isFollowing, () {
+          _buildTabButton('Followers', !widget.showFollowingList, () {
             setState(() {});
-            isFollowing = false;
+            showFollowingList = false;
           }),
         ],
       ),

@@ -338,7 +338,11 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
                           0,
                       placeDotTrailing: true,
                       onTap: () {
-                        Get.to(() => const FollowUnfollowScreen());
+                        Get.to(
+                          () => FollowUnfollowScreen(
+                            showFollowingList: true,
+                          ),
+                        );
                       },
                     ),
                     _buildStatus(
