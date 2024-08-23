@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
 import 'package:get/get_rx/src/rx_typedefs/rx_typedefs.dart';
+import 'package:snapshare/presentation/controller/follow_unfollow_toggle_controller.dart';
 import 'package:snapshare/presentation/controller/get_userinfo_by_username_controller.dart';
 import 'package:snapshare/presentation/controller/grid_or_listview_switch_controller.dart';
 import 'package:snapshare/presentation/controller/others_profile_screen_controller.dart';
@@ -11,13 +12,11 @@ import 'package:snapshare/presentation/screens/follow_unfollow_screen.dart';
 
 class OthersProfileScreen extends StatefulWidget {
   final String username;
-  final bool following;
   final String userFullName;
 
   const OthersProfileScreen({
     super.key,
     required this.username,
-    required this.following,
     required this.userFullName,
   });
 
@@ -364,19 +363,37 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
                   children: [
                     GetBuilder<OthersProfileScreenController>(
                         builder: (othersProfileScreenController) {
-                      return ElevatedButton(
-                        onPressed: () async {
-                          await othersProfileScreenController.followUser(
-                            username: widget.username,
-                          );
-                        },
-                        style: const ButtonStyle(
-                          backgroundColor:
-                              WidgetStatePropertyAll(Color(0XFFEAECF0)),
-                          foregroundColor: WidgetStatePropertyAll(Colors.black),
-                        ),
-                        child: Text(widget.following ? "Unfollow" : "Follow"),
-                      );
+                      return GetBuilder<FollowUnfollowToggleController>(
+                          builder: (followUnfollowToggleController) {
+                        return ElevatedButton(
+                          onPressed: () async {
+                            if (followUnfollowToggleController.isFollowing) {
+                              await othersProfileScreenController.unFollowUser(
+                                username: widget.username,
+                              );
+                            } else {
+                              await othersProfileScreenController.followUser(
+                                username: widget.username,
+                              );
+                            }
+
+                            followUnfollowToggleController.toggle();
+                          },
+                          style: const ButtonStyle(
+                            backgroundColor:
+                                WidgetStatePropertyAll(Color(0XFFEAECF0)),
+                            foregroundColor:
+                                WidgetStatePropertyAll(Colors.black),
+                          ),
+                          child: GetBuilder<FollowUnfollowToggleController>(
+                              builder: (followUnfollowToggleController) {
+                            return Text(
+                                followUnfollowToggleController.isFollowing
+                                    ? "Unfollow"
+                                    : "Follow");
+                          }),
+                        );
+                      });
                     }),
                     const SizedBox(width: 8),
                     ElevatedButton(

@@ -46,4 +46,44 @@ class OthersProfileScreenController extends GetxController {
       username: username,
     );
   }
+
+  Future<void> unFollowUser({
+    required String username,
+  }) async {
+    await Get.find<GetUserinfoByUsernameController>().fetchUserData(
+      username: username,
+    );
+    final otherUserData =
+        await Get.find<GetUserinfoByUsernameController>().getUserData;
+    await Get.find<GetUserinfoByEmailController>()
+        .fetchUserData(email: FirebaseAuth.instance.currentUser?.email ?? "");
+    final currentUserData =
+        await Get.find<GetUserinfoByEmailController>().getUserData;
+    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+
+    final otherUserDbRef =
+        firebaseFirestore.collection("userInfo").doc(username);
+    final currentUserDbRef = firebaseFirestore.collection("userInfo").doc(
+          currentUserData["username"],
+        );
+
+    for (int i = 0; i < otherUserData["followers"].length; i++) {
+      if (otherUserData["followers"][i] == currentUserData["username"]) {
+        otherUserData["followers"].removeAt(i);
+        break;
+      }
+    }
+    await otherUserDbRef.update({"followers": otherUserData["followers"]});
+
+    for (int i = 0; i < currentUserData["following"].length; i++) {
+      if (currentUserData["following"][i] == otherUserData["username"]) {
+        currentUserData["following"].removeAt(i);
+        break;
+      }
+    }
+    await currentUserDbRef.update({"following": currentUserData["following"]});
+    await Get.find<GetUserinfoByUsernameController>().fetchUserData(
+      username: username,
+    );
+  }
 }

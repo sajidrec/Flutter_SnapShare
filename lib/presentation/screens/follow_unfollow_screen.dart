@@ -145,7 +145,6 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
             Get.to(
               OthersProfileScreen(
                 username: searchUsers[index]['username'],
-                following: searchUsers[index]['isFollowing'],
                 userFullName: searchUsers[index]['name'],
               ),
             );
@@ -187,7 +186,6 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
             Get.to(
               OthersProfileScreen(
                 username: searchUsers[index]['username'],
-                following: searchUsers[index]['isFollowing'],
                 userFullName: searchUsers[index]['name'],
               ),
             );
