@@ -352,7 +352,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           0,
                       placeDotTrailing: true,
                       onTap: () {
-                        Get.to(() => const FollowUnfollowScreen());
+                        Get.to(
+                          () => FollowUnfollowScreen(
+                            showFollowingList: true,
+                          ),
+                        );
                       },
                     ),
                     _buildStatus(
@@ -361,7 +365,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               .getUserData["followers"].length ??
                           0,
                       placeDotTrailing: false,
-                      onTap: () {},
+                      onTap: () {
+                        Get.to(
+                          () => FollowUnfollowScreen(
+                            showFollowingList: false,
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),

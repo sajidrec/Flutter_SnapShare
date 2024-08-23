@@ -1,6 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:snapshare/presentation/controller/follow_unfollow_toggle_controller.dart';
+import 'package:snapshare/presentation/controller/get_userinfo_by_email_controller.dart';
 import 'package:snapshare/presentation/controller/search_screen_controller.dart';
 import 'package:snapshare/presentation/screens/others_profile_screen.dart';
 
@@ -65,27 +68,47 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                   itemBuilder: (context, index) {
                     return GridTile(
-                      child: InkWell(
-                        onTap: () {
-                          Get.to(
-                            OthersProfileScreen(
-                              username: getAllUserinfo.getData[index]
-                                  ["username"],
-                              following: false,
-                              userFullName: getAllUserinfo.getData[index]
-                                  ["fullName"],
+                      child: GetBuilder<GetUserinfoByEmailController>(
+                          builder: (getUserInfoByEmailController) {
+                        return GetBuilder<FollowUnfollowToggleController>(
+                            builder: (followUnfollowToggleController) {
+                          return InkWell(
+                            onTap: () async {
+                              await getUserInfoByEmailController.fetchUserData(
+                                email:
+                                    FirebaseAuth.instance.currentUser?.email ??
+                                        "",
+                              );
+                              final currentUserData =
+                                  await getUserInfoByEmailController
+                                      .getUserData;
+
+                              followUnfollowToggleController.setInitialStatus(
+                                  status: await currentUserData["following"]
+                                      .contains(
+                                getAllUserinfo.getData[index]["username"],
+                              ));
+
+                              Get.to(
+                                OthersProfileScreen(
+                                  username: getAllUserinfo.getData[index]
+                                      ["username"],
+                                  userFullName: getAllUserinfo.getData[index]
+                                      ["fullName"],
+                                ),
+                              );
+                            },
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(10.0),
+                              // Adjust radius as needed
+                              child: Image.network(
+                                getAllUserinfo.getData[index]["profilePic"],
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           );
-                        },
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10.0),
-                          // Adjust radius as needed
-                          child: Image.network(
-                            getAllUserinfo.getData[index]["profilePic"],
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
+                        });
+                      }),
                     );
                   },
                 );
