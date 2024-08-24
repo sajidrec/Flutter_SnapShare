@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 import 'package:snapshare/utils/app_colors.dart';
 import 'package:snapshare/widgets/location_screen.dart';
 
+import '../controller/new_post_controller.dart';
+
 class NewPostScreen extends StatefulWidget {
   final String imagePath;
 
@@ -16,6 +18,8 @@ class NewPostScreen extends StatefulWidget {
 
 class _NewPostScreenState extends State<NewPostScreen> {
   List<String> selectedLocations = [];
+  final TextEditingController _captionController = TextEditingController();
+  final NewPostController _newPostController = Get.put(NewPostController());
 
   void _openLocationScreen() async {
     final result = await Get.to(() => const LocationScreen());
@@ -30,6 +34,21 @@ class _NewPostScreenState extends State<NewPostScreen> {
     setState(() {
       selectedLocations.remove(location);
     });
+  }
+
+  void _postToFireStore() async {
+    String? imageUrl =
+        await _newPostController.uploadImage(File(widget.imagePath));
+
+    if (imageUrl != null) {
+      await _newPostController.createPost(
+        imageUrl: imageUrl,
+        caption: _captionController.text,
+        locations: selectedLocations,
+      );
+    } else {
+      Get.snackbar('Failed', 'Post failed');
+    }
   }
 
   @override
@@ -119,6 +138,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
         ),
         Expanded(
           child: TextFormField(
+            controller: _captionController,
             maxLines: 4,
             decoration: const InputDecoration(
               border: InputBorder.none,
@@ -144,9 +164,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
       ),
       actions: [
         TextButton(
-          onPressed: () {
-            // Add your post functionality here
-          },
+          onPressed: _postToFireStore,
           child: const Text(
             'Post',
             style: TextStyle(

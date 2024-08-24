@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:snapshare/presentation/controller/new_post_controller.dart';
 import 'package:snapshare/presentation/screens/home_screen.dart';
-import 'package:snapshare/presentation/screens/new_post_screen.dart';
 import 'package:snapshare/presentation/screens/profile_screen.dart';
 import 'package:snapshare/presentation/screens/search_screen.dart';
 
@@ -14,14 +14,9 @@ class BottomNavBar extends StatefulWidget {
 }
 
 class _BottomNavBarState extends State<BottomNavBar> {
-  int _selectedPage = 0;
-  XFile? _pickedImage;
+  final NewPostController _newPostController = Get.put(NewPostController());
 
-  Future<void> pickImageFromGallery() async {
-    ImagePicker imagePicker = ImagePicker();
-    _pickedImage = await imagePicker.pickImage(source: ImageSource.gallery);
-    setState(() {});
-  }
+  int _selectedPage = 0;
 
   final List<Widget> _screenList = [
     const HomeScreen(),
@@ -99,7 +94,10 @@ class _BottomNavBarState extends State<BottomNavBar> {
                     Column(
                       children: [
                         IconButton(
-                          onPressed: () {},
+                          onPressed: () async {
+                            await _newPostController
+                                .pickImageForBottomNav(ImageSource.camera);
+                          },
                           icon: const Icon(
                             Icons.camera_alt_outlined,
                             size: 100,
@@ -117,12 +115,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
                       children: [
                         IconButton(
                           onPressed: () async {
-                            await pickImageFromGallery();
-                            _pickedImage != null
-                                ? Get.to(() => NewPostScreen(
-                                      imagePath: _pickedImage!.path,
-                                    ))
-                                : null;
+                            await _newPostController
+                                .pickImageForBottomNav(ImageSource.gallery);
                           },
                           icon: const Icon(
                             Icons.image_outlined,
