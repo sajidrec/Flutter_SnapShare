@@ -342,6 +342,7 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
                           () => FollowUnfollowScreen(
                             showFollowingList: true,
                             userFullName: widget.userFullName,
+                            userName: widget.username,
                           ),
                         );
                       },
@@ -357,6 +358,7 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
                           () => FollowUnfollowScreen(
                             showFollowingList: false,
                             userFullName: widget.userFullName,
+                            userName: widget.username,
                           ),
                         );
                       },

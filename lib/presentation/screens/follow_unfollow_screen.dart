@@ -1,19 +1,23 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:snapshare/presentation/controller/follow_unfollow_screen_controller.dart';
+import 'package:snapshare/presentation/controller/follow_unfollow_toggle_controller.dart';
+import 'package:snapshare/presentation/controller/get_userinfo_by_email_controller.dart';
 import 'package:snapshare/presentation/screens/others_profile_screen.dart';
-import 'package:snapshare/utils/app_colors.dart';
 import 'package:snapshare/utils/assets_path.dart';
 import 'package:snapshare/widgets/profile_image_button.dart';
 
 class FollowUnfollowScreen extends StatefulWidget {
   final bool showFollowingList;
   final String userFullName;
+  final String userName;
 
   const FollowUnfollowScreen({
     super.key,
     required this.showFollowingList,
     required this.userFullName,
+    required this.userName,
   });
 
   @override
@@ -25,28 +29,17 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
 
   bool showFollowingList = true;
 
-  List<Map<String, dynamic>> users = [];
-
-  List<Map<String, dynamic>> searchUsers = [];
-
   @override
   void initState() {
     super.initState();
-    searchUsers = users;
+    fetchUserData();
     showFollowingList = widget.showFollowingList;
   }
 
-  void _searchUsersList() {
-    setState(() {});
-    searchUsers = users.where((userData) {
-      return userData['name']
-              .toLowerCase()
-              .contains(_searchController.text.toLowerCase()) ||
-          userData['username']
-              .toString()
-              .toLowerCase()
-              .contains(_searchController.text.toLowerCase());
-    }).toList();
+  Future<void> fetchUserData() async {
+    await Get.find<FollowUnfollowScreenController>().fetchUser(
+      username: widget.userName,
+    );
   }
 
   @override
@@ -58,17 +51,23 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
           _buildTabs(),
           Padding(
             padding: const EdgeInsets.all(15.0),
-            child: TextFormField(
-              controller: _searchController,
-              onChanged: (value) => _searchUsersList(),
-              decoration: const InputDecoration(
-                hintText: 'Search',
-                prefixIcon: Icon(Icons.search),
-              ),
-            ),
+            child: GetBuilder<FollowUnfollowScreenController>(
+                builder: (followUnfollowScreenController) {
+              return TextFormField(
+                controller: _searchController,
+                onChanged: (value) =>
+                    followUnfollowScreenController.fetchFollowingSearchUser(
+                  searchKeyword: value,
+                ),
+                decoration: const InputDecoration(
+                  hintText: 'Search',
+                  prefixIcon: Icon(Icons.search),
+                ),
+              );
+            }),
           ),
           Expanded(
-            child: widget.showFollowingList
+            child: showFollowingList
                 ? _buildFollowingList()
                 : _buildFollowerList(),
           ),
@@ -135,120 +134,160 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
   }
 
   Widget _buildFollowingList() {
-    return ListView.builder(
-      itemCount: searchUsers.length,
-      itemBuilder: (context, index) {
-        return InkWell(
-          onTap: () {
-            FocusScope.of(context).requestFocus(FocusNode());
-            Get.to(
-              OthersProfileScreen(
-                username: searchUsers[index]['username'],
-                userFullName: searchUsers[index]['name'],
-              ),
-            );
-          },
-          child: ListTile(
-            leading: const CircleAvatar(
-              backgroundImage: AssetImage(AssetsPath.photo2),
-            ),
-            title: Text(searchUsers[index]['name']),
-            subtitle: Text(searchUsers[index]['username']),
-            trailing: ElevatedButton(
-                onPressed: () {
-                  setState(() {});
-                  searchUsers[index]['isFollowing'] =
-                      !searchUsers[index]['isFollowing'];
-                },
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: searchUsers[index]['isFollowing']
-                        ? AppColor.themeColor
-                        : Colors.grey.shade400),
-                child: Text(
-                  searchUsers[index]['isFollowing'] ? 'Unfollow' : 'Follow',
-                  style: const TextStyle(
-                      color: Colors.black87, fontWeight: FontWeight.w600),
-                )),
-          ),
-        );
-      },
-    );
-  }
+    return GetBuilder<FollowUnfollowScreenController>(
+        builder: (followUnfollowScreenController) {
+      return followUnfollowScreenController.searchedFollowingUser.isNotEmpty
+          ? InkWell(
+              onTap: () async {
+                bool userIsFollower = false;
 
-  Widget _buildFollowerList() {
-    return ListView.builder(
-      itemCount: searchUsers.length,
-      itemBuilder: (context, index) {
-        return InkWell(
-          onTap: () {
-            FocusScope.of(context).requestFocus(FocusNode());
-            Get.to(
-              OthersProfileScreen(
-                username: searchUsers[index]['username'],
-                userFullName: searchUsers[index]['name'],
-              ),
-            );
-          },
-          child: ListTile(
-            leading: const CircleAvatar(
-              backgroundImage: AssetImage(AssetsPath.photo2),
-            ),
-            title: Text(searchUsers[index]['name']),
-            subtitle: Text(searchUsers[index]['username']),
-            trailing: ElevatedButton(
-                onPressed: () {
-                  _showRemoveBottomSheet(index);
-                },
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey.shade400),
-                child: const Text(
-                  'Remove',
-                  style: TextStyle(
-                      color: Colors.black87, fontWeight: FontWeight.w600),
-                )),
-          ),
-        );
-      },
-    );
-  }
+                await Get.find<GetUserinfoByEmailController>().fetchUserData(
+                    email: FirebaseAuth.instance.currentUser?.email ?? "");
 
-  void _showRemoveBottomSheet(int index) {
-    Get.bottomSheet(
-        Container(
-          padding: const EdgeInsets.all(16.0),
-          height: 150,
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-            ),
-          ),
-          child: Column(
-            children: [
-              _buildProfileHeader(index),
-              Center(
-                child: TextButton(
-                  onPressed: () {
-                    users.removeAt(index);
-                    searchUsers = users;
-                    Get.back();
-                    setState(() {});
-                  },
-                  child: const Text(
-                    'Remove',
-                    style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.red,
-                        fontWeight: FontWeight.bold),
+                final followings = Get.find<GetUserinfoByEmailController>()
+                    .getUserData["following"];
+
+                for (int i = 0;
+                    (i < followings.length) && !userIsFollower;
+                    i++) {
+                  if (followings[i] ==
+                      followUnfollowScreenController
+                          .searchedFollowingUser["username"]) {
+                    userIsFollower = true;
+                  }
+                }
+
+                Get.find<FollowUnfollowToggleController>().setInitialStatus(
+                  status: userIsFollower,
+                );
+
+                await Get.to(
+                  OthersProfileScreen(
+                    username: followUnfollowScreenController
+                        .searchedFollowingUser["username"],
+                    userFullName: followUnfollowScreenController
+                        .searchedFollowingUser["fullName"],
+                  ),
+                );
+
+                await fetchUserData();
+
+                Get.find<FollowUnfollowScreenController>()
+                    .fetchFollowingSearchUser(
+                        searchKeyword: followUnfollowScreenController
+                            .searchedFollowingUser["username"]);
+              },
+              child: ListTile(
+                leading: CircleAvatar(
+                  backgroundImage: NetworkImage(followUnfollowScreenController
+                      .searchedFollowingUser["profilePic"]),
+                ),
+                title: Text(
+                  followUnfollowScreenController
+                      .searchedFollowingUser["fullName"],
+                ),
+                subtitle: Text(
+                  "@${followUnfollowScreenController.searchedFollowingUser["username"]}",
+                ),
+              ),
+            )
+          : ListView.builder(
+              shrinkWrap: true,
+              itemCount: followUnfollowScreenController
+                  .getFollowingUserDataList.length,
+              itemBuilder: (context, index) => InkWell(
+                onTap: () async {
+                  bool userIsFollower = false;
+
+                  await Get.find<GetUserinfoByEmailController>().fetchUserData(
+                      email: FirebaseAuth.instance.currentUser?.email ?? "");
+
+                  final followings = Get.find<GetUserinfoByEmailController>()
+                      .getUserData["following"];
+
+                  for (int i = 0;
+                      (i < followings.length) && !userIsFollower;
+                      i++) {
+                    if (followings[i] ==
+                        followUnfollowScreenController
+                            .getFollowingUserDataList[index]["username"]) {
+                      userIsFollower = true;
+                    }
+                  }
+
+                  Get.find<FollowUnfollowToggleController>().setInitialStatus(
+                    status: userIsFollower,
+                  );
+
+                  await Get.to(
+                    OthersProfileScreen(
+                      username: followUnfollowScreenController
+                          .getFollowingUserDataList[index]["username"],
+                      userFullName: followUnfollowScreenController
+                          .getFollowingUserDataList[index]["fullName"],
+                    ),
+                  );
+                  await fetchUserData();
+                },
+                child: ListTile(
+                  leading: CircleAvatar(
+                    backgroundImage: NetworkImage(followUnfollowScreenController
+                        .getFollowingUserDataList[index]["profilePic"]),
+                  ),
+                  title: Text(
+                    followUnfollowScreenController
+                        .getFollowingUserDataList[index]["fullName"],
+                  ),
+                  subtitle: Text(
+                    "@${followUnfollowScreenController.getFollowingUserDataList[index]["username"]}",
                   ),
                 ),
               ),
-            ],
-          ),
-        ),
-        isScrollControlled: true);
+            );
+    });
   }
+
+  Widget _buildFollowerList() {
+    return const SizedBox();
+  }
+
+  // void _showRemoveBottomSheet(int index) {
+  //   Get.bottomSheet(
+  //       Container(
+  //         padding: const EdgeInsets.all(16.0),
+  //         height: 150,
+  //         decoration: const BoxDecoration(
+  //           color: Colors.white,
+  //           borderRadius: BorderRadius.only(
+  //             topLeft: Radius.circular(20),
+  //             topRight: Radius.circular(20),
+  //           ),
+  //         ),
+  //         child: Column(
+  //           children: [
+  //             _buildProfileHeader(index),
+  //             Center(
+  //               child: TextButton(
+  //                 onPressed: () {
+  //                   // followingUserList.removeAt(index);
+  //                   // searchUsers = followingUserList;
+  //                   Get.back();
+  //                   setState(() {});
+  //                 },
+  //                 child: const Text(
+  //                   'Remove',
+  //                   style: TextStyle(
+  //                       fontSize: 20,
+  //                       color: Colors.red,
+  //                       fontWeight: FontWeight.bold),
+  //                 ),
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //       isScrollControlled: true);
+  // }
 
   Widget _buildProfileHeader(index) {
     return Row(
@@ -277,5 +316,11 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
         ),
       ],
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _searchController.dispose();
   }
 }
