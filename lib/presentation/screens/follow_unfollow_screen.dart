@@ -1,12 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:snapshare/presentation/controller/follow_unfollow_screen_controller.dart';
 import 'package:snapshare/presentation/controller/follow_unfollow_toggle_controller.dart';
-import 'package:snapshare/presentation/controller/get_userinfo_by_email_controller.dart';
+import 'package:snapshare/presentation/controller/get_userinfo_by_username_controller.dart';
 import 'package:snapshare/presentation/screens/others_profile_screen.dart';
-import 'package:snapshare/utils/assets_path.dart';
-import 'package:snapshare/widgets/profile_image_button.dart';
 
 class FollowUnfollowScreen extends StatefulWidget {
   final bool showFollowingList;
@@ -135,74 +132,16 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
 
   Widget _buildFollowingList() {
     return GetBuilder<FollowUnfollowScreenController>(
-        builder: (followUnfollowScreenController) {
-      return followUnfollowScreenController.searchedFollowingUser.isNotEmpty
-          ? InkWell(
-              onTap: () async {
-                bool userIsFollower = false;
-
-                await Get.find<GetUserinfoByEmailController>().fetchUserData(
-                    email: FirebaseAuth.instance.currentUser?.email ?? "");
-
-                final followings = Get.find<GetUserinfoByEmailController>()
-                    .getUserData["following"];
-
-                for (int i = 0;
-                    (i < followings.length) && !userIsFollower;
-                    i++) {
-                  if (followings[i] ==
-                      followUnfollowScreenController
-                          .searchedFollowingUser["username"]) {
-                    userIsFollower = true;
-                  }
-                }
-
-                Get.find<FollowUnfollowToggleController>().setInitialStatus(
-                  status: userIsFollower,
-                );
-
-                await Get.to(
-                  OthersProfileScreen(
-                    username: followUnfollowScreenController
-                        .searchedFollowingUser["username"],
-                    userFullName: followUnfollowScreenController
-                        .searchedFollowingUser["fullName"],
-                  ),
-                );
-
-                await fetchUserData();
-
-                Get.find<FollowUnfollowScreenController>()
-                    .fetchFollowingSearchUser(
-                        searchKeyword: followUnfollowScreenController
-                            .searchedFollowingUser["username"]);
-              },
-              child: ListTile(
-                leading: CircleAvatar(
-                  backgroundImage: NetworkImage(followUnfollowScreenController
-                      .searchedFollowingUser["profilePic"]),
-                ),
-                title: Text(
-                  followUnfollowScreenController
-                      .searchedFollowingUser["fullName"],
-                ),
-                subtitle: Text(
-                  "@${followUnfollowScreenController.searchedFollowingUser["username"]}",
-                ),
-              ),
-            )
-          : ListView.builder(
-              shrinkWrap: true,
-              itemCount: followUnfollowScreenController
-                  .getFollowingUserDataList.length,
-              itemBuilder: (context, index) => InkWell(
+      builder: (followUnfollowScreenController) {
+        return followUnfollowScreenController.searchedFollowingUser.isNotEmpty
+            ? InkWell(
                 onTap: () async {
                   bool userIsFollower = false;
 
-                  await Get.find<GetUserinfoByEmailController>().fetchUserData(
-                      email: FirebaseAuth.instance.currentUser?.email ?? "");
+                  await Get.find<GetUserinfoByUsernameController>()
+                      .fetchUserData(username: widget.userName);
 
-                  final followings = Get.find<GetUserinfoByEmailController>()
+                  final followings = Get.find<GetUserinfoByUsernameController>()
                       .getUserData["following"];
 
                   for (int i = 0;
@@ -210,7 +149,7 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
                       i++) {
                     if (followings[i] ==
                         followUnfollowScreenController
-                            .getFollowingUserDataList[index]["username"]) {
+                            .searchedFollowingUser["username"]) {
                       userIsFollower = true;
                     }
                   }
@@ -222,101 +161,99 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
                   await Get.to(
                     OthersProfileScreen(
                       username: followUnfollowScreenController
-                          .getFollowingUserDataList[index]["username"],
+                          .searchedFollowingUser["username"],
                       userFullName: followUnfollowScreenController
-                          .getFollowingUserDataList[index]["fullName"],
+                          .searchedFollowingUser["fullName"],
                     ),
                   );
+
                   await fetchUserData();
+
+                  Get.find<FollowUnfollowScreenController>()
+                      .fetchFollowingSearchUser(
+                          searchKeyword: followUnfollowScreenController
+                              .searchedFollowingUser["username"]);
                 },
                 child: ListTile(
                   leading: CircleAvatar(
                     backgroundImage: NetworkImage(followUnfollowScreenController
-                        .getFollowingUserDataList[index]["profilePic"]),
+                        .searchedFollowingUser["profilePic"]),
                   ),
                   title: Text(
                     followUnfollowScreenController
-                        .getFollowingUserDataList[index]["fullName"],
+                        .searchedFollowingUser["fullName"],
                   ),
                   subtitle: Text(
-                    "@${followUnfollowScreenController.getFollowingUserDataList[index]["username"]}",
+                    "@${followUnfollowScreenController.searchedFollowingUser["username"]}",
                   ),
                 ),
-              ),
-            );
-    });
+              )
+            : ListView.builder(
+                shrinkWrap: true,
+                itemCount: followUnfollowScreenController
+                    .getFollowingUserDataList.length,
+                itemBuilder: (context, index) => InkWell(
+                  onTap: () async {
+                    bool userIsFollower = false;
+
+                    await Get.find<GetUserinfoByUsernameController>()
+                        .fetchUserData(
+                      username: widget.userName,
+                    );
+
+                    final followings =
+                        Get.find<GetUserinfoByUsernameController>()
+                            .getUserData["following"];
+
+                    for (int i = 0;
+                        (i < followings.length) && !userIsFollower;
+                        i++) {
+                      if (followings[i] ==
+                          followUnfollowScreenController
+                              .getFollowingUserDataList[index]["username"]) {
+                        userIsFollower = true;
+                      }
+                    }
+
+                    Get.find<FollowUnfollowToggleController>().setInitialStatus(
+                      status: userIsFollower,
+                    );
+
+                    await Get.to(
+                      OthersProfileScreen(
+                        username: followUnfollowScreenController
+                            .getFollowingUserDataList[index]["username"],
+                        userFullName: followUnfollowScreenController
+                            .getFollowingUserDataList[index]["fullName"],
+                      ),
+                    );
+                    await fetchUserData();
+                  },
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundImage: NetworkImage(
+                        followUnfollowScreenController
+                            .getFollowingUserDataList[index]["profilePic"],
+                      ),
+                    ),
+                    title: Text(
+                      followUnfollowScreenController
+                          .getFollowingUserDataList[index]["fullName"],
+                    ),
+                    subtitle: Text(
+                      "@${followUnfollowScreenController.getFollowingUserDataList[index]["username"]}",
+                    ),
+                  ),
+                ),
+              );
+      },
+    );
   }
 
   Widget _buildFollowerList() {
     return const SizedBox();
   }
 
-  // void _showRemoveBottomSheet(int index) {
-  //   Get.bottomSheet(
-  //       Container(
-  //         padding: const EdgeInsets.all(16.0),
-  //         height: 150,
-  //         decoration: const BoxDecoration(
-  //           color: Colors.white,
-  //           borderRadius: BorderRadius.only(
-  //             topLeft: Radius.circular(20),
-  //             topRight: Radius.circular(20),
-  //           ),
-  //         ),
-  //         child: Column(
-  //           children: [
-  //             _buildProfileHeader(index),
-  //             Center(
-  //               child: TextButton(
-  //                 onPressed: () {
-  //                   // followingUserList.removeAt(index);
-  //                   // searchUsers = followingUserList;
-  //                   Get.back();
-  //                   setState(() {});
-  //                 },
-  //                 child: const Text(
-  //                   'Remove',
-  //                   style: TextStyle(
-  //                       fontSize: 20,
-  //                       color: Colors.red,
-  //                       fontWeight: FontWeight.bold),
-  //                 ),
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //       isScrollControlled: true);
-  // }
-
-  Widget _buildProfileHeader(index) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const ProfileImageButton(
-          profileImage: AssetsPath.photo2,
-        ),
-        const SizedBox(width: 15),
-        _buildProfileStatusSection(),
-      ],
-    );
-  }
-
-  Widget _buildProfileStatusSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 5),
-        Text(
-          FirebaseAuth.instance.currentUser?.displayName ?? "Unknown",
-          style: const TextStyle(
-            fontWeight: FontWeight.w700,
-            fontSize: 18,
-          ),
-        ),
-      ],
-    );
-  }
 
   @override
   void dispose() {
