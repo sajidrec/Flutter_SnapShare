@@ -1,8 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:snapshare/presentation/controller/follow_unfollow_screen_controller.dart';
 import 'package:snapshare/presentation/controller/follow_unfollow_toggle_controller.dart';
-import 'package:snapshare/presentation/controller/get_userinfo_by_username_controller.dart';
+import 'package:snapshare/presentation/controller/get_userinfo_by_email_controller.dart';
 import 'package:snapshare/presentation/screens/others_profile_screen.dart';
 
 class FollowUnfollowScreen extends StatefulWidget {
@@ -148,10 +149,10 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
                 onTap: () async {
                   bool userIsFollower = false;
 
-                  await Get.find<GetUserinfoByUsernameController>()
-                      .fetchUserData(username: widget.userName);
+                  await Get.find<GetUserinfoByEmailController>().fetchUserData(
+                      email: FirebaseAuth.instance.currentUser?.email ?? "");
 
-                  final followings = Get.find<GetUserinfoByUsernameController>()
+                  final followings = Get.find<GetUserinfoByEmailController>()
                       .getUserData["following"];
 
                   for (int i = 0;
@@ -206,14 +207,13 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
                   onTap: () async {
                     bool userIsFollower = false;
 
-                    await Get.find<GetUserinfoByUsernameController>()
+                    await Get.find<GetUserinfoByEmailController>()
                         .fetchUserData(
-                      username: widget.userName,
-                    );
+                            email:
+                                FirebaseAuth.instance.currentUser?.email ?? "");
 
-                    final followings =
-                        Get.find<GetUserinfoByUsernameController>()
-                            .getUserData["following"];
+                    final followings = Get.find<GetUserinfoByEmailController>()
+                        .getUserData["following"];
 
                     for (int i = 0;
                         (i < followings.length) && !userIsFollower;
