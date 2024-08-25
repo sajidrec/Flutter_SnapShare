@@ -4,6 +4,7 @@ import 'package:snapshare/presentation/controller/auth_controller/registration_c
 import 'package:snapshare/presentation/controller/auth_controller/selected_image_name_controller.dart';
 import 'package:snapshare/presentation/controller/auth_controller/update_profile_controller.dart';
 import 'package:snapshare/presentation/controller/auth_controller/upload_user_info_db_controller.dart';
+import 'package:snapshare/presentation/controller/follow_unfollow_screen_controller.dart';
 import 'package:snapshare/presentation/controller/follow_unfollow_toggle_controller.dart';
 import 'package:snapshare/presentation/controller/others_profile_screen_controller.dart';
 import 'package:snapshare/presentation/controller/search_screen_controller.dart';
@@ -25,5 +26,6 @@ class ControllerBinder extends Bindings {
     Get.put(SearchScreenController());
     Get.put(OthersProfileScreenController());
     Get.put(FollowUnfollowToggleController());
+    Get.put(FollowUnfollowScreenController());
   }
 }

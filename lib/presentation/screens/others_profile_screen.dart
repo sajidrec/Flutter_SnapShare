@@ -26,28 +26,18 @@ class OthersProfileScreen extends StatefulWidget {
 
 class _OthersProfileScreenState extends State<OthersProfileScreen> {
   List<String> imageUrls = [
-    "https://shorturl.at/uytTh",
     "https://shorturl.at/AoU19",
-    "https://shorturl.at/P6J6r",
-    "https://shorturl.at/ZRQ9e",
-    "https://shorturl.at/ukFeK",
-    "https://rb.gy/bd6llr",
-    "https://rb.gy/bd6llr",
-    "https://shorturl.at/uytTh",
     "https://shorturl.at/AoU19",
-    "https://shorturl.at/P6J6r",
-    "https://shorturl.at/ZRQ9e",
-    "https://shorturl.at/ZRQ9e",
-    "https://shorturl.at/ukFeK",
-    "https://rb.gy/bd6llr",
-    "https://rb.gy/bd6llr",
-    "https://shorturl.at/uytTh",
+    "https://shorturl.at/AoU19",
+    "https://shorturl.at/AoU19",
   ];
 
   @override
   void initState() {
     super.initState();
-    fetchUserData();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (timeStamp) async => await fetchUserData(),
+    );
   }
 
   Future<void> fetchUserData() async {
@@ -337,12 +327,15 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
                               .getUserData["following"].length ??
                           0,
                       placeDotTrailing: true,
-                      onTap: () {
-                        Get.to(
+                      onTap: () async {
+                        await Get.to(
                           () => FollowUnfollowScreen(
                             showFollowingList: true,
+                            userFullName: widget.userFullName,
+                            userName: widget.username,
                           ),
                         );
+                        await fetchUserData();
                       },
                     ),
                     _buildStatus(
@@ -351,7 +344,15 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
                               .getUserData["followers"].length ??
                           0,
                       placeDotTrailing: false,
-                      onTap: () {},
+                      onTap: () {
+                        Get.to(
+                          () => FollowUnfollowScreen(
+                            showFollowingList: false,
+                            userFullName: widget.userFullName,
+                            userName: widget.username,
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -366,39 +367,45 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
                 Row(
                   children: [
                     GetBuilder<OthersProfileScreenController>(
-                        builder: (othersProfileScreenController) {
-                      return GetBuilder<FollowUnfollowToggleController>(
+                      builder: (othersProfileScreenController) {
+                        return GetBuilder<FollowUnfollowToggleController>(
                           builder: (followUnfollowToggleController) {
-                        return ElevatedButton(
-                          onPressed: () async {
-                            if (followUnfollowToggleController.isFollowing) {
-                              await othersProfileScreenController.unFollowUser(
-                                username: widget.username,
-                              );
-                            } else {
-                              await othersProfileScreenController.followUser(
-                                username: widget.username,
-                              );
-                            }
+                            return ElevatedButton(
+                              onPressed: () async {
+                                if (followUnfollowToggleController
+                                    .isFollowing) {
+                                  await othersProfileScreenController
+                                      .unFollowUser(
+                                    username: widget.username,
+                                  );
+                                } else {
+                                  await othersProfileScreenController
+                                      .followUser(
+                                    username: widget.username,
+                                  );
+                                }
 
-                            followUnfollowToggleController.toggle();
+                                followUnfollowToggleController.toggle();
+                              },
+                              style: const ButtonStyle(
+                                backgroundColor:
+                                    WidgetStatePropertyAll(Color(0XFFEAECF0)),
+                                foregroundColor:
+                                    WidgetStatePropertyAll(Colors.black),
+                              ),
+                              child: GetBuilder<FollowUnfollowToggleController>(
+                                builder: (followUnfollowToggleController) {
+                                  return Text(
+                                      followUnfollowToggleController.isFollowing
+                                          ? "Unfollow"
+                                          : "Follow");
+                                },
+                              ),
+                            );
                           },
-                          style: const ButtonStyle(
-                            backgroundColor:
-                                WidgetStatePropertyAll(Color(0XFFEAECF0)),
-                            foregroundColor:
-                                WidgetStatePropertyAll(Colors.black),
-                          ),
-                          child: GetBuilder<FollowUnfollowToggleController>(
-                              builder: (followUnfollowToggleController) {
-                            return Text(
-                                followUnfollowToggleController.isFollowing
-                                    ? "Unfollow"
-                                    : "Follow");
-                          }),
                         );
-                      });
-                    }),
+                      },
+                    ),
                     const SizedBox(width: 8),
                     ElevatedButton(
                       onPressed: () {
@@ -477,6 +484,11 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
   AppBar _buildAppbar() {
     return AppBar(
       backgroundColor: Colors.transparent,
+      leading: IconButton(
+          onPressed: () {
+            Get.back();
+          },
+          icon: const Icon(Icons.arrow_back_ios)),
       title: Text(
         widget.userFullName,
         style: const TextStyle(
