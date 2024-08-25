@@ -39,7 +39,6 @@ class _NewPostScreenState extends State<NewPostScreen> {
   void _postToFireStore() async {
     String? imageUrl =
         await _newPostController.uploadImage(File(widget.imagePath));
-
     if (imageUrl != null) {
       await _newPostController.createPost(
         imageUrl: imageUrl,

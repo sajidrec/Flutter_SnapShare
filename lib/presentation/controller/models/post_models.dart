@@ -9,6 +9,8 @@ class Post {
   final String postId;
   final DateTime timestamp;
   final String userId;
+  final String userFullName;
+  final String userProfilePic;
 
   Post({
     required this.caption,
@@ -19,6 +21,8 @@ class Post {
     required this.postId,
     required this.timestamp,
     required this.userId,
+    required this.userFullName,
+    required this.userProfilePic,
   });
 
   factory Post.fromDocument(DocumentSnapshot doc) {
@@ -33,6 +37,8 @@ class Post {
       locations: List<String>.from(data['locations'] ?? ''),
       timestamp: (data['timestamp'] as Timestamp).toDate(),
       comments: List<String>.from(data['comments'] ?? []),
+      userFullName: data['userFullName'] ?? '',
+      userProfilePic: data['userProfilePic'] ?? '',
     );
   }
 }

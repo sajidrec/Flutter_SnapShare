@@ -150,7 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Row(
             children: [
               ProfileImageButton(
-                profileImage: post.imageUrl,
+                profileImage: FirebaseAuth.instance.currentUser?.photoURL ?? "",
               ),
               const SizedBox(width: 8),
               _buildComment(),
@@ -315,14 +315,14 @@ class _HomeScreenState extends State<HomeScreen> {
     return Row(
       children: [
         ProfileImageButton(
-          profileImage: FirebaseAuth.instance.currentUser!.photoURL,
+          profileImage: post.userProfilePic,
         ),
         const SizedBox(width: 10),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              FirebaseAuth.instance.currentUser?.displayName ?? "",
+              post.userFullName,
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18,

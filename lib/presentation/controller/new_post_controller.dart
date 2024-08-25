@@ -48,6 +48,8 @@ class NewPostController extends GetxController {
         'likes': [],
         'comments': [],
         'timestamp': FieldValue.serverTimestamp(),
+        'userFullName': currentUser.displayName,
+        'userProfilePic':currentUser.photoURL,
       });
       Get.back();
       Get.snackbar('Success', 'Post created successfully!');
