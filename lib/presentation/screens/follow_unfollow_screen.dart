@@ -29,8 +29,11 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
   @override
   void initState() {
     super.initState();
-    fetchUserData();
     showFollowingList = widget.showFollowingList;
+
+    WidgetsBinding.instance.addPostFrameCallback(
+      (timeStamp) async => await fetchUserData(),
+    );
   }
 
   Future<void> fetchUserData() async {
@@ -41,34 +44,41 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _buildAppBar(),
-      body: Column(
-        children: [
-          _buildTabs(),
-          Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: GetBuilder<FollowUnfollowScreenController>(
-                builder: (followUnfollowScreenController) {
-              return TextFormField(
-                controller: _searchController,
-                onChanged: (value) =>
-                    followUnfollowScreenController.fetchFollowingSearchUser(
-                  searchKeyword: value,
-                ),
-                decoration: const InputDecoration(
-                  hintText: 'Search',
-                  prefixIcon: Icon(Icons.search),
-                ),
-              );
-            }),
-          ),
-          Expanded(
-            child: showFollowingList
-                ? _buildFollowingList()
-                : _buildFollowerList(),
-          ),
-        ],
+    return SafeArea(
+      child: Scaffold(
+        appBar: _buildAppBar(),
+        body: Column(
+          children: [
+            _buildTabs(),
+            _buildSearchInput(),
+            Expanded(
+              child: showFollowingList
+                  ? _buildFollowingList()
+                  : _buildFollowerList(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSearchInput() {
+    return Padding(
+      padding: const EdgeInsets.all(15.0),
+      child: GetBuilder<FollowUnfollowScreenController>(
+        builder: (followUnfollowScreenController) {
+          return TextFormField(
+            controller: _searchController,
+            onChanged: (value) =>
+                followUnfollowScreenController.fetchFollowingSearchUser(
+              searchKeyword: value,
+            ),
+            decoration: const InputDecoration(
+              hintText: 'Search',
+              prefixIcon: Icon(Icons.search),
+            ),
+          );
+        },
       ),
     );
   }
@@ -253,7 +263,6 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
   Widget _buildFollowerList() {
     return const SizedBox();
   }
-
 
   @override
   void dispose() {

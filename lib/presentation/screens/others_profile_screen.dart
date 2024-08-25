@@ -26,28 +26,18 @@ class OthersProfileScreen extends StatefulWidget {
 
 class _OthersProfileScreenState extends State<OthersProfileScreen> {
   List<String> imageUrls = [
-    "https://shorturl.at/uytTh",
     "https://shorturl.at/AoU19",
-    "https://shorturl.at/P6J6r",
-    "https://shorturl.at/ZRQ9e",
-    "https://shorturl.at/ukFeK",
-    "https://rb.gy/bd6llr",
-    "https://rb.gy/bd6llr",
-    "https://shorturl.at/uytTh",
     "https://shorturl.at/AoU19",
-    "https://shorturl.at/P6J6r",
-    "https://shorturl.at/ZRQ9e",
-    "https://shorturl.at/ZRQ9e",
-    "https://shorturl.at/ukFeK",
-    "https://rb.gy/bd6llr",
-    "https://rb.gy/bd6llr",
-    "https://shorturl.at/uytTh",
+    "https://shorturl.at/AoU19",
+    "https://shorturl.at/AoU19",
   ];
 
   @override
   void initState() {
     super.initState();
-    fetchUserData();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (timeStamp) async => await fetchUserData(),
+    );
   }
 
   Future<void> fetchUserData() async {
@@ -337,14 +327,15 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
                               .getUserData["following"].length ??
                           0,
                       placeDotTrailing: true,
-                      onTap: () {
-                        Get.to(
+                      onTap: () async {
+                        await Get.to(
                           () => FollowUnfollowScreen(
                             showFollowingList: true,
                             userFullName: widget.userFullName,
                             userName: widget.username,
                           ),
                         );
+                        await fetchUserData();
                       },
                     ),
                     _buildStatus(
