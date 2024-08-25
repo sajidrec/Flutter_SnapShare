@@ -273,26 +273,26 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
         return followUnfollowScreenController.searchedFollowerUser.isNotEmpty
             ? InkWell(
                 onTap: () async {
-                  bool userIsFollower = false;
+                  bool followingUser = false;
 
                   await Get.find<GetUserinfoByEmailController>().fetchUserData(
                       email: FirebaseAuth.instance.currentUser?.email ?? "");
 
-                  final followers = Get.find<GetUserinfoByEmailController>()
-                      .getUserData["followers"];
+                  final following = Get.find<GetUserinfoByEmailController>()
+                      .getUserData["following"];
 
                   for (int i = 0;
-                      (i < followers.length) && !userIsFollower;
+                      (i < following.length) && !followingUser;
                       i++) {
-                    if (followers[i] ==
+                    if (following[i] ==
                         followUnfollowScreenController
                             .searchedFollowerUser["username"]) {
-                      userIsFollower = true;
+                      followingUser = true;
                     }
                   }
 
                   Get.find<FollowUnfollowToggleController>().setInitialStatus(
-                    status: userIsFollower,
+                    status: followingUser,
                   );
 
                   await Get.to(
@@ -331,28 +331,28 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
                     .getFollowersUserDataList.length,
                 itemBuilder: (context, index) => InkWell(
                   onTap: () async {
-                    bool userIsFollower = false;
+                    bool followingUser = false;
 
                     await Get.find<GetUserinfoByEmailController>()
                         .fetchUserData(
                             email:
                                 FirebaseAuth.instance.currentUser?.email ?? "");
 
-                    final followers = Get.find<GetUserinfoByEmailController>()
-                        .getUserData["followers"];
+                    final following = Get.find<GetUserinfoByEmailController>()
+                        .getUserData["following"];
 
                     for (int i = 0;
-                        (i < followers.length) && !userIsFollower;
+                        (i < following.length) && !followingUser;
                         i++) {
-                      if (followers[i] ==
+                      if (following[i] ==
                           followUnfollowScreenController
                               .getFollowersUserDataList[index]["username"]) {
-                        userIsFollower = true;
+                        followingUser = true;
                       }
                     }
 
                     Get.find<FollowUnfollowToggleController>().setInitialStatus(
-                      status: userIsFollower,
+                      status: followingUser,
                     );
 
                     await Get.to(
