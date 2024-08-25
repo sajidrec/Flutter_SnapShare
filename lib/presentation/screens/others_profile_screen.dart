@@ -367,39 +367,45 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
                 Row(
                   children: [
                     GetBuilder<OthersProfileScreenController>(
-                        builder: (othersProfileScreenController) {
-                      return GetBuilder<FollowUnfollowToggleController>(
+                      builder: (othersProfileScreenController) {
+                        return GetBuilder<FollowUnfollowToggleController>(
                           builder: (followUnfollowToggleController) {
-                        return ElevatedButton(
-                          onPressed: () async {
-                            if (followUnfollowToggleController.isFollowing) {
-                              await othersProfileScreenController.unFollowUser(
-                                username: widget.username,
-                              );
-                            } else {
-                              await othersProfileScreenController.followUser(
-                                username: widget.username,
-                              );
-                            }
+                            return ElevatedButton(
+                              onPressed: () async {
+                                if (followUnfollowToggleController
+                                    .isFollowing) {
+                                  await othersProfileScreenController
+                                      .unFollowUser(
+                                    username: widget.username,
+                                  );
+                                } else {
+                                  await othersProfileScreenController
+                                      .followUser(
+                                    username: widget.username,
+                                  );
+                                }
 
-                            followUnfollowToggleController.toggle();
+                                followUnfollowToggleController.toggle();
+                              },
+                              style: const ButtonStyle(
+                                backgroundColor:
+                                    WidgetStatePropertyAll(Color(0XFFEAECF0)),
+                                foregroundColor:
+                                    WidgetStatePropertyAll(Colors.black),
+                              ),
+                              child: GetBuilder<FollowUnfollowToggleController>(
+                                builder: (followUnfollowToggleController) {
+                                  return Text(
+                                      followUnfollowToggleController.isFollowing
+                                          ? "Unfollow"
+                                          : "Follow");
+                                },
+                              ),
+                            );
                           },
-                          style: const ButtonStyle(
-                            backgroundColor:
-                                WidgetStatePropertyAll(Color(0XFFEAECF0)),
-                            foregroundColor:
-                                WidgetStatePropertyAll(Colors.black),
-                          ),
-                          child: GetBuilder<FollowUnfollowToggleController>(
-                              builder: (followUnfollowToggleController) {
-                            return Text(
-                                followUnfollowToggleController.isFollowing
-                                    ? "Unfollow"
-                                    : "Follow");
-                          }),
                         );
-                      });
-                    }),
+                      },
+                    ),
                     const SizedBox(width: 8),
                     ElevatedButton(
                       onPressed: () {
@@ -478,6 +484,11 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
   AppBar _buildAppbar() {
     return AppBar(
       backgroundColor: Colors.transparent,
+      leading: IconButton(
+          onPressed: () {
+            Get.back();
+          },
+          icon: const Icon(Icons.arrow_back_ios)),
       title: Text(
         widget.userFullName,
         style: const TextStyle(
