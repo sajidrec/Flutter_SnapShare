@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
 import 'package:get/get_rx/src/rx_typedefs/rx_typedefs.dart';
+import 'package:snapshare/presentation/controller/get_post_images_by_uid_controller.dart';
 import 'package:snapshare/presentation/controller/get_userinfo_by_email_controller.dart';
 import 'package:snapshare/presentation/controller/grid_or_listview_switch_controller.dart';
 import 'package:snapshare/presentation/screens/auth/signup_or_login_screen.dart';
@@ -20,25 +21,6 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  List<String> imageUrls = [
-    "https://shorturl.at/uytTh",
-    "https://shorturl.at/AoU19",
-    "https://shorturl.at/P6J6r",
-    "https://shorturl.at/ZRQ9e",
-    "https://shorturl.at/ukFeK",
-    "https://rb.gy/bd6llr",
-    "https://rb.gy/bd6llr",
-    "https://shorturl.at/uytTh",
-    "https://shorturl.at/AoU19",
-    "https://shorturl.at/P6J6r",
-    "https://shorturl.at/ZRQ9e",
-    "https://shorturl.at/ZRQ9e",
-    "https://shorturl.at/ukFeK",
-    "https://rb.gy/bd6llr",
-    "https://rb.gy/bd6llr",
-    "https://shorturl.at/uytTh",
-  ];
-
   @override
   void initState() {
     super.initState();
@@ -51,6 +33,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> fetchUserData() async {
     await Get.find<GetUserinfoByEmailController>()
         .fetchUserData(email: FirebaseAuth.instance.currentUser?.email ?? "");
+    await Get.find<GetPostImagesByUidController>().fetchData(
+      uid: FirebaseAuth.instance.currentUser?.uid ?? "",
+      email: FirebaseAuth.instance.currentUser?.email ?? "",
+    );
   }
 
   @override
@@ -92,52 +78,34 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  // Widget _buildPostSection() {
-  //   return Padding(
-  //     padding: const EdgeInsets.symmetric(horizontal: 16),
-  //     child: GetBuilder<GridOrListviewSwitchController>(
-  //         builder: (gridOrListViewController) {
-  //       return GridView.builder(
-  //         primary: false,
-  //         shrinkWrap: true,
-  //         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-  //           crossAxisCount: gridOrListViewController.gridViewActive ? 2 : 1,
-  //         ),
-  //         itemBuilder: (context, index) => Padding(
-  //           padding: const EdgeInsets.all(5.0),
-  //           child: ClipRRect(
-  //             borderRadius: BorderRadius.circular(10),
-  //             child: Image.network(
-  //               "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9GwY4ejWID3BOyuYZFpLQa746bRb6eoSMmQ&s",
-  //               fit: BoxFit.cover,
-  //             ),
-  //           ),
-  //         ),
-  //         itemCount: 21,
-  //       );
-  //     }),
-  //   );
-  // }
-
   Widget _buildPostSection() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: GetBuilder<GridOrListviewSwitchController>(
         builder: (gridOrListViewController) {
           return SingleChildScrollView(
-            child: StaggeredGrid.count(
-              crossAxisCount: gridOrListViewController.gridViewActive ? 4 : 1,
-              mainAxisSpacing: 4,
-              crossAxisSpacing: 4,
-              children: List.generate(imageUrls.length, (index) {
-                return StaggeredGridTile.count(
-                  crossAxisCellCount: _getCrossAxisCellCount(
-                      index, gridOrListViewController.gridViewActive),
-                  mainAxisCellCount: _getMainAxisCellCount(index),
-                  child: _buildTile(imageUrls[index]),
-                );
-              }),
-            ),
+            child: GetBuilder<GetPostImagesByUidController>(
+                builder: (getPostImagesByUidController) {
+              return (getPostImagesByUidController.getPostImageList.isEmpty)
+                  ? const Text("No post yet")
+                  : StaggeredGrid.count(
+                      crossAxisCount:
+                          gridOrListViewController.gridViewActive ? 4 : 1,
+                      mainAxisSpacing: 4,
+                      crossAxisSpacing: 4,
+                      children: List.generate(
+                          getPostImagesByUidController.getPostImageList.length,
+                          (index) {
+                        return StaggeredGridTile.count(
+                          crossAxisCellCount: _getCrossAxisCellCount(
+                              index, gridOrListViewController.gridViewActive),
+                          mainAxisCellCount: _getMainAxisCellCount(index),
+                          child: _buildTile(getPostImagesByUidController
+                              .getPostImageList[index]),
+                        );
+                      }),
+                    );
+            }),
           );
         },
       ),
@@ -354,7 +322,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               .getUserData["following"].length ??
                           0,
                       placeDotTrailing: true,
-
                       onTap: () async {
                         await Get.find<GetUserinfoByEmailController>()
                             .fetchUserData(
@@ -384,7 +351,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               .getUserData["followers"].length ??
                           0,
                       placeDotTrailing: false,
-
                       onTap: () async {
                         await Get.find<GetUserinfoByEmailController>()
                             .fetchUserData(
