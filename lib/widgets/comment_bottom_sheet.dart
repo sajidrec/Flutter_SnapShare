@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:snapshare/presentation/controller/get_userinfo_by_username_controller.dart';
 import 'package:snapshare/utils/assets_path.dart';
 
 class CommentBottomSheet {
@@ -27,6 +28,8 @@ class _CommentBottomSheetWidgetState extends State<CommentBottomSheetWidget> {
   final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   late Stream<QuerySnapshot> _commentsStream;
+  final GetUserinfoByUsernameController getUserinfoByUsernameController =
+      Get.find<GetUserinfoByUsernameController>();
 
   @override
   void initState() {
@@ -86,8 +89,9 @@ class _CommentBottomSheetWidgetState extends State<CommentBottomSheetWidget> {
                     final commentData = comment.data() as Map<String, dynamic>;
 
                     return ListTile(
-                      leading: const CircleAvatar(
-                        backgroundImage: AssetImage(AssetsPath.photo5),
+                      leading: CircleAvatar(
+                        backgroundImage:
+                            NetworkImage('${_auth.currentUser!.photoURL}'),
                         radius: 20,
                       ),
                       title: Row(
@@ -97,7 +101,7 @@ class _CommentBottomSheetWidgetState extends State<CommentBottomSheetWidget> {
                                   const TextStyle(fontWeight: FontWeight.bold)),
                           const SizedBox(width: 5),
                           Text(
-                            _formatTime(commentData['timestamp'].toDate()),
+                            _formatTime(commentData['timestamp']?.toDate()),
                             style: const TextStyle(
                                 color: Colors.grey, fontSize: 12),
                           ),
