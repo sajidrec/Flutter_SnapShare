@@ -42,7 +42,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    fetchUserData();
+
+    WidgetsBinding.instance.addPostFrameCallback(
+      (timeStamp) async => await fetchUserData(),
+    );
   }
 
   Future<void> fetchUserData() async {
@@ -351,12 +354,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               .getUserData["following"].length ??
                           0,
                       placeDotTrailing: true,
-                      onTap: () {
-                        Get.to(
-                          () => const FollowUnfollowScreen(
+
+                      onTap: () async {
+                        await Get.find<GetUserinfoByEmailController>()
+                            .fetchUserData(
+                                email:
+                                    FirebaseAuth.instance.currentUser?.email ??
+                                        "");
+                        final username =
+                            await Get.find<GetUserinfoByEmailController>()
+                                .getUserData["username"];
+
+                        await Get.to(
+                          () => FollowUnfollowScreen(
                             showFollowingList: true,
+                            userFullName: FirebaseAuth
+                                    .instance.currentUser?.displayName ??
+                                "Unknown",
+                            userName: username,
                           ),
                         );
+
+                        await fetchUserData();
                       },
                     ),
                     _buildStatus(
@@ -365,10 +384,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               .getUserData["followers"].length ??
                           0,
                       placeDotTrailing: false,
-                      onTap: () {
-                        Get.to(
-                          () => const FollowUnfollowScreen(
+
+                      onTap: () async {
+                        await Get.find<GetUserinfoByEmailController>()
+                            .fetchUserData(
+                                email:
+                                    FirebaseAuth.instance.currentUser?.email ??
+                                        "");
+                        final username =
+                            await Get.find<GetUserinfoByEmailController>()
+                                .getUserData["username"];
+                        await Get.to(
+                          () => FollowUnfollowScreen(
                             showFollowingList: false,
+                            userFullName: FirebaseAuth
+                                    .instance.currentUser?.displayName ??
+                                "Unknown",
+                            userName: username,
                           ),
                         );
                       },

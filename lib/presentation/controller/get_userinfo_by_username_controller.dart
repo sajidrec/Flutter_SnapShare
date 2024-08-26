@@ -15,7 +15,9 @@ class GetUserinfoByUsernameController extends GetxController {
   }) async {
     _inProgress = true;
     update();
+
     FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+
     final docRef = firebaseFirestore.collection("userInfo").doc(username);
     final theDoc = await docRef.get();
 
