@@ -13,6 +13,8 @@ import 'package:snapshare/presentation/controller/grid_or_listview_switch_contro
 import 'package:snapshare/presentation/controller/others_profile_screen_controller.dart';
 import 'package:snapshare/presentation/controller/search_screen_controller.dart';
 
+import 'presentation/controller/get_post_images_by_uid_controller.dart';
+
 class ControllerBinder extends Bindings {
   @override
   void dependencies() {
@@ -29,5 +31,6 @@ class ControllerBinder extends Bindings {
     Get.put(FollowUnfollowToggleController());
     Get.put(GetPostInfoController());
     Get.put(FollowUnfollowScreenController());
+    Get.put(GetPostImagesByUidController());
   }
 }

@@ -24,8 +24,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   NewPostController newPostController = Get.put(NewPostController());
   final TextEditingController _commentController = TextEditingController();
-  final Map<String, bool> _likedPostsList =
-      {}; // this is if we want to track likes
+  // final Map<String, bool> _likedPostsList =
+  //     {}; // this is if we want to track likes
 
   @override
   void initState() {
@@ -170,10 +170,10 @@ class _HomeScreenState extends State<HomeScreen> {
         onTap: () {
           CommentBottomSheet.show(postId);
         },
-        decoration: InputDecoration(
+        decoration: const InputDecoration(
             hintText: 'Your Comments',
             border: InputBorder.none,
-            suffixIcon: const Icon(Icons.send_outlined)),
+            suffixIcon: Icon(Icons.send_outlined)),
         controller: _commentController,
       ),
     );
