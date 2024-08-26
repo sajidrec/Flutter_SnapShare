@@ -1,10 +1,17 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
 import 'package:get/get_rx/src/rx_typedefs/rx_typedefs.dart';
+import 'package:snapshare/presentation/controller/get_post_images_by_uid_controller.dart';
+import 'package:snapshare/presentation/controller/get_userinfo_by_email_controller.dart';
 import 'package:snapshare/presentation/controller/grid_or_listview_switch_controller.dart';
 import 'package:snapshare/presentation/screens/auth/signup_or_login_screen.dart';
 import 'package:snapshare/presentation/screens/follow_unfollow_screen.dart';
+import 'package:snapshare/utils/app_colors.dart';
+
+import 'bottom_nav_bar.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -13,8 +20,25 @@ class ProfileScreen extends StatefulWidget {
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-
 class _ProfileScreenState extends State<ProfileScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback(
+      (timeStamp) async => await fetchUserData(),
+    );
+  }
+
+  Future<void> fetchUserData() async {
+    await Get.find<GetUserinfoByEmailController>()
+        .fetchUserData(email: FirebaseAuth.instance.currentUser?.email ?? "");
+    await Get.find<GetPostImagesByUidController>().fetchData(
+      uid: FirebaseAuth.instance.currentUser?.uid ?? "",
+      email: FirebaseAuth.instance.currentUser?.email ?? "",
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -58,26 +82,100 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: GetBuilder<GridOrListviewSwitchController>(
-          builder: (gridOrListViewController) {
-        return GridView.builder(
-          primary: false,
-          shrinkWrap: true,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: gridOrListViewController.gridViewActive ? 2 : 1,
-          ),
-          itemBuilder: (context, index) => Padding(
-            padding: const EdgeInsets.all(5.0),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.network(
-                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9GwY4ejWID3BOyuYZFpLQa746bRb6eoSMmQ&s",
-                fit: BoxFit.cover,
-              ),
+        builder: (gridOrListViewController) {
+          return SingleChildScrollView(
+            child: GetBuilder<GetPostImagesByUidController>(
+              builder: (getPostImagesByUidController) {
+                return (getPostImagesByUidController.getPostImageList.isEmpty)
+                    ? const Text("No post yet")
+                    : StaggeredGrid.count(
+                        crossAxisCount:
+                            gridOrListViewController.gridViewActive ? 4 : 1,
+                        mainAxisSpacing: 4,
+                        crossAxisSpacing: 4,
+                        children: List.generate(
+                          getPostImagesByUidController.getPostImageList.length,
+                          (index) {
+                            return StaggeredGridTile.count(
+                              crossAxisCellCount: _getCrossAxisCellCount(index,
+                                  gridOrListViewController.gridViewActive),
+                              mainAxisCellCount: _getMainAxisCellCount(index),
+                              child: _buildTile(getPostImagesByUidController
+                                  .getPostImageList[index]),
+                            );
+                          },
+                        ),
+                      );
+              },
             ),
-          ),
-          itemCount: 21,
-        );
-      }),
+          );
+        },
+      ),
+    );
+  }
+
+  int _getCrossAxisCellCount(int index, bool gridViewActive) {
+    // Repeat pattern for mainAxisCellCount
+
+    if (!gridViewActive) return 1;
+
+    switch (index % 6) {
+      case 0:
+      case 4:
+        return 2;
+      case 1:
+      case 2:
+      case 3:
+      case 5:
+        return 1;
+      default:
+        return 1;
+    }
+  }
+
+  int _getMainAxisCellCount(int index) {
+    // Repeat pattern for mainAxisCellCount
+    switch (index % 6) {
+      case 0:
+      case 4:
+        return 2;
+      case 1:
+      case 2:
+      case 3:
+      case 5:
+        return 1;
+      default:
+        return 1;
+    }
+  }
+
+  Widget _buildTile(String imageUrl) {
+    return Padding(
+      padding: const EdgeInsets.all(5.0),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Image.network(
+          imageUrl,
+          fit: BoxFit.cover,
+          loadingBuilder: (context, child, progress) {
+            if (progress == null) {
+              return child;
+            } else {
+              return const Center(
+                child: CupertinoActivityIndicator(
+                  animating: true,
+                  radius: 15.0,
+                ),
+              );
+            }
+          },
+          errorBuilder: (context, error, stackTrace) {
+            return const Center(
+              child: Icon(Icons.error),
+            );
+          },
+        ),
+      ),
     );
   }
 
@@ -168,64 +266,118 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildProfileHeader() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildProfilePicture(),
-        const SizedBox(width: 12),
-        _buildProfileStatusSection(),
-      ],
+    return Center(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildProfilePicture(),
+          const SizedBox(width: 12),
+          _buildProfileStatusSection(),
+        ],
+      ),
     );
   }
 
   Widget _buildProfileStatusSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 5),
-        Text(
-          FirebaseAuth.instance.currentUser?.displayName ?? "Unknown",
-          style: const TextStyle(
-            fontWeight: FontWeight.w700,
-            fontSize: 18,
-          ),
-        ),
-        const SizedBox(height: 5),
-        Text(
-          FirebaseAuth.instance.currentUser?.email ?? "Not available",
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-          ),
-        ),
-        const SizedBox(height: 5),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _buildStatus(
-              statusTitle: "Post",
-              statusQuantity: 50,
-              placeDotTrailing: true,
-              onTap: () {},
-            ),
-            _buildStatus(
-              statusTitle: "Following",
-              statusQuantity: 99,
-              placeDotTrailing: true,
-              onTap: () {
-                Get.to(() => const FollowUnfollowScreen());
-              },
-            ),
-            _buildStatus(
-              statusTitle: "Follower",
-              statusQuantity: 99,
-              placeDotTrailing: false,
-              onTap: () {},
-            ),
-          ],
-        ),
-      ],
-    );
+    return GetBuilder<GetUserinfoByEmailController>(
+        builder: (getUserinfoByEmailController) {
+      return getUserinfoByEmailController.inProgress
+          ? const Center(
+              child: CupertinoActivityIndicator(
+                color: AppColor.themeColor,
+              ),
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 5),
+                Text(
+                  FirebaseAuth.instance.currentUser?.displayName ?? "Unknown",
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 18,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  "@${getUserinfoByEmailController.getUserData["username"] ?? "Not available"}",
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    _buildStatus(
+                      statusTitle: "Post",
+                      statusQuantity: getUserinfoByEmailController
+                              .getUserData["posts"].length ??
+                          0,
+                      placeDotTrailing: true,
+                      onTap: () {},
+                    ),
+                    _buildStatus(
+                      statusTitle: "Following",
+                      statusQuantity: getUserinfoByEmailController
+                              .getUserData["following"].length ??
+                          0,
+                      placeDotTrailing: true,
+                      onTap: () async {
+                        await Get.find<GetUserinfoByEmailController>()
+                            .fetchUserData(
+                                email:
+                                    FirebaseAuth.instance.currentUser?.email ??
+                                        "");
+                        final username =
+                            await Get.find<GetUserinfoByEmailController>()
+                                .getUserData["username"];
+
+                        await Get.to(
+                          () => FollowUnfollowScreen(
+                            showFollowingList: true,
+                            userFullName: FirebaseAuth
+                                    .instance.currentUser?.displayName ??
+                                "Unknown",
+                            userName: username,
+                          ),
+                        );
+
+                        await fetchUserData();
+                      },
+                    ),
+                    _buildStatus(
+                      statusTitle: "Follower",
+                      statusQuantity: getUserinfoByEmailController
+                              .getUserData["followers"].length ??
+                          0,
+                      placeDotTrailing: false,
+                      onTap: () async {
+                        await Get.find<GetUserinfoByEmailController>()
+                            .fetchUserData(
+                                email:
+                                    FirebaseAuth.instance.currentUser?.email ??
+                                        "");
+                        final username =
+                            await Get.find<GetUserinfoByEmailController>()
+                                .getUserData["username"];
+                        await Get.to(
+                          () => FollowUnfollowScreen(
+                            showFollowingList: false,
+                            userFullName: FirebaseAuth
+                                    .instance.currentUser?.displayName ??
+                                "Unknown",
+                            userName: username,
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            );
+    });
   }
 
   Widget _buildStatus({
@@ -283,6 +435,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return AppBar(
       backgroundColor: Colors.transparent,
       centerTitle: true,
+      leading: IconButton(
+          onPressed: () {
+            Get.offAll(() => const BottomNavBar());
+          },
+          icon: const Icon(Icons.arrow_back_ios)),
       actions: [
         IconButton(
           onPressed: () async {
@@ -316,8 +473,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
             );
-            // await FirebaseAuth.instance.signOut();
-            // Get.offAll(() => const SignupOrLoginScreen());
           },
           icon: const Icon(Icons.logout),
         )

@@ -200,71 +200,81 @@ class _SignupScreenState extends State<SignupScreen> {
                                           FocusScope.of(context)
                                               .requestFocus(FocusNode());
 
-                                          bool userInfoUploaded =
-                                              await uploadUserInfoDbController
-                                                  .uploadUserInfo(
-                                            username: usernameTeController.text
-                                                .trim(),
-                                            userFullName:
-                                                nameTeController.text.trim(),
-                                            userEmail:
-                                                emailController.text.trim(),
-                                          );
-
-                                          if (!userInfoUploaded) {
-                                            usernameTeController.text = "";
-                                            Get.snackbar(
-                                              "Failed",
-                                              "try different username",
-                                            );
-                                          }
-
                                           if (profileImage == null) {
                                             Get.snackbar(
                                               "Select profile picture",
                                               "",
                                             );
+                                            usernameTeController.text = "";
+                                            nameTeController.text = "";
+                                            emailController.text = "";
+                                            passwordController.text = "";
+                                            confirmPasswordController.text = "";
                                           }
 
                                           if ((_formKey.currentState
                                                       ?.validate() ??
                                                   false) &&
                                               profileImage != null) {
-                                            bool registrationStatus =
-                                                await registrationController
-                                                    .registerNewUser(
-                                              userFullName:
-                                                  nameTeController.text.trim(),
-                                              profilePicturePath:
-                                                  profileImage!.path,
-                                              email:
-                                                  emailController.text.trim(),
-                                              password: passwordController.text,
-                                              userName: usernameTeController
+
+                                            bool userInfoUploaded =
+                                                await uploadUserInfoDbController
+                                                    .uploadUserInfo(
+                                              username: usernameTeController
                                                   .text
                                                   .trim(),
+                                              userFullName:
+                                                  nameTeController.text.trim(),
+                                              userEmail:
+                                                  emailController.text.trim(),
                                             );
 
-                                            if (registrationStatus) {
-                                              if (mounted) {
-                                                Get.snackbar(
-                                                  "Sucess",
-                                                  "Registration successful please login",
-                                                  backgroundColor: Colors.green,
-                                                  colorText: Colors.white,
-                                                );
-                                                Get.offAll(
-                                                  () => const LoginScreen(),
-                                                );
-                                              }
-                                            } else {
+                                            if (!userInfoUploaded) {
+                                              usernameTeController.text = "";
                                               Get.snackbar(
                                                 "Failed",
-                                                registrationController
-                                                    .errorMessage,
-                                                backgroundColor: Colors.red,
-                                                colorText: Colors.white,
+                                                "try different username",
                                               );
+                                            } else {
+                                              bool registrationStatus =
+                                                  await registrationController
+                                                      .registerNewUser(
+                                                userFullName: nameTeController
+                                                    .text
+                                                    .trim(),
+                                                profilePicturePath:
+                                                    profileImage!.path,
+                                                email:
+                                                    emailController.text.trim(),
+                                                password:
+                                                    passwordController.text,
+                                                userName: usernameTeController
+                                                    .text
+                                                    .trim(),
+                                              );
+
+                                              if (registrationStatus) {
+                                                if (mounted) {
+                                                  Get.snackbar(
+                                                    "Sucess",
+                                                    "Registration successful please login",
+                                                    backgroundColor:
+                                                        Colors.green,
+                                                    colorText: Colors.white,
+                                                  );
+                                                  Get.offAll(
+                                                    () => const LoginScreen(),
+                                                  );
+                                                }
+                                              } else {
+                                                Get.snackbar(
+                                                  "Failed",
+                                                  registrationController
+                                                      .errorMessage,
+                                                  backgroundColor: Colors.red,
+                                                  colorText: Colors.white,
+                                                );
+                                              }
                                             }
                                           }
                                         }
