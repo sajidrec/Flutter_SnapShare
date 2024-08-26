@@ -1,15 +1,17 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:snapshare/presentation/screens/chat_screen.dart';
-import 'package:snapshare/presentation/screens/notification_screen.dart';
+import 'package:snapshare/presentation/controller/models/post_models.dart';
 import 'package:snapshare/presentation/screens/profile_screen.dart';
 import 'package:snapshare/presentation/screens/update_profile_screen.dart';
-import 'package:snapshare/utils/assets_path.dart';
 import 'package:snapshare/widgets/comment_bottom_sheet.dart';
 import 'package:snapshare/widgets/profile_image_button.dart';
 import 'package:snapshare/widgets/story_section.dart';
+
+import 'chat_screen.dart';
+import 'notification_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,39 +22,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _commentController = TextEditingController();
-
-  final List<Map<String, String>> userData = const [
-    {
-      'image': AssetsPath.photo5,
-      'title': 'You',
-      'username': '@you',
-      'profileImage': AssetsPath.photo5
-    },
-    {
-      'image': AssetsPath.photo2,
-      'title': 'John Doe',
-      'username': '@johndoe',
-      'profileImage': AssetsPath.photo2
-    },
-    {
-      'image': AssetsPath.photo3,
-      'title': 'John Lite',
-      'username': '@johnlite',
-      'profileImage': AssetsPath.photo3
-    },
-    {
-      'image': AssetsPath.photo4,
-      'title': 'Alia Kane',
-      'username': '@aliakane',
-      'profileImage': AssetsPath.photo4
-    },
-    {
-      'image': AssetsPath.profileImage,
-      'title': 'Alex Cary',
-      'username': '@alexcary',
-      'profileImage': AssetsPath.profileImage
-    },
-  ];
+  final Map<String, bool> _likedPostsList = {};
 
   @override
   void initState() {
@@ -91,7 +61,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 GestureDetector(
                   onTap: () => Get.to(() => const ProfileScreen()),
                   child: ProfileImageButton(
-                    // profileImage: userData[0]['profileImage'],
                     profileImage:
                         FirebaseAuth.instance.currentUser?.photoURL ?? "",
                   ),
@@ -120,49 +89,68 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildPostSection() {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: userData.length,
-      itemBuilder: (BuildContext context, index) {
-        final user = userData[index];
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black12,
-                  offset: Offset(0, 3),
-                  blurRadius: 6,
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection('posts').snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Center(
+            child: CupertinoActivityIndicator(),
+          );
+        }
+
+        final posts =
+            snapshot.data!.docs.map((doc) => Post.fromDocument(doc)).toList();
+
+        return ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: posts.length,
+          itemBuilder: (BuildContext context, index) {
+            final post = posts[index];
+            return Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black12,
+                      offset: Offset(0, 3),
+                      blurRadius: 6,
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            child: _buildPostSectionBody(user),
-          ),
+                child: _buildPostSectionBody(post),
+              ),
+            );
+          },
         );
       },
     );
   }
 
-  Widget _buildPostSectionBody(Map<String, String> user) {
+  Widget _buildPostSectionBody(Post post) {
+    final String imageUrl = post.imageUrl;
+    final bool isLiked =
+        post.likes.contains(FirebaseAuth.instance.currentUser!.uid);
+
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildPostTitleAndIcon(user),
+          _buildPostTitleAndIcon(post),
           const SizedBox(height: 12),
-          _buildPostImageSection(user['image']!),
+          _buildPostImageSection(imageUrl),
           const SizedBox(height: 12),
-          _buildReactAndComment(),
+          _buildReactAndComment(post.postId, isLiked),
           const SizedBox(height: 8),
           Row(
             children: [
               ProfileImageButton(
-                profileImage: user['profileImage'],
+                profileImage: FirebaseAuth.instance.currentUser?.photoURL ?? "",
               ),
               const SizedBox(width: 8),
               _buildComment(),
@@ -179,42 +167,121 @@ class _HomeScreenState extends State<HomeScreen> {
         decoration: const InputDecoration(
           hintText: 'Your Comments',
           border: InputBorder.none,
-          focusedBorder: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          disabledBorder: InputBorder.none,
         ),
         controller: _commentController,
       ),
     );
   }
 
-  Widget _buildReactAndComment() {
+  Widget _buildReactAndComment(String postId, bool isLiked) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _buildReactAndCommentRow(),
-        IconButton(onPressed: () {}, icon: const Icon(CupertinoIcons.bookmark))
+        _buildReactAndCommentRow(postId, isLiked),
+        IconButton(
+          onPressed: () {},
+          icon: const Icon(CupertinoIcons.bookmark),
+        ),
       ],
     );
   }
 
-  Widget _buildReactAndCommentRow() {
+  // Widget _buildReactAndCommentRow(String postId, bool isLiked) {
+  //   return Row(
+  //     children: [
+  //       Container(
+  //         padding: const EdgeInsets.all(4.0),
+  //         child: IconButton(
+  //           icon: const Icon(
+  //             CupertinoIcons.suit_heart_fill,
+  //             size: 30,
+  //           ),
+  //           color: isLiked ? Colors.red : Colors.grey,
+  //           onPressed: () {
+  //             setState(() {
+  //               _likedPostsList[postId] = !(_likedPostsList[postId] ?? false);
+  //               FirebaseFirestore.instance
+  //                   .collection('posts')
+  //                   .doc(postId)
+  //                   .update({
+  //                 'likes': FieldValue.arrayUnion(
+  //                     [FirebaseAuth.instance.currentUser!.uid]),
+  //               });
+  //             });
+  //           },
+  //         ),
+  //       ),
+  //       IconButton(
+  //         onPressed: () {
+  //           CommentBottomSheet.show();
+  //         },
+  //         icon: const Icon(
+  //           CupertinoIcons.chat_bubble,
+  //           size: 22,
+  //         ),
+  //       ),
+  //       TextButton(
+  //         onPressed: () {
+  //           CommentBottomSheet.show();
+  //         },
+  //         child: const Text(
+  //           '20 Comments',
+  //           style: TextStyle(
+  //             fontSize: 17,
+  //             color: Colors.black87,
+  //             fontWeight: FontWeight.w400,
+  //           ),
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
+
+  Widget _buildReactAndCommentRow(String postId, bool isLiked) {
     return Row(
       children: [
         Container(
           padding: const EdgeInsets.all(4.0),
-          child: const Icon(
-            CupertinoIcons.suit_heart_fill,
-            size: 30,
-            color: Colors.red,
+          child: IconButton(
+            icon: const Icon(
+              CupertinoIcons.suit_heart_fill,
+              size: 30,
+            ),
+            color: isLiked ? Colors.red : Colors.grey,
+            onPressed: () {
+              setState(() {
+                if (isLiked) {
+                  // If the post is already liked, unlike it
+                  FirebaseFirestore.instance
+                      .collection('posts')
+                      .doc(postId)
+                      .update({
+                    'likes': FieldValue.arrayRemove(
+                        [FirebaseAuth.instance.currentUser!.uid]),
+                  });
+                } else {
+                  // If the post is not liked, like it
+                  FirebaseFirestore.instance
+                      .collection('posts')
+                      .doc(postId)
+                      .update({
+                    'likes': FieldValue.arrayUnion(
+                        [FirebaseAuth.instance.currentUser!.uid]),
+                  });
+                }
+              });
+            },
           ),
         ),
         IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              CupertinoIcons.chat_bubble,
-              size: 22,
-            )),
+          onPressed: () {
+            CommentBottomSheet.show();
+          },
+          icon: const Icon(
+            CupertinoIcons.chat_bubble,
+            size: 22,
+          ),
+        ),
         TextButton(
           onPressed: () {
             CommentBottomSheet.show();
@@ -222,9 +289,10 @@ class _HomeScreenState extends State<HomeScreen> {
           child: const Text(
             '20 Comments',
             style: TextStyle(
-                fontSize: 17,
-                color: Colors.black87,
-                fontWeight: FontWeight.w400),
+              fontSize: 17,
+              color: Colors.black87,
+              fontWeight: FontWeight.w400,
+            ),
           ),
         ),
       ],
@@ -234,7 +302,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildPostImageSection(String image) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
-      child: Image.asset(
+      child: Image.network(
         image,
         fit: BoxFit.cover,
         width: double.infinity,
@@ -243,28 +311,28 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildPostTitleAndIcon(Map<String, String> user) {
+  Widget _buildPostTitleAndIcon(Post post) {
     return Row(
       children: [
         ProfileImageButton(
-          profileImage: user['profileImage'],
+          profileImage: post.userProfilePic,
         ),
         const SizedBox(width: 10),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              user['title']!,
+              post.userFullName,
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
               ),
             ),
             Text(
-              user['username']!,
+              post.caption,
               style: const TextStyle(
                 fontWeight: FontWeight.w400,
-                fontSize: 14,
+                fontSize: 15,
                 color: Colors.grey,
               ),
             ),
@@ -272,8 +340,9 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         const Spacer(),
         IconButton(
-            onPressed: () {},
-            icon: const Icon(CupertinoIcons.ellipsis_vertical)),
+          onPressed: () {},
+          icon: const Icon(CupertinoIcons.ellipsis_vertical),
+        ),
       ],
     );
   }

@@ -354,6 +354,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               .getUserData["following"].length ??
                           0,
                       placeDotTrailing: true,
+
                       onTap: () async {
                         await Get.find<GetUserinfoByEmailController>()
                             .fetchUserData(
@@ -383,6 +384,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               .getUserData["followers"].length ??
                           0,
                       placeDotTrailing: false,
+
                       onTap: () async {
                         await Get.find<GetUserinfoByEmailController>()
                             .fetchUserData(
