@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:snapshare/presentation/controller/models/post_models.dart';
+import 'package:snapshare/presentation/controller/new_post_controller.dart';
 import 'package:snapshare/presentation/screens/profile_screen.dart';
 import 'package:snapshare/presentation/screens/update_profile_screen.dart';
 import 'package:snapshare/widgets/comment_bottom_sheet.dart';
@@ -21,8 +22,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  NewPostController newPostController = Get.put(NewPostController());
   final TextEditingController _commentController = TextEditingController();
-  final Map<String, bool> _likedPostsList = {};
+  final Map<String, bool> _likedPostsList =
+      {}; // this is if we want to track likes
 
   @override
   void initState() {
@@ -143,7 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           _buildPostTitleAndIcon(post),
           const SizedBox(height: 12),
-          _buildPostImageSection(imageUrl),
+          _buildPostImageSection(imageUrl, post.caption),
           const SizedBox(height: 12),
           _buildReactAndComment(post.postId, isLiked),
           const SizedBox(height: 8),
@@ -153,7 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 profileImage: FirebaseAuth.instance.currentUser?.photoURL ?? "",
               ),
               const SizedBox(width: 8),
-              _buildComment(),
+              _buildComment(post.postId),
             ],
           ),
         ],
@@ -161,13 +164,16 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildComment() {
+  Widget _buildComment(String postId) {
     return Expanded(
       child: TextFormField(
-        decoration: const InputDecoration(
-          hintText: 'Your Comments',
-          border: InputBorder.none,
-        ),
+        onTap: () {
+          CommentBottomSheet.show(postId);
+        },
+        decoration: InputDecoration(
+            hintText: 'Your Comments',
+            border: InputBorder.none,
+            suffixIcon: const Icon(Icons.send_outlined)),
         controller: _commentController,
       ),
     );
@@ -186,96 +192,40 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Widget _buildReactAndCommentRow(String postId, bool isLiked) {
-  //   return Row(
-  //     children: [
-  //       Container(
-  //         padding: const EdgeInsets.all(4.0),
-  //         child: IconButton(
-  //           icon: const Icon(
-  //             CupertinoIcons.suit_heart_fill,
-  //             size: 30,
-  //           ),
-  //           color: isLiked ? Colors.red : Colors.grey,
-  //           onPressed: () {
-  //             setState(() {
-  //               _likedPostsList[postId] = !(_likedPostsList[postId] ?? false);
-  //               FirebaseFirestore.instance
-  //                   .collection('posts')
-  //                   .doc(postId)
-  //                   .update({
-  //                 'likes': FieldValue.arrayUnion(
-  //                     [FirebaseAuth.instance.currentUser!.uid]),
-  //               });
-  //             });
-  //           },
-  //         ),
-  //       ),
-  //       IconButton(
-  //         onPressed: () {
-  //           CommentBottomSheet.show();
-  //         },
-  //         icon: const Icon(
-  //           CupertinoIcons.chat_bubble,
-  //           size: 22,
-  //         ),
-  //       ),
-  //       TextButton(
-  //         onPressed: () {
-  //           CommentBottomSheet.show();
-  //         },
-  //         child: const Text(
-  //           '20 Comments',
-  //           style: TextStyle(
-  //             fontSize: 17,
-  //             color: Colors.black87,
-  //             fontWeight: FontWeight.w400,
-  //           ),
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
-
   Widget _buildReactAndCommentRow(String postId, bool isLiked) {
     return Row(
       children: [
-        Container(
-          padding: const EdgeInsets.all(4.0),
-          child: IconButton(
-            icon: const Icon(
-              CupertinoIcons.suit_heart_fill,
-              size: 30,
-            ),
-            color: isLiked ? Colors.red : Colors.grey,
-            onPressed: () {
-              setState(() {
-                if (isLiked) {
-                  // If the post is already liked, unlike it
-                  FirebaseFirestore.instance
-                      .collection('posts')
-                      .doc(postId)
-                      .update({
-                    'likes': FieldValue.arrayRemove(
-                        [FirebaseAuth.instance.currentUser!.uid]),
-                  });
-                } else {
-                  // If the post is not liked, like it
-                  FirebaseFirestore.instance
-                      .collection('posts')
-                      .doc(postId)
-                      .update({
-                    'likes': FieldValue.arrayUnion(
-                        [FirebaseAuth.instance.currentUser!.uid]),
-                  });
-                }
-              });
-            },
+        IconButton(
+          icon: const Icon(
+            CupertinoIcons.suit_heart_fill,
+            size: 30,
           ),
+          color: isLiked ? Colors.red : Colors.grey,
+          onPressed: () {
+            setState(() {
+              if (isLiked) {
+                FirebaseFirestore.instance
+                    .collection('posts')
+                    .doc(postId)
+                    .update({
+                  'likes': FieldValue.arrayRemove(
+                      [FirebaseAuth.instance.currentUser!.uid]),
+                });
+              } else {
+                FirebaseFirestore.instance
+                    .collection('posts')
+                    .doc(postId)
+                    .update({
+                  'likes': FieldValue.arrayUnion(
+                      [FirebaseAuth.instance.currentUser!.uid]),
+                });
+              }
+            });
+          },
         ),
         IconButton(
           onPressed: () {
-            CommentBottomSheet.show();
+            CommentBottomSheet.show(postId);
           },
           icon: const Icon(
             CupertinoIcons.chat_bubble,
@@ -284,10 +234,10 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         TextButton(
           onPressed: () {
-            CommentBottomSheet.show();
+            CommentBottomSheet.show(postId);
           },
           child: const Text(
-            '20 Comments',
+            'Comments',
             style: TextStyle(
               fontSize: 17,
               color: Colors.black87,
@@ -299,15 +249,27 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildPostImageSection(String image) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(10),
-      child: Image.network(
-        image,
-        fit: BoxFit.cover,
-        width: double.infinity,
-        height: 300,
-      ),
+  Widget _buildPostImageSection(String image, String text) {
+    return Column(
+      children: [
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            text,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+          ),
+        ),
+        const SizedBox(height: 10),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: Image.network(
+            image,
+            fit: BoxFit.cover,
+            width: double.infinity,
+            height: 350,
+          ),
+        ),
+      ],
     );
   }
 
@@ -329,11 +291,11 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             Text(
-              post.caption,
+              post.locations.join(', '),
               style: const TextStyle(
                 fontWeight: FontWeight.w400,
                 fontSize: 15,
-                color: Colors.grey,
+                color: Colors.black87,
               ),
             ),
           ],
