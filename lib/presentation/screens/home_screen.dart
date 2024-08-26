@@ -292,7 +292,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             Text(
-              post.locations.join(', '),
+              post.locations.join(',\n '),
               style: const TextStyle(
                 fontWeight: FontWeight.w400,
                 fontSize: 15,
