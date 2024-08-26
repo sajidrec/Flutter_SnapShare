@@ -11,6 +11,8 @@ class Post {
   final String userId;
   final String userFullName;
   final String userProfilePic;
+  final String username;
+
 
   Post({
     required this.caption,
@@ -23,6 +25,7 @@ class Post {
     required this.userId,
     required this.userFullName,
     required this.userProfilePic,
+    required this.username,
   });
 
   factory Post.fromDocument(DocumentSnapshot doc) {
@@ -39,6 +42,7 @@ class Post {
       comments: List<String>.from(data['comments'] ?? []),
       userFullName: data['userFullName'] ?? '',
       userProfilePic: data['userProfilePic'] ?? '',
+      username: data['username'] ?? '',
     );
   }
 }
