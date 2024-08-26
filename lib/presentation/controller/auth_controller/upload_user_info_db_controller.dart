@@ -9,10 +9,18 @@ class UploadUserInfoDbController extends GetxController {
   }) async {
     FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
 
-    final docRef = firebaseFirestore.collection("userInfo").doc(username);
-    final docSnapshot = await docRef.get();
+    DocumentSnapshot documentSnapshotUsernameCheck =
+        await firebaseFirestore.collection('userInfo').doc(username).get();
 
-    if (docSnapshot.exists) {
+    final QuerySnapshot checkingEmailAlreadyRegistered = await FirebaseFirestore
+        .instance
+        .collection('userInfo')
+        .where('email', isEqualTo: userEmail)
+        .limit(1)
+        .get();
+
+    if (documentSnapshotUsernameCheck.exists ||
+        checkingEmailAlreadyRegistered.docs.isNotEmpty) {
       return false;
     }
 
