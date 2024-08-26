@@ -14,6 +14,7 @@ import 'package:snapshare/presentation/controller/others_profile_screen_controll
 import 'package:snapshare/presentation/controller/search_screen_controller.dart';
 
 import 'presentation/controller/get_post_images_by_uid_controller.dart';
+import 'presentation/controller/get_post_images_by_username_controller.dart';
 
 class ControllerBinder extends Bindings {
   @override
@@ -32,5 +33,6 @@ class ControllerBinder extends Bindings {
     Get.put(GetPostInfoController());
     Get.put(FollowUnfollowScreenController());
     Get.put(GetPostImagesByUidController());
+    Get.put(GetPostImagesByUsernameController());
   }
 }

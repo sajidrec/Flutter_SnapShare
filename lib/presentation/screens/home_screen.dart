@@ -24,6 +24,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   NewPostController newPostController = Get.put(NewPostController());
   final TextEditingController _commentController = TextEditingController();
+
   // final Map<String, bool> _likedPostsList =
   //     {}; // this is if we want to track likes
 
