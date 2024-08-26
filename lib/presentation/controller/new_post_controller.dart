@@ -49,7 +49,7 @@ class NewPostController extends GetxController {
         'comments': [],
         'timestamp': FieldValue.serverTimestamp(),
         'userFullName': currentUser.displayName,
-        'userProfilePic':currentUser.photoURL,
+        'userProfilePic': currentUser.photoURL,
       });
       Get.back();
       Get.snackbar('Success', 'Post created successfully!');
@@ -111,29 +111,6 @@ class NewPostController extends GetxController {
       }
     });
     update();
-  }
-
-  Future<void> addComment(String postId, String commentText) async {
-    User? currentUser = fAuth.currentUser;
-
-    if (currentUser == null) {
-      Get.snackbar('Error', 'No user is currently signed in');
-      return;
-    }
-
-    final DocumentReference postRef = fireStore.collection('posts').doc(postId);
-
-    try {
-      await postRef.collection('comments').add({
-        'userId': currentUser.uid,
-        'commentText': commentText,
-        'timestamp': FieldValue.serverTimestamp(),
-      });
-
-      Get.snackbar('Success', 'Comment added successfully!');
-    } catch (e) {
-      Get.snackbar('Error', e.toString());
-    }
   }
 
   void fetchPosts() async {
