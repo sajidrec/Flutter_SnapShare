@@ -98,13 +98,23 @@ class _SearchScreenState extends State<SearchScreen> {
                                 ),
                               );
                             },
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10.0),
-                              // Adjust radius as needed
-                              child: Image.network(
-                                getAllUserinfo.getData[index]["profilePic"],
-                                fit: BoxFit.cover,
-                              ),
+                            child: Column(
+                              children: [
+                                Expanded(
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    // Adjust radius as needed
+                                    child: Image.network(
+                                      getAllUserinfo.getData[index]
+                                          ["profilePic"],
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                                Text(
+                                  "@${getAllUserinfo.getData[index]["username"]}",
+                                ),
+                              ],
                             ),
                           );
                         });

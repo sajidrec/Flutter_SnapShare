@@ -85,27 +85,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
         builder: (gridOrListViewController) {
           return SingleChildScrollView(
             child: GetBuilder<GetPostImagesByUidController>(
-                builder: (getPostImagesByUidController) {
-              return (getPostImagesByUidController.getPostImageList.isEmpty)
-                  ? const Text("No post yet")
-                  : StaggeredGrid.count(
-                      crossAxisCount:
-                          gridOrListViewController.gridViewActive ? 4 : 1,
-                      mainAxisSpacing: 4,
-                      crossAxisSpacing: 4,
-                      children: List.generate(
+              builder: (getPostImagesByUidController) {
+                return (getPostImagesByUidController.getPostImageList.isEmpty)
+                    ? const Text("No post yet")
+                    : StaggeredGrid.count(
+                        crossAxisCount:
+                            gridOrListViewController.gridViewActive ? 4 : 1,
+                        mainAxisSpacing: 4,
+                        crossAxisSpacing: 4,
+                        children: List.generate(
                           getPostImagesByUidController.getPostImageList.length,
                           (index) {
-                        return StaggeredGridTile.count(
-                          crossAxisCellCount: _getCrossAxisCellCount(
-                              index, gridOrListViewController.gridViewActive),
-                          mainAxisCellCount: _getMainAxisCellCount(index),
-                          child: _buildTile(getPostImagesByUidController
-                              .getPostImageList[index]),
-                        );
-                      }),
-                    );
-            }),
+                            return StaggeredGridTile.count(
+                              crossAxisCellCount: _getCrossAxisCellCount(index,
+                                  gridOrListViewController.gridViewActive),
+                              mainAxisCellCount: _getMainAxisCellCount(index),
+                              child: _buildTile(getPostImagesByUidController
+                                  .getPostImageList[index]),
+                            );
+                          },
+                        ),
+                      );
+              },
+            ),
           );
         },
       ),
