@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:snapshare/presentation/controller/chat_list_screen_controller.dart';
+import 'package:snapshare/utils/app_colors.dart';
 
 class ChatListScreen extends StatefulWidget {
   const ChatListScreen({super.key});
@@ -25,24 +26,32 @@ class _ChatListScreenState extends State<ChatListScreen> {
       child: Scaffold(
         body: GetBuilder<ChatListScreenController>(
             builder: (chatListScreenController) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-            child: ListView.separated(
-              itemCount: chatListScreenController.getListOfMessagesUser.length,
-              itemBuilder: (context, index) {
-                return _buildChatElement(
-                  chatListScreenController: chatListScreenController,
-                  index: index,
-                  onTap: () {},
+          return chatListScreenController.inProgress
+              ? const Center(
+                  child: CircularProgressIndicator(
+                    color: AppColor.themeColor,
+                  ),
+                )
+              : Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+                  child: ListView.separated(
+                    itemCount:
+                        chatListScreenController.getListOfMessagesUser.length,
+                    itemBuilder: (context, index) {
+                      return _buildChatElement(
+                        chatListScreenController: chatListScreenController,
+                        index: index,
+                        onTap: () {},
+                      );
+                    },
+                    separatorBuilder: (BuildContext context, int index) {
+                      return const SizedBox(
+                        height: 10,
+                      );
+                    },
+                  ),
                 );
-              },
-              separatorBuilder: (BuildContext context, int index) {
-                return const SizedBox(
-                  height: 10,
-                );
-              },
-            ),
-          );
         }),
       ),
     );
