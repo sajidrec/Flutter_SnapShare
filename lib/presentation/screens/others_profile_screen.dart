@@ -8,7 +8,7 @@ import 'package:snapshare/presentation/controller/get_post_images_by_username_co
 import 'package:snapshare/presentation/controller/get_userinfo_by_username_controller.dart';
 import 'package:snapshare/presentation/controller/grid_or_listview_switch_controller.dart';
 import 'package:snapshare/presentation/controller/others_profile_screen_controller.dart';
-import 'package:snapshare/presentation/screens/chat_screen.dart';
+import 'package:snapshare/presentation/screens/chat_list_screen.dart';
 import 'package:snapshare/presentation/screens/follow_unfollow_screen.dart';
 
 class OthersProfileScreen extends StatefulWidget {
@@ -392,7 +392,7 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
                     ElevatedButton(
                       onPressed: () {
                         Get.to(
-                          const ChatScreen(),
+                          const ChatListScreen(),
                         );
                       },
                       style: const ButtonStyle(
