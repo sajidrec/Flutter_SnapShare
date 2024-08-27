@@ -3,8 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:snapshare/presentation/controller/models/post_models.dart';
 import 'package:snapshare/presentation/controller/new_post_controller.dart';
+import 'package:snapshare/presentation/models/post_models.dart';
 import 'package:snapshare/presentation/screens/profile_screen.dart';
 import 'package:snapshare/presentation/screens/update_profile_screen.dart';
 import 'package:snapshare/widgets/comment_bottom_sheet.dart';
@@ -202,26 +202,59 @@ class _HomeScreenState extends State<HomeScreen> {
             size: 30,
           ),
           color: isLiked ? Colors.red : Colors.grey,
-          onPressed: () {
-            setState(() {
-              if (isLiked) {
-                FirebaseFirestore.instance
-                    .collection('posts')
-                    .doc(postId)
+          onPressed: () async {
+            final postDetails = await FirebaseFirestore.instance
+                .collection("posts")
+                .doc(postId)
+                .get();
+
+            if (isLiked) {
+              await FirebaseFirestore.instance
+                  .collection('posts')
+                  .doc(postId)
+                  .update({
+                'likes': FieldValue.arrayRemove(
+                    [FirebaseAuth.instance.currentUser!.uid]),
+              });
+
+              if (postDetails["userId"] !=
+                  FirebaseAuth.instance.currentUser?.uid) {
+                await FirebaseFirestore.instance
+                    .collection("userInfo")
+                    .doc(postDetails["username"])
                     .update({
-                  'likes': FieldValue.arrayRemove(
-                      [FirebaseAuth.instance.currentUser!.uid]),
-                });
-              } else {
-                FirebaseFirestore.instance
-                    .collection('posts')
-                    .doc(postId)
-                    .update({
-                  'likes': FieldValue.arrayUnion(
-                      [FirebaseAuth.instance.currentUser!.uid]),
+                  "notifications": FieldValue.arrayRemove([
+                    {
+                      FirebaseAuth.instance.currentUser?.email ?? "": postId,
+                    },
+                  ]),
                 });
               }
-            });
+            } else {
+              await FirebaseFirestore.instance
+                  .collection('posts')
+                  .doc(postId)
+                  .update({
+                'likes': FieldValue.arrayUnion(
+                    [FirebaseAuth.instance.currentUser!.uid]),
+              });
+
+              if (postDetails["userId"] !=
+                  FirebaseAuth.instance.currentUser?.uid) {
+                await FirebaseFirestore.instance
+                    .collection("userInfo")
+                    .doc(postDetails["username"])
+                    .update({
+                  "notifications": FieldValue.arrayUnion([
+                    {
+                      FirebaseAuth.instance.currentUser?.email ?? "": postId,
+                    },
+                  ]),
+                });
+              }
+            }
+
+            setState(() {});
           },
         ),
         IconButton(

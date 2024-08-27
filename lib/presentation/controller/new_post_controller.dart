@@ -6,7 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:snapshare/presentation/controller/get_userinfo_by_email_controller.dart';
-import 'package:snapshare/presentation/controller/models/post_models.dart';
+import 'package:snapshare/presentation/models/post_models.dart';
 import 'package:snapshare/presentation/screens/new_post_screen.dart';
 import 'package:uuid/uuid.dart';
 
