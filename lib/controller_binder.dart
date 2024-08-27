@@ -10,6 +10,7 @@ import 'package:snapshare/presentation/controller/get_post_info_controller.dart'
 import 'package:snapshare/presentation/controller/get_userinfo_by_email_controller.dart';
 import 'package:snapshare/presentation/controller/get_userinfo_by_username_controller.dart';
 import 'package:snapshare/presentation/controller/grid_or_listview_switch_controller.dart';
+import 'package:snapshare/presentation/controller/notification_screen_controller.dart';
 import 'package:snapshare/presentation/controller/others_profile_screen_controller.dart';
 import 'package:snapshare/presentation/controller/search_screen_controller.dart';
 
@@ -34,5 +35,6 @@ class ControllerBinder extends Bindings {
     Get.put(FollowUnfollowScreenController());
     Get.put(GetPostImagesByUidController());
     Get.put(GetPostImagesByUsernameController());
+    Get.put(NotificationScreenController());
   }
 }
