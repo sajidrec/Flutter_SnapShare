@@ -39,13 +39,15 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade200,
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildTopSection(),
-            _buildPostSection(),
-          ],
+        child: Container(
+          color: Theme.of(context).colorScheme.primary,
+          child: Column(
+            children: [
+              _buildTopSection(),
+              _buildPostSection(),
+            ],
+          ),
         ),
       ),
     );
@@ -53,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildTopSection() {
     return Container(
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.primary,
       child: Column(
         children: [
           const SizedBox(height: 30),
@@ -116,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.secondary,
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: const [
                     BoxShadow(
@@ -337,6 +339,7 @@ class _HomeScreenState extends State<HomeScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: Theme.of(context).colorScheme.primary,
         contentPadding: EdgeInsets.zero,
         content: Padding(
           padding: const EdgeInsets.all(10.0),
