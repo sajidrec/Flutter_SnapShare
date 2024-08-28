@@ -151,7 +151,7 @@ class SnapShare extends StatelessWidget {
       colorScheme: ColorScheme.fromSwatch().copyWith(
         brightness: Brightness.light,
         primary: Colors.white,
-        secondary: Colors.teal,
+        secondary: Colors.white,
       ),
     );
   }

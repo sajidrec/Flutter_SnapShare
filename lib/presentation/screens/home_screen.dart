@@ -313,10 +313,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildHeaderLogo() {
-    return const Text(
+    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDarkTheme ? Colors.white : Colors.black;
+    return Text(
       'SnapShare',
       style: TextStyle(
-          fontSize: 28, fontWeight: FontWeight.w500, fontFamily: 'Lobster'),
+          fontSize: 28,
+          fontWeight: FontWeight.w500,
+          fontFamily: 'Lobster',
+          color: textColor),
     );
   }
 
