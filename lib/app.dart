@@ -163,7 +163,7 @@ class SnapShare extends StatelessWidget {
       scaffoldBackgroundColor: Colors.white10,
       appBarTheme: _buildAppbarTheme(Colors.white10),
       inputDecorationTheme:
-          _buildInputDecorationTheme(Colors.grey.shade300, Colors.white),
+          _buildInputDecorationTheme(Colors.black54, Colors.blueGrey),
       elevatedButtonTheme: _buildElevatedButtonThemeData(AppColor.themeColor),
       bottomNavigationBarTheme:
           _buildBottomNavBarThemeData(AppColor.themeColor, Colors.white),

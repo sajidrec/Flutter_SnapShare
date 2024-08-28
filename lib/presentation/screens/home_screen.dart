@@ -336,6 +336,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void showProfileUpdateDialog(BuildContext context) {
+    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDarkTheme ? Colors.white : Colors.black;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -351,15 +353,21 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Image.network('https://i.imgur.com/BgdbRIQ.png'),
                 const SizedBox(height: 16),
-                const Text(
+                Text(
                   'Profile Created',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: textColor),
                 ),
                 const SizedBox(height: 16),
-                const Text(
+                Text(
                   'Update your name, profile image,\nadditional number',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: textColor),
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
