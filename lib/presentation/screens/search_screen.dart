@@ -48,6 +48,8 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _buildSearchResultView() {
+    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDarkTheme ? Colors.white70 : Colors.black;
     return Expanded(
       child: GetBuilder<SearchScreenController>(
         builder: (getAllUserinfo) {
@@ -113,6 +115,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                 ),
                                 Text(
                                   "@${getAllUserinfo.getData[index]["username"]}",
+                                  style: TextStyle(color: textColor),
                                 ),
                               ],
                             ),

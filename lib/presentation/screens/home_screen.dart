@@ -39,13 +39,15 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade200,
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildTopSection(),
-            _buildPostSection(),
-          ],
+        child: Container(
+          color: Theme.of(context).colorScheme.primary,
+          child: Column(
+            children: [
+              _buildTopSection(),
+              _buildPostSection(),
+            ],
+          ),
         ),
       ),
     );
@@ -53,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildTopSection() {
     return Container(
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.primary,
       child: Column(
         children: [
           const SizedBox(height: 30),
@@ -116,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.secondary,
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: const [
                     BoxShadow(
@@ -367,9 +369,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void showProfileUpdateDialog(BuildContext context) {
+    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDarkTheme ? Colors.white : Colors.black;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: Theme.of(context).colorScheme.primary,
         contentPadding: EdgeInsets.zero,
         content: Padding(
           padding: const EdgeInsets.all(10.0),
@@ -381,15 +386,21 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Image.network('https://i.imgur.com/BgdbRIQ.png'),
                 const SizedBox(height: 16),
-                const Text(
+                Text(
                   'Profile Created',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: textColor),
                 ),
                 const SizedBox(height: 16),
-                const Text(
+                Text(
                   'Update your name, profile image,\nadditional number',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: textColor),
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
