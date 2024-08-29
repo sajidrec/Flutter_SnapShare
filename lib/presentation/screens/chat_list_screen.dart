@@ -25,34 +25,35 @@ class _ChatListScreenState extends State<ChatListScreen> {
     return SafeArea(
       child: Scaffold(
         body: GetBuilder<ChatListScreenController>(
-            builder: (chatListScreenController) {
-          return chatListScreenController.inProgress
-              ? const Center(
-                  child: CircularProgressIndicator(
-                    color: AppColor.themeColor,
-                  ),
-                )
-              : Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-                  child: ListView.separated(
-                    itemCount:
-                        chatListScreenController.getListOfMessagesUser.length,
-                    itemBuilder: (context, index) {
-                      return _buildChatElement(
-                        chatListScreenController: chatListScreenController,
-                        index: index,
-                        onTap: () {},
-                      );
-                    },
-                    separatorBuilder: (BuildContext context, int index) {
-                      return const SizedBox(
-                        height: 10,
-                      );
-                    },
-                  ),
-                );
-        }),
+          builder: (chatListScreenController) {
+            return chatListScreenController.inProgress
+                ? const Center(
+                    child: CircularProgressIndicator(
+                      color: AppColor.themeColor,
+                    ),
+                  )
+                : Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+                    child: ListView.separated(
+                      itemCount:
+                          chatListScreenController.getListOfMessagesUser.length,
+                      itemBuilder: (context, index) {
+                        return _buildChatElement(
+                          chatListScreenController: chatListScreenController,
+                          index: index,
+                          onTap: () {},
+                        );
+                      },
+                      separatorBuilder: (BuildContext context, int index) {
+                        return const SizedBox(
+                          height: 10,
+                        );
+                      },
+                    ),
+                  );
+          },
+        ),
       ),
     );
   }
@@ -79,6 +80,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
               ),
               const SizedBox(width: 5),
               Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     chatListScreenController
