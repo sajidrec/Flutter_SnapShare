@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:snapshare/presentation/controller/chat_list_screen_controller.dart';
+import 'package:snapshare/presentation/screens/chat_screen.dart';
 import 'package:snapshare/utils/app_colors.dart';
 
 class ChatListScreen extends StatefulWidget {
@@ -54,7 +55,11 @@ class _ChatListScreenState extends State<ChatListScreen> {
                                     chatListScreenController:
                                         chatListScreenController,
                                     index: index,
-                                    onTap: () {},
+                                    onTap: () {
+                                      Get.to(
+                                        const ChatScreen(),
+                                      );
+                                    },
                                   );
                                 },
                                 separatorBuilder:
