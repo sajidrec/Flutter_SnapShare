@@ -1,8 +1,42 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:snapshare/presentation/controller/chat_screen_controller.dart';
+import 'package:snapshare/presentation/controller/get_userinfo_by_email_controller.dart';
 import 'package:snapshare/utils/app_colors.dart';
 
-class ChatScreen extends StatelessWidget {
-  const ChatScreen({super.key});
+class ChatScreen extends StatefulWidget {
+  const ChatScreen({
+    super.key,
+    required this.otherUsername,
+  });
+
+  final String otherUsername;
+
+  @override
+  State<ChatScreen> createState() => _ChatScreenState();
+}
+
+class _ChatScreenState extends State<ChatScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (timeStamp) async {
+        await Get.find<GetUserinfoByEmailController>().fetchUserData(
+            email: FirebaseAuth.instance.currentUser?.email ?? "");
+        currentUserUsername = await Get.find<GetUserinfoByEmailController>()
+            .getUserData["username"];
+        await _fetchUserData();
+      },
+    );
+  }
+
+  Future<void> _fetchUserData() async {
+    await Get.find<ChatScreenController>().fetchData(widget.otherUsername);
+  }
+
+  late final String currentUserUsername;
 
   @override
   Widget build(BuildContext context) {
@@ -42,24 +76,37 @@ class ChatScreen extends StatelessWidget {
 
   Widget _buildMessageSection() {
     return Expanded(
-      child: ListView.separated(
-        shrinkWrap: true,
-        itemBuilder: (context, index) {
-          if (index % 2 == 0) {
-            return _buildMessageFromCurrentUser(
-              msg: "sajid",
-            );
-          } else {
-            return _buildMessageFromOtherUser(
-              msg: "sajid",
-            );
-          }
-        },
-        itemCount: 10,
-        separatorBuilder: (BuildContext context, int index) {
-          return const Padding(padding: EdgeInsets.all(5.0));
-        },
-      ),
+      child: GetBuilder<ChatScreenController>(builder: (chatScreenController) {
+        return chatScreenController.inProgress
+            ? const Center(
+                child: CircularProgressIndicator(
+                  color: AppColor.themeColor,
+                ),
+              )
+            : ListView.separated(
+                shrinkWrap: true,
+                itemBuilder: (context, index) {
+                  if (chatScreenController.getChattingData[index].senderName ==
+                      (currentUserUsername)) {
+                    return _buildMessageFromCurrentUser(
+                      msg: chatScreenController
+                              .getChattingData[index].messageText ??
+                          "",
+                    );
+                  } else {
+                    return _buildMessageFromOtherUser(
+                      msg: chatScreenController
+                              .getChattingData[index].messageText ??
+                          "",
+                    );
+                  }
+                },
+                itemCount: chatScreenController.getChattingData.length,
+                separatorBuilder: (BuildContext context, int index) {
+                  return const Padding(padding: EdgeInsets.all(5.0));
+                },
+              );
+      }),
     );
   }
 

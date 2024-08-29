@@ -5,6 +5,7 @@ import 'package:snapshare/presentation/controller/auth_controller/selected_image
 import 'package:snapshare/presentation/controller/auth_controller/update_profile_controller.dart';
 import 'package:snapshare/presentation/controller/auth_controller/upload_user_info_db_controller.dart';
 import 'package:snapshare/presentation/controller/chat_list_screen_controller.dart';
+import 'package:snapshare/presentation/controller/chat_screen_controller.dart';
 import 'package:snapshare/presentation/controller/follow_unfollow_screen_controller.dart';
 import 'package:snapshare/presentation/controller/follow_unfollow_toggle_controller.dart';
 import 'package:snapshare/presentation/controller/get_post_info_controller.dart';
@@ -38,5 +39,6 @@ class ControllerBinder extends Bindings {
     Get.put(GetPostImagesByUsernameController());
     Get.put(NotificationScreenController());
     Get.put(ChatListScreenController());
+    Get.put(ChatScreenController());
   }
 }

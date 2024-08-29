@@ -36,39 +36,44 @@ class _ChatListScreenState extends State<ChatListScreen> {
                 : Padding(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-                    child:
-                        (chatListScreenController.getListOfMessagesUser.isEmpty)
-                            ? const Center(
-                                child: Text(
-                                  "No chat yet",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              )
-                            : ListView.separated(
-                                itemCount: chatListScreenController
-                                    .getListOfMessagesUser.length,
-                                itemBuilder: (context, index) {
-                                  return _buildChatElement(
-                                    chatListScreenController:
-                                        chatListScreenController,
-                                    index: index,
-                                    onTap: () {
-                                      Get.to(
-                                        const ChatScreen(),
-                                      );
-                                    },
-                                  );
-                                },
-                                separatorBuilder:
-                                    (BuildContext context, int index) {
-                                  return const SizedBox(
-                                    height: 10,
-                                  );
-                                },
+                    child: (chatListScreenController
+                            .getListOfMessagesUser.isEmpty)
+                        ? const Center(
+                            child: Text(
+                              "No chat yet",
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 16,
                               ),
+                            ),
+                          )
+                        : ListView.separated(
+                            itemCount: chatListScreenController
+                                .getListOfMessagesUser.length,
+                            itemBuilder: (context, index) {
+                              return _buildChatElement(
+                                chatListScreenController:
+                                    chatListScreenController,
+                                index: index,
+                                onTap: () {
+                                  Get.to(
+                                    ChatScreen(
+                                      otherUsername: chatListScreenController
+                                              .getListOfMessagesUser[index]
+                                              .username ??
+                                          "",
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                            separatorBuilder:
+                                (BuildContext context, int index) {
+                              return const SizedBox(
+                                height: 10,
+                              );
+                            },
+                          ),
                   );
           },
         ),

@@ -1,7 +1,7 @@
 class MessageInfoModel {
   MessageInfoModel({
     String? messageText,
-    num? messageSentTime,
+    int? messageSentTime,
     String? senderName,
   }) {
     _messageText = messageText;
@@ -16,12 +16,12 @@ class MessageInfoModel {
   }
 
   String? _messageText;
-  num? _messageSentTime;
+  int? _messageSentTime;
   String? _senderName;
 
   MessageInfoModel copyWith({
     String? messageText,
-    num? messageSentTime,
+    int? messageSentTime,
     String? senderName,
   }) =>
       MessageInfoModel(
@@ -32,7 +32,7 @@ class MessageInfoModel {
 
   String? get messageText => _messageText;
 
-  num? get messageSentTime => _messageSentTime;
+  int? get messageSentTime => _messageSentTime;
 
   String? get senderName => _senderName;
 
