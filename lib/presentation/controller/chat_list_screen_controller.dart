@@ -22,27 +22,33 @@ class ChatListScreenController extends GetxController {
     await Get.find<GetUserinfoByEmailController>().fetchUserData(
       email: FirebaseAuth.instance.currentUser?.email ?? "",
     );
-    for (int i = 0;
-        i <
-            Get.find<GetUserinfoByEmailController>()
-                .getUserData["messages"]
-                .length;
-        i++) {
-      String chatUserUsername =
-          Get.find<GetUserinfoByEmailController>().getUserData["messages"][i];
 
-      await Get.find<GetUserinfoByUsernameController>()
-          .fetchUserData(username: chatUserUsername);
+    if (Get.find<GetUserinfoByEmailController>()
+        .getUserData
+        .containsKey("chatList")) {
+      for (int i = 0;
+          i <
+              Get.find<GetUserinfoByEmailController>()
+                  .getUserData["chatList"]
+                  .length;
+          i++) {
+        String chatUserUsername =
+            Get.find<GetUserinfoByEmailController>().getUserData["chatList"][i];
 
-      MessageChatElementModel messageChatElementModel = MessageChatElementModel(
-        username:
-            Get.find<GetUserinfoByEmailController>().getUserData["messages"][i],
-        userFullName:
-            Get.find<GetUserinfoByUsernameController>().getUserData["fullName"],
-        userPhoto: Get.find<GetUserinfoByUsernameController>()
-            .getUserData["profilePic"],
-      );
-      _listOfMessagesUser.add(messageChatElementModel);
+        await Get.find<GetUserinfoByUsernameController>()
+            .fetchUserData(username: chatUserUsername);
+
+        MessageChatElementModel messageChatElementModel =
+            MessageChatElementModel(
+          username: Get.find<GetUserinfoByEmailController>()
+              .getUserData["chatList"][i],
+          userFullName: Get.find<GetUserinfoByUsernameController>()
+              .getUserData["fullName"],
+          userPhoto: Get.find<GetUserinfoByUsernameController>()
+              .getUserData["profilePic"],
+        );
+        _listOfMessagesUser.add(messageChatElementModel);
+      }
     }
 
     _inProgress = false;
