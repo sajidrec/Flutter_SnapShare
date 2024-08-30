@@ -5,13 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:snapshare/presentation/controller/new_post_controller.dart';
 import 'package:snapshare/presentation/models/post_models.dart';
+import 'package:snapshare/presentation/screens/chat_list_screen.dart';
 import 'package:snapshare/presentation/screens/profile_screen.dart';
 import 'package:snapshare/presentation/screens/update_profile_screen.dart';
 import 'package:snapshare/widgets/comment_bottom_sheet.dart';
 import 'package:snapshare/widgets/profile_image_button.dart';
 import 'package:snapshare/widgets/story_section.dart';
-
-import 'chat_screen.dart';
 import 'notification_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -78,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Get.to(const NotificationScreen());
                     }),
                     _buildCircularIconButton(Icons.message_outlined, () {
-                      Get.to(() => const ChatScreen());
+                      Get.to(() => const ChatListScreen());
                     })
                   ],
                 )

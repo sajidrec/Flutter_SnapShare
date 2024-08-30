@@ -392,7 +392,9 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
                     ElevatedButton(
                       onPressed: () {
                         Get.to(
-                          const ChatScreen(),
+                          ChatScreen(
+                            otherUsername: widget.username,
+                          ),
                         );
                       },
                       style: const ButtonStyle(
