@@ -98,6 +98,19 @@ class ChatScreenController extends GetxController {
       "messages": FieldValue.arrayUnion([messageInfoModel.toJson()]),
     });
 
+    await firebaseFirestore.collection("userInfo").doc(currentUsername).update({
+      "chatList": FieldValue.arrayUnion(
+        [oppositeUsername],
+      ),
+    });
+
+    await firebaseFirestore
+        .collection("userInfo")
+        .doc(oppositeUsername)
+        .update({
+      "chatList": FieldValue.arrayUnion([currentUsername]),
+    });
+
     _chatting.add(messageInfoModel);
     _chatting.sort(
       (a, b) => a.messageSentTime!.compareTo(b.messageSentTime ?? 0),
