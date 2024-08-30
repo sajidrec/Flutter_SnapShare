@@ -1,5 +1,4 @@
-import 'dart:convert';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:snapshare/presentation/controller/get_userinfo_by_email_controller.dart';
@@ -31,9 +30,8 @@ class ChatScreenController extends GetxController {
                 .getUserData["messages"]
                 .length;
         i++) {
-      String messageString = jsonDecode(
-          Get.find<GetUserinfoByEmailController>().getUserData["messages"][i]);
-      Map<String, dynamic> data = jsonDecode(messageString);
+      Map<String, dynamic> data =
+          Get.find<GetUserinfoByEmailController>().getUserData["messages"][i];
 
       MessageInfoModel messageInfoModel = MessageInfoModel.fromJson(data);
 
@@ -54,10 +52,8 @@ class ChatScreenController extends GetxController {
                 .getUserData["messages"]
                 .length;
         i++) {
-      String messageString = jsonDecode(
-          Get.find<GetUserinfoByUsernameController>().getUserData["messages"]
-              [i]);
-      Map<String, dynamic> data = jsonDecode(messageString);
+      Map<String, dynamic> data = Get.find<GetUserinfoByUsernameController>()
+          .getUserData["messages"][i];
 
       MessageInfoModel messageInfoModel = MessageInfoModel.fromJson(data);
 
@@ -74,6 +70,39 @@ class ChatScreenController extends GetxController {
     );
 
     _inProgress = false;
+    update();
+  }
+
+  Future<void> sendMessage({
+    required String message,
+    required String oppositeUsername,
+  }) async {
+    await Get.find<GetUserinfoByEmailController>()
+        .fetchUserData(email: FirebaseAuth.instance.currentUser?.email ?? "");
+
+    final String currentUsername =
+        await Get.find<GetUserinfoByEmailController>().getUserData["username"];
+
+    MessageInfoModel messageInfoModel = MessageInfoModel(
+      messageText: message,
+      messageSentTime: DateTime.now().millisecondsSinceEpoch,
+      senderName: currentUsername,
+    );
+
+    FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+
+    await firebaseFirestore
+        .collection("userInfo")
+        .doc(oppositeUsername)
+        .update({
+      "messages": FieldValue.arrayUnion([messageInfoModel.toJson()]),
+    });
+
+    _chatting.add(messageInfoModel);
+    _chatting.sort(
+      (a, b) => a.messageSentTime!.compareTo(b.messageSentTime ?? 0),
+    );
+
     update();
   }
 }

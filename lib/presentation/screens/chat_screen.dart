@@ -38,6 +38,9 @@ class _ChatScreenState extends State<ChatScreen> {
 
   late final String currentUserUsername;
 
+  final TextEditingController _messageSentTEController =
+      TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -60,16 +63,27 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildMessageInput(BuildContext context) {
     return TextField(
+      controller: _messageSentTEController,
       decoration: InputDecoration(
-        suffixIcon: IconButton(
-          onPressed: () async {
-            FocusScope.of(context).requestFocus(FocusNode());
-          },
-          icon: const Icon(
-            Icons.send,
-            color: AppColor.themeColor,
-          ),
-        ),
+        suffixIcon: GetBuilder<ChatScreenController>(builder: (
+          chatScreenController,
+        ) {
+          return IconButton(
+            onPressed: () async {
+              FocusScope.of(context).requestFocus(FocusNode());
+              await chatScreenController.sendMessage(
+                message: _messageSentTEController.text.trim(),
+                oppositeUsername: widget.otherUsername,
+              );
+
+              _messageSentTEController.clear();
+            },
+            icon: const Icon(
+              Icons.send,
+              color: AppColor.themeColor,
+            ),
+          );
+        }),
       ),
     );
   }
@@ -154,5 +168,11 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _messageSentTEController.dispose();
   }
 }
