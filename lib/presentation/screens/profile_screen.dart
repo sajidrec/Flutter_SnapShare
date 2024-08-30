@@ -41,14 +41,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDarkTheme ? Colors.white70 : Colors.black;
     return SafeArea(
       child: Scaffold(
-        appBar: _buildAppbar(),
+        appBar: _buildAppbar(textColor),
         body: Column(
           children: [
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: _buildProfileHeader(),
+              child: _buildProfileHeader(textColor),
             ),
             Container(
               color: const Color(0xFFF5F5F6),
@@ -62,7 +64,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Stack(
                     children: [
                       _buildHorizontalLine(),
-                      _buildNavbar(),
+                      _buildNavbar(textColor),
                     ],
                   ),
                   const SizedBox(height: 5),
@@ -70,7 +72,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             Expanded(
-              child: _buildPostSection(),
+              child: _buildPostSection(textColor),
             ),
           ],
         ),
@@ -78,7 +80,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildPostSection() {
+  Widget _buildPostSection(Color textColor) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: GetBuilder<GridOrListviewSwitchController>(
@@ -87,7 +89,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: GetBuilder<GetPostImagesByUidController>(
               builder: (getPostImagesByUidController) {
                 return (getPostImagesByUidController.getPostImageList.isEmpty)
-                    ? const Text("No post yet")
+                    ? Text(
+                        "No post yet",
+                        style: TextStyle(color: textColor),
+                      )
                     : StaggeredGrid.count(
                         crossAxisCount:
                             gridOrListViewController.gridViewActive ? 4 : 1,
@@ -191,7 +196,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildNavbar() {
+  Widget _buildNavbar(Color textColor) {
     return GetBuilder<GridOrListviewSwitchController>(
         builder: (gridOrListviewController) {
       return Row(
@@ -206,6 +211,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               );
             },
             active: gridOrListviewController.gridViewActive,
+            textColor: textColor,
           ),
           const SizedBox(
             width: 12,
@@ -219,6 +225,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               );
             },
             active: !gridOrListviewController.gridViewActive,
+            textColor: textColor,
           ),
         ],
       );
@@ -230,6 +237,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required Icon buttonIcon,
     required Callback callbackFunction,
     required bool active,
+    required Color textColor,
   }) {
     return InkWell(
       onTap: callbackFunction,
@@ -244,7 +252,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     buttonIcon,
-                    Text(buttonText),
+                    Text(
+                      buttonText,
+                      style: TextStyle(color: textColor),
+                    ),
                   ],
                 ),
                 const SizedBox(
@@ -265,20 +276,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildProfileHeader() {
+  Widget _buildProfileHeader(Color textColor) {
     return Center(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildProfilePicture(),
           const SizedBox(width: 12),
-          _buildProfileStatusSection(),
+          _buildProfileStatusSection(textColor),
         ],
       ),
     );
   }
 
-  Widget _buildProfileStatusSection() {
+  Widget _buildProfileStatusSection(Color textColor) {
     return GetBuilder<GetUserinfoByEmailController>(
         builder: (getUserinfoByEmailController) {
       return getUserinfoByEmailController.inProgress
@@ -293,18 +304,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 const SizedBox(height: 5),
                 Text(
                   FirebaseAuth.instance.currentUser?.displayName ?? "Unknown",
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 18,
-                  ),
+                  style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 18,
+                      color: textColor),
                 ),
                 const SizedBox(height: 5),
                 Text(
                   "@${getUserinfoByEmailController.getUserData["username"] ?? "Not available"}",
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                  ),
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: textColor),
                 ),
                 const SizedBox(height: 5),
                 Row(
@@ -317,6 +328,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           0,
                       placeDotTrailing: true,
                       onTap: () {},
+                      textColor: textColor,
                     ),
                     _buildStatus(
                       statusTitle: "Following",
@@ -346,6 +358,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                         await fetchUserData();
                       },
+                      textColor: textColor,
                     ),
                     _buildStatus(
                       statusTitle: "Follower",
@@ -372,6 +385,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         );
                       },
+                      textColor: textColor,
                     ),
                   ],
                 ),
@@ -380,25 +394,29 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
-  Widget _buildStatus({
-    required String statusTitle,
-    required int statusQuantity,
-    required bool placeDotTrailing,
-    required VoidCallback onTap,
-  }) {
+  Widget _buildStatus(
+      {required String statusTitle,
+      required int statusQuantity,
+      required bool placeDotTrailing,
+      required VoidCallback onTap,
+      required Color textColor}) {
     return GestureDetector(
       onTap: onTap,
       child: Row(
         children: [
           Text(
             statusQuantity.toString(),
-            style: const TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
-            ),
+            style: TextStyle(
+                fontWeight: FontWeight.w600, fontSize: 14, color: textColor),
           ),
-          const Text(" "),
-          Text(statusTitle),
+          Text(
+            " ",
+            style: TextStyle(color: textColor),
+          ),
+          Text(
+            statusTitle,
+            style: TextStyle(color: textColor),
+          ),
           if (placeDotTrailing) ...[
             const SizedBox(width: 8),
             Container(
@@ -431,7 +449,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  AppBar _buildAppbar() {
+  AppBar _buildAppbar(Color textColor) {
     return AppBar(
       backgroundColor: Colors.transparent,
       centerTitle: true,
@@ -439,7 +457,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           onPressed: () {
             Get.offAll(() => const BottomNavBar());
           },
-          icon: const Icon(Icons.arrow_back_ios)),
+          icon: Icon(Icons.arrow_back_ios, color: textColor)),
       actions: [
         IconButton(
           onPressed: () async {
@@ -474,15 +492,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             );
           },
-          icon: const Icon(Icons.logout),
+          icon: Icon(
+            Icons.logout,
+            color: textColor,
+          ),
         )
       ],
-      title: const Text(
+      title: Text(
         "My Profile",
         style: TextStyle(
-          fontWeight: FontWeight.w700,
-          fontSize: 20,
-        ),
+            fontWeight: FontWeight.w700, fontSize: 20, color: textColor),
       ),
     );
   }

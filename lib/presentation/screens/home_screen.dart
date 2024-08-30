@@ -3,15 +3,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:snapshare/presentation/controller/models/post_models.dart';
 import 'package:snapshare/presentation/controller/new_post_controller.dart';
+import 'package:snapshare/presentation/models/post_models.dart';
+import 'package:snapshare/presentation/screens/chat_list_screen.dart';
 import 'package:snapshare/presentation/screens/profile_screen.dart';
 import 'package:snapshare/presentation/screens/update_profile_screen.dart';
 import 'package:snapshare/widgets/comment_bottom_sheet.dart';
 import 'package:snapshare/widgets/profile_image_button.dart';
 import 'package:snapshare/widgets/story_section.dart';
-
-import 'chat_screen.dart';
 import 'notification_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -39,13 +38,15 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade200,
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildTopSection(),
-            _buildPostSection(),
-          ],
+        child: Container(
+          color: Theme.of(context).colorScheme.primary,
+          child: Column(
+            children: [
+              _buildTopSection(),
+              _buildPostSection(),
+            ],
+          ),
         ),
       ),
     );
@@ -53,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildTopSection() {
     return Container(
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.primary,
       child: Column(
         children: [
           const SizedBox(height: 30),
@@ -76,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Get.to(const NotificationScreen());
                     }),
                     _buildCircularIconButton(Icons.message_outlined, () {
-                      Get.to(() => const ChatScreen());
+                      Get.to(() => const ChatListScreen());
                     })
                   ],
                 )
@@ -116,7 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.secondary,
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: const [
                     BoxShadow(
@@ -202,26 +203,59 @@ class _HomeScreenState extends State<HomeScreen> {
             size: 30,
           ),
           color: isLiked ? Colors.red : Colors.grey,
-          onPressed: () {
-            setState(() {
-              if (isLiked) {
-                FirebaseFirestore.instance
-                    .collection('posts')
-                    .doc(postId)
+          onPressed: () async {
+            final postDetails = await FirebaseFirestore.instance
+                .collection("posts")
+                .doc(postId)
+                .get();
+
+            if (isLiked) {
+              await FirebaseFirestore.instance
+                  .collection('posts')
+                  .doc(postId)
+                  .update({
+                'likes': FieldValue.arrayRemove(
+                    [FirebaseAuth.instance.currentUser!.uid]),
+              });
+
+              if (postDetails["userId"] !=
+                  FirebaseAuth.instance.currentUser?.uid) {
+                await FirebaseFirestore.instance
+                    .collection("userInfo")
+                    .doc(postDetails["username"])
                     .update({
-                  'likes': FieldValue.arrayRemove(
-                      [FirebaseAuth.instance.currentUser!.uid]),
-                });
-              } else {
-                FirebaseFirestore.instance
-                    .collection('posts')
-                    .doc(postId)
-                    .update({
-                  'likes': FieldValue.arrayUnion(
-                      [FirebaseAuth.instance.currentUser!.uid]),
+                  "notifications": FieldValue.arrayRemove([
+                    {
+                      FirebaseAuth.instance.currentUser?.email ?? "": postId,
+                    },
+                  ]),
                 });
               }
-            });
+            } else {
+              await FirebaseFirestore.instance
+                  .collection('posts')
+                  .doc(postId)
+                  .update({
+                'likes': FieldValue.arrayUnion(
+                    [FirebaseAuth.instance.currentUser!.uid]),
+              });
+
+              if (postDetails["userId"] !=
+                  FirebaseAuth.instance.currentUser?.uid) {
+                await FirebaseFirestore.instance
+                    .collection("userInfo")
+                    .doc(postDetails["username"])
+                    .update({
+                  "notifications": FieldValue.arrayUnion([
+                    {
+                      FirebaseAuth.instance.currentUser?.email ?? "": postId,
+                    },
+                  ]),
+                });
+              }
+            }
+
+            setState(() {});
           },
         ),
         IconButton(
@@ -292,7 +326,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             Text(
-              post.locations.join(', '),
+              post.locations.join(',\n '),
               style: const TextStyle(
                 fontWeight: FontWeight.w400,
                 fontSize: 15,
@@ -311,10 +345,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildHeaderLogo() {
-    return const Text(
+    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDarkTheme ? Colors.white : Colors.black;
+    return Text(
       'SnapShare',
       style: TextStyle(
-          fontSize: 28, fontWeight: FontWeight.w500, fontFamily: 'Lobster'),
+          fontSize: 28,
+          fontWeight: FontWeight.w500,
+          fontFamily: 'Lobster',
+          color: textColor),
     );
   }
 
@@ -334,9 +373,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void showProfileUpdateDialog(BuildContext context) {
+    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDarkTheme ? Colors.white : Colors.black;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: Theme.of(context).colorScheme.primary,
         contentPadding: EdgeInsets.zero,
         content: Padding(
           padding: const EdgeInsets.all(10.0),
@@ -348,15 +390,21 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Image.network('https://i.imgur.com/BgdbRIQ.png'),
                 const SizedBox(height: 16),
-                const Text(
+                Text(
                   'Profile Created',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: textColor),
                 ),
                 const SizedBox(height: 16),
-                const Text(
+                Text(
                   'Update your name, profile image,\nadditional number',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: textColor),
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(

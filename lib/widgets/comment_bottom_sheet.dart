@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:snapshare/presentation/controller/get_userinfo_by_username_controller.dart';
 import 'package:snapshare/utils/assets_path.dart';
 
 class CommentBottomSheet {
@@ -27,6 +28,8 @@ class _CommentBottomSheetWidgetState extends State<CommentBottomSheetWidget> {
   final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   late Stream<QuerySnapshot> _commentsStream;
+  final GetUserinfoByUsernameController getUserinfoByUsernameController =
+      Get.find<GetUserinfoByUsernameController>();
 
   @override
   void initState() {
@@ -41,11 +44,13 @@ class _CommentBottomSheetWidgetState extends State<CommentBottomSheetWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDarkTheme ? Colors.white : Colors.black;
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primary,
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
         ),
@@ -86,18 +91,23 @@ class _CommentBottomSheetWidgetState extends State<CommentBottomSheetWidget> {
                     final commentData = comment.data() as Map<String, dynamic>;
 
                     return ListTile(
-                      leading: const CircleAvatar(
-                        backgroundImage: AssetImage(AssetsPath.photo5),
+                      leading: CircleAvatar(
+                        backgroundImage:
+                            NetworkImage('${_auth.currentUser!.photoURL}'),
                         radius: 20,
                       ),
                       title: Row(
                         children: [
                           Text(commentData['username'],
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold)),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: isDarkTheme
+                                    ? Colors.grey[400]
+                                    : Colors.grey,
+                              )),
                           const SizedBox(width: 5),
                           Text(
-                            _formatTime(commentData['timestamp'].toDate()),
+                            _formatTime(commentData['timestamp']?.toDate()),
                             style: const TextStyle(
                                 color: Colors.grey, fontSize: 12),
                           ),
@@ -106,34 +116,40 @@ class _CommentBottomSheetWidgetState extends State<CommentBottomSheetWidget> {
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(commentData['text']),
-                          TextButton(
-                            onPressed: () {
-                              _deleteComment(comment.id);
-                            },
-                            child: const Text('Delete',
-                                style: TextStyle(color: Colors.red)),
+                          Text(
+                            commentData['text'],
+                            style: TextStyle(
+                              color:
+                                  isDarkTheme ? Colors.grey[400] : Colors.grey,
+                            ),
                           ),
+                          // TextButton(
+                          //   onPressed: () {
+                          //     _deleteComment(comment.id);
+                          //   },
+                          //   child: const Text('Delete',
+                          //       style: TextStyle(color: Colors.red)),
+                          // ),
                         ],
                       ),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.favorite_border,
-                            color: Colors.grey),
-                        onPressed: () {},
-                      ),
+                      // trailing: IconButton(
+                      //   icon: const Icon(Icons.favorite_border,
+                      //       color: Colors.grey),
+                      //   onPressed: () {},
+                      // ),
                     );
                   },
                 );
               },
             ),
           ),
-          _buildCommentInputField(),
+          _buildCommentInputField(textColor),
         ],
       ),
     );
   }
 
-  Widget _buildCommentInputField() {
+  Widget _buildCommentInputField(Color textColor) {
     return Padding(
       padding: const EdgeInsets.all(10),
       child: Row(
@@ -146,10 +162,12 @@ class _CommentBottomSheetWidgetState extends State<CommentBottomSheetWidget> {
           Expanded(
             child: TextField(
               controller: _commentController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: 'Add comments',
+                hintStyle: TextStyle(color: textColor.withOpacity(0.6)),
                 border: InputBorder.none,
               ),
+              style: TextStyle(color: textColor),
             ),
           ),
           TextButton(
