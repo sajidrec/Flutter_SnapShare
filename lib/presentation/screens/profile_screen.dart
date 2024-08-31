@@ -41,8 +41,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDarkTheme ? Colors.white70 : Colors.black;
+    final textColor = AppColor.forText(context);
     return SafeArea(
       child: Scaffold(
         appBar: _buildAppbar(textColor),

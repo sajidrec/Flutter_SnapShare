@@ -34,13 +34,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final customColor = AppColor.lightOrDark(context);
+
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         leading: IconButton(
           onPressed: () {
             Get.to(() => const SignupOrLoginScreen());
           },
-          icon: const Icon(Icons.arrow_back_ios_new),
+          icon: Icon(Icons.arrow_back_ios_new, color: customColor),
         ),
       ),
       body: Padding(
@@ -57,24 +60,30 @@ class _LoginScreenState extends State<LoginScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const SizedBox(height: 64),
-                      const Text(
+                      Text(
                         "Enter your phone number\nand password",
                         style: TextStyle(
-                            fontSize: 24, fontWeight: FontWeight.w400),
+                            fontSize: 24,
+                            fontWeight: FontWeight.w400,
+                            color: customColor),
                       ),
                       const SizedBox(height: 32),
-                      const Text('Email',
+                      Text('Email',
                           style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w500)),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: customColor)),
                       const SizedBox(height: 10),
                       TextFields(
                           hintText: 'Email',
                           icon: const Icon(Icons.email_outlined),
                           controller: emailController),
                       const SizedBox(height: 15),
-                      const Text('Password',
+                      Text('Password',
                           style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w500)),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: customColor)),
                       const SizedBox(height: 10),
                       TextFields(
                         isPassword: true,
@@ -118,7 +127,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                       const SizedBox(height: 10),
-                      _buildTextButton()
+                      _buildTextButton(customColor)
                     ],
                   ),
                 );
@@ -127,16 +136,14 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildTextButton() {
+  Widget _buildTextButton(Color color) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text(
+        Text(
           'Don\'t have an account?',
           style: TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 16,
-              color: Colors.blueGrey),
+              fontWeight: FontWeight.w600, fontSize: 16, color: color),
         ),
         TextButton(
           onPressed: () {

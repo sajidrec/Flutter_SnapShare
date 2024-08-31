@@ -145,7 +145,7 @@ class SnapShare extends StatelessWidget {
       appBarTheme: _buildAppbarTheme(Colors.white),
       inputDecorationTheme: _buildInputDecorationTheme(
           Colors.grey.shade500, AppColor.inputBorderColor),
-      elevatedButtonTheme: _buildElevatedButtonThemeData(AppColor.themeColor),
+      elevatedButtonTheme: _buildElevatedButtonThemeData(),
       bottomNavigationBarTheme:
           _buildBottomNavBarThemeData(AppColor.themeColor, Colors.black87),
       colorScheme: ColorScheme.fromSwatch().copyWith(
@@ -164,7 +164,7 @@ class SnapShare extends StatelessWidget {
       appBarTheme: _buildAppbarTheme(Colors.white10),
       inputDecorationTheme:
           _buildInputDecorationTheme(Colors.black54, Colors.blueGrey),
-      elevatedButtonTheme: _buildElevatedButtonThemeData(AppColor.themeColor),
+      elevatedButtonTheme: _buildElevatedButtonThemeData(),
       bottomNavigationBarTheme:
           _buildBottomNavBarThemeData(AppColor.themeColor, Colors.white),
       colorScheme: ColorScheme.fromSwatch().copyWith(
@@ -181,13 +181,13 @@ class SnapShare extends StatelessWidget {
     );
   }
 
-  ElevatedButtonThemeData _buildElevatedButtonThemeData(Color backgroundColor) {
+  ElevatedButtonThemeData _buildElevatedButtonThemeData() {
     return ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
-        backgroundColor: backgroundColor,
+        backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       ),
@@ -195,7 +195,9 @@ class SnapShare extends StatelessWidget {
   }
 
   InputDecorationTheme _buildInputDecorationTheme(
-      Color enabledBorderColor, Color focusedBorderColor) {
+    Color enabledBorderColor,
+    Color focusedBorderColor,
+  ) {
     return InputDecorationTheme(
       fillColor: Colors.transparent,
       filled: true,

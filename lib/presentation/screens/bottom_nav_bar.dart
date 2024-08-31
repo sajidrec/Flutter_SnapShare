@@ -5,6 +5,7 @@ import 'package:snapshare/presentation/controller/new_post_controller.dart';
 import 'package:snapshare/presentation/screens/home_screen.dart';
 import 'package:snapshare/presentation/screens/profile_screen.dart';
 import 'package:snapshare/presentation/screens/search_screen.dart';
+import 'package:snapshare/utils/app_colors.dart';
 
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({super.key});
@@ -37,8 +38,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   @override
   Widget build(BuildContext context) {
+    final customColor = AppColor.forBottomNav(context);
+
     return Scaffold(
-      backgroundColor: Colors.white,
       body: _screenList[_selectedPage],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedPage,
@@ -46,7 +48,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
         showSelectedLabels: false,
         showUnselectedLabels: false,
         type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white,
+        backgroundColor: customColor,
         items: [
           _buildNavBarItem(Icons.home_outlined, 0),
           _buildNavBarItem(Icons.search_outlined, 1),

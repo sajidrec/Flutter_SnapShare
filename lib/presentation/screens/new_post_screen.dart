@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:snapshare/presentation/screens/location_screen.dart';
 import 'package:snapshare/utils/app_colors.dart';
-import 'package:snapshare/widgets/location_screen.dart';
 
 import '../controller/new_post_controller.dart';
 
@@ -52,15 +52,16 @@ class _NewPostScreenState extends State<NewPostScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final textColor = AppColor.forText(context);
     return Scaffold(
-      appBar: _buildAppBar(),
+      appBar: _buildAppBar(textColor),
       body: SingleChildScrollView(
         child: Center(
           child: Column(
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: _buildImageAndTextField(),
+                child: _buildImageAndTextField(textColor),
               ),
               const SizedBox(height: 10),
               const Divider(),
@@ -73,10 +74,12 @@ class _NewPostScreenState extends State<NewPostScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           'Add Location',
                           style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w600),
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                              color: textColor),
                         ),
                         if (selectedLocations.isNotEmpty) ...[
                           const SizedBox(height: 8),
@@ -107,13 +110,16 @@ class _NewPostScreenState extends State<NewPostScreen> {
               const Divider(),
               const SizedBox(height: 80),
               const Divider(),
-              const Padding(
+              Padding(
                 padding: EdgeInsets.all(8.0),
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
                     'Add Music',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: textColor),
                   ),
                 ),
               ),
@@ -127,7 +133,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
     );
   }
 
-  Row _buildImageAndTextField() {
+  Row _buildImageAndTextField(Color textColor) {
     return Row(
       children: [
         SizedBox(
@@ -137,6 +143,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
         ),
         Expanded(
           child: TextFormField(
+            style: TextStyle(color: textColor),
             controller: _captionController,
             maxLines: 4,
             decoration: const InputDecoration(
@@ -149,17 +156,17 @@ class _NewPostScreenState extends State<NewPostScreen> {
     );
   }
 
-  AppBar _buildAppBar() {
+  AppBar _buildAppBar(Color textColor) {
     return AppBar(
       leading: IconButton(
         onPressed: () {
           Get.back();
         },
-        icon: const Icon(Icons.arrow_back_ios),
+        icon: Icon(Icons.arrow_back_ios, color: textColor),
       ),
-      title: const Text(
+      title: Text(
         'New Post',
-        style: TextStyle(fontWeight: FontWeight.w600),
+        style: TextStyle(fontWeight: FontWeight.w600, color: textColor),
       ),
       actions: [
         TextButton(
