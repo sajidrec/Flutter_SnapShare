@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:snapshare/presentation/screens/location_screen.dart';
 import 'package:snapshare/utils/app_colors.dart';
 
-import '../controller/new_post_controller.dart';
+import '../controller/post_controller/new_post_controller.dart';
 
 class NewPostScreen extends StatefulWidget {
   final String imagePath;
