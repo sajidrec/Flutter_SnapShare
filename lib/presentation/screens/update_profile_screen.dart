@@ -109,7 +109,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                             TextFields(
                               hintText: "Your name",
                               controller: nameTeController,
-                              icon: const Icon(Icons.person),
+                              icon: Icon(Icons.person, color: textColor),
                             ),
                             const SizedBox(height: 10),
                             Text('Email',
@@ -118,7 +118,8 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                             const SizedBox(height: 10),
                             TextField(
                               decoration: InputDecoration(
-                                  prefixIcon: const Icon(Icons.email_outlined),
+                                  prefixIcon: Icon(Icons.email_outlined,
+                                      color: textColor),
                                   hintText:
                                       FirebaseAuth.instance.currentUser?.email,
                                   enabled: false,
@@ -131,7 +132,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                             const SizedBox(height: 10),
                             TextFields(
                               hintText: 'Passwords',
-                              icon: const Icon(Icons.lock_outline),
+                              icon: Icon(Icons.lock_outline, color: textColor),
                               isPassword: true,
                               controller: passwordController,
                             ),
@@ -142,7 +143,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                             const SizedBox(height: 10),
                             TextFields(
                               hintText: 'Confirm Passwords',
-                              icon: const Icon(Icons.lock_outline),
+                              icon: Icon(Icons.lock_outline, color: textColor),
                               isPassword: true,
                               controller: confirmPasswordController,
                             ),
@@ -311,7 +312,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
         ),
         TextButton(
           onPressed: () {},
-          child: Text(
+          child: const Text(
             'Forget Password?',
             style: TextStyle(fontSize: 16, color: Colors.blue),
           ),

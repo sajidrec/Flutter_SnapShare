@@ -130,7 +130,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
                           fontWeight: FontWeight.w700,
                           color: color),
                     ),
-                    SizedBox(height: 3),
+                    const SizedBox(height: 3),
                     Text(
                       "@${chatListScreenController.getListOfMessagesUser[index].username ?? ""}",
                       style: TextStyle(color: color),
