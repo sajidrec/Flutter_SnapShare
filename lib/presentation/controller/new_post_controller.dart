@@ -59,6 +59,22 @@ class NewPostController extends GetxController {
         'userProfilePic': currentUser.photoURL,
         'username': currentUserInfo["username"],
       });
+
+      await Get.find<GetUserinfoByEmailController>()
+          .fetchUserData(email: FirebaseAuth.instance.currentUser?.email ?? "");
+
+      FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+      await firebaseFirestore
+          .collection("userInfo")
+          .doc(await Get.find<GetUserinfoByEmailController>()
+              .getUserData["username"])
+          .update({
+        "posts": FieldValue.arrayUnion(
+          [
+            postId,
+          ],
+        ),
+      });
       Get.back();
       Get.snackbar('Success', 'Post created successfully!');
     } catch (e) {
@@ -128,16 +144,11 @@ class NewPostController extends GetxController {
           .orderBy('timestamp', descending: true)
           .get();
 
-      for (var doc in snapshot.docs) {
-        print('Document data: ${doc.data()}');
-      }
-
       final fetchedPosts =
           snapshot.docs.map((doc) => Post.fromDocument(doc)).toList();
       posts.assignAll(fetchedPosts);
-      print('We have ${fetchedPosts.length} posts');
     } catch (e) {
-      print('Error fetching posts: $e');
+      throw e.toString();
     }
   }
 }
