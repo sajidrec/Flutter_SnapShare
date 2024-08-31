@@ -24,11 +24,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final textColor = AppColor.forText(context);
     return SafeArea(
       child: Scaffold(
         body: Column(
           children: [
-            _buildAppbar(),
+            _buildAppbar(textColor),
             _buildHorizontalLine(),
             const SizedBox(height: 10),
             Expanded(
@@ -41,7 +42,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         ),
                       )
                     : notificationScreenController.getNotificationList.isEmpty
-                        ? const Text("No notification yet")
+                        ? Text(
+                            "No notification yet",
+                            style: TextStyle(color: textColor),
+                          )
                         : ListView.builder(
                             shrinkWrap: true,
                             itemBuilder: (context, index) => _buildNotification(
@@ -122,7 +126,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     );
   }
 
-  Widget _buildAppbar() {
+  Widget _buildAppbar(Color textColor) {
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Row(
@@ -131,14 +135,15 @@ class _NotificationScreenState extends State<NotificationScreen> {
             onPressed: () {
               Get.back();
             },
-            icon: const Icon(Icons.arrow_back_ios),
+            icon: Icon(
+              Icons.arrow_back_ios,
+              color: textColor,
+            ),
           ),
-          const Text(
+          Text(
             "Notification",
             style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-            ),
+                fontSize: 20, fontWeight: FontWeight.w700, color: textColor),
           ),
         ],
       ),

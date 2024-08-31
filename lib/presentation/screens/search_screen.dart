@@ -31,6 +31,8 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final customColor = AppColor.lightOrDark(context);
+
     return SafeArea(
       child: Scaffold(
           body: Padding(
@@ -40,16 +42,14 @@ class _SearchScreenState extends State<SearchScreen> {
             const SizedBox(height: 20),
             _buildSearchInput(),
             const SizedBox(height: 20),
-            _buildSearchResultView(),
+            _buildSearchResultView(customColor),
           ],
         ),
       )),
     );
   }
 
-  Widget _buildSearchResultView() {
-    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDarkTheme ? Colors.white70 : Colors.black;
+  Widget _buildSearchResultView(Color customColor) {
     return Expanded(
       child: GetBuilder<SearchScreenController>(
         builder: (getAllUserinfo) {
@@ -115,7 +115,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                 ),
                                 Text(
                                   "@${getAllUserinfo.getData[index]["username"]}",
-                                  style: TextStyle(color: textColor),
+                                  style: TextStyle(color: customColor),
                                 ),
                               ],
                             ),
@@ -131,6 +131,9 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _buildSearchInput() {
+    // final searchText = AppColor.isItDark(context);
+    final customColor = AppColor.lightOrDark(context);
+
     return GetBuilder<SearchScreenController>(
         builder: (searchScreenController) {
       return TextField(
@@ -141,6 +144,7 @@ class _SearchScreenState extends State<SearchScreen> {
           );
         },
         controller: _searchTEController,
+        style: TextStyle(color: customColor),
         decoration: InputDecoration(
           isDense: true,
           contentPadding: const EdgeInsets.symmetric(vertical: 5),
@@ -151,6 +155,7 @@ class _SearchScreenState extends State<SearchScreen> {
               );
             },
             icon: const Icon(CupertinoIcons.search),
+            color: customColor,
           ),
           hintText: "Search",
           focusedBorder: const OutlineInputBorder(

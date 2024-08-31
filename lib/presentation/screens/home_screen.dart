@@ -8,9 +8,11 @@ import 'package:snapshare/presentation/models/post_models.dart';
 import 'package:snapshare/presentation/screens/chat_list_screen.dart';
 import 'package:snapshare/presentation/screens/profile_screen.dart';
 import 'package:snapshare/presentation/screens/update_profile_screen.dart';
+import 'package:snapshare/utils/app_colors.dart';
 import 'package:snapshare/widgets/comment_bottom_sheet.dart';
 import 'package:snapshare/widgets/profile_image_button.dart';
 import 'package:snapshare/widgets/story_section.dart';
+
 import 'notification_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -23,9 +25,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   NewPostController newPostController = Get.put(NewPostController());
   final TextEditingController _commentController = TextEditingController();
-
-  // final Map<String, bool> _likedPostsList =
-  //     {}; // this is if we want to track likes
 
   @override
   void initState() {
@@ -373,8 +372,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void showProfileUpdateDialog(BuildContext context) {
-    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDarkTheme ? Colors.white : Colors.black;
+    final customColor = AppColor.lightOrDark(context);
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -395,7 +394,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: textColor),
+                      color: customColor),
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -404,7 +403,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: textColor),
+                      color: customColor),
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
