@@ -146,6 +146,8 @@ class _SearchScreenState extends State<SearchScreen> {
         controller: _searchTEController,
         style: TextStyle(color: customColor),
         decoration: InputDecoration(
+          enabledBorder:
+              OutlineInputBorder(borderSide: BorderSide(color: customColor)),
           isDense: true,
           contentPadding: const EdgeInsets.symmetric(vertical: 5),
           prefixIcon: IconButton(

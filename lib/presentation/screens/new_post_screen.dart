@@ -111,7 +111,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
               const SizedBox(height: 80),
               const Divider(),
               Padding(
-                padding: EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8.0),
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
