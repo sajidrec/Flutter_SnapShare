@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:snapshare/presentation/controller/network_caller/network_caller.dart';
+import 'package:snapshare/utils/app_colors.dart';
 
 class LocationScreen extends StatefulWidget {
   const LocationScreen({super.key});
@@ -53,17 +54,25 @@ class _LocationScreenState extends State<LocationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final textColor = AppColor.forText(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Select Locations'),
+        automaticallyImplyLeading: true,
+        iconTheme: IconThemeData(
+          color: textColor,
+        ),
+        title: Text(
+          'Select Locations',
+          style: TextStyle(color: textColor),
+        ),
         actions: [
           TextButton(
             onPressed: () {
               Get.back(result: _selectedLocations);
             },
-            child: const Text(
+            child: Text(
               'Done',
-              style: TextStyle(color: Colors.black87),
+              style: TextStyle(color: textColor),
             ),
           ),
         ],
@@ -75,7 +84,10 @@ class _LocationScreenState extends State<LocationScreen> {
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.search),
+                prefixIcon: Icon(
+                  Icons.search,
+                  color: textColor,
+                ),
                 hintText: 'Search Location...',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -94,7 +106,10 @@ class _LocationScreenState extends State<LocationScreen> {
                 final location = _searchedLocations[index];
                 final isSelected = _selectedLocations.contains(location);
                 return ListTile(
-                  title: Text(location),
+                  title: Text(
+                    location,
+                    style: TextStyle(color: textColor),
+                  ),
                   trailing: isSelected
                       ? const Icon(Icons.check, color: Colors.green)
                       : null,

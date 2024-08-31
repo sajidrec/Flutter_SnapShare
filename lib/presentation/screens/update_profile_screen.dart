@@ -1,4 +1,3 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +22,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController userNameController = TextEditingController();
   final TextEditingController confirmPasswordController =
-  TextEditingController();
+      TextEditingController();
   final TextEditingController nameTeController = TextEditingController();
   bool _savePassword = false;
 
@@ -31,135 +30,151 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final textColor = AppColor.forText(context);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {
             Get.back();
           },
-          icon: const Icon(Icons.arrow_back_ios_new),
+          icon: Icon(
+            Icons.arrow_back_ios_new,
+            color: textColor,
+          ),
         ),
       ),
       body: GetBuilder<UpdateProfileController>(
           builder: (updateProfileController) {
-            return updateProfileController.inProgress
-                ? const Center(
-              child: CupertinoActivityIndicator(
-                color: AppColor.themeColor,
-              ),
-            )
-                : SingleChildScrollView(
-              child: Stack(
-                children: [
-                  Form(
-                    key: _formKey,
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 30),
-                          const Text(
-                            'Update your details',
-                            style: TextStyle(fontSize: 24),
-                          ),
-                          const SizedBox(height: 10),
-                          GetBuilder<SelectedImageNameController>(
-                              builder: (selectedImageNameController) {
-                                return Text(
-                                  selectedImageNameController.pickedImageName,
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                );
-                              }),
-                          const SizedBox(height: 10),
-                          GetBuilder<SelectedImageNameController>(
-                              builder: (selectedImageNameController) {
-                                return _buildSelectPicture(
-                                  onTapFunc: () async {
-                                    ImagePicker imagePicker = ImagePicker();
-                                    profileImage = await imagePicker.pickImage(
-                                      source: ImageSource.gallery,
-                                    );
-                                    if (profileImage != null) {
-                                      selectedImageNameController.provideFileName(
-                                        pickedImage: profileImage,
-                                      );
-                                    } else {
-                                      Get.snackbar(
-                                        "Error",
-                                        "No image selected",
-                                        backgroundColor: Colors.red,
-                                        colorText: Colors.white,
-                                      );
-                                    }
-                                  },
-                                );
-                              }),
-                          const SizedBox(height: 10),
-                          const Text('Full Name',
-                              style: TextStyle(fontSize: 16)),
-                          const SizedBox(height: 10),
-                          TextFields(
-                            hintText: "Your name",
-                            controller: nameTeController,
-                            icon: const Icon(Icons.person),
-                          ),
-                          const SizedBox(height: 10),
-                          const Text('Email', style: TextStyle(fontSize: 16)),
-                          const SizedBox(height: 10),
-                          TextField(
-                            decoration: InputDecoration(prefixIcon: const Icon(Icons.email_outlined),
-                              hintText: FirebaseAuth.instance.currentUser?.email,
-                              enabled: false,border:const OutlineInputBorder()
+        return updateProfileController.inProgress
+            ? const Center(
+                child: CupertinoActivityIndicator(
+                  color: AppColor.themeColor,
+                ),
+              )
+            : SingleChildScrollView(
+                child: Stack(
+                  children: [
+                    Form(
+                      key: _formKey,
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 30),
+                            Text(
+                              'Update your details',
+                              style: TextStyle(fontSize: 24, color: textColor),
                             ),
-                          ),
-
-                          const SizedBox(height: 10),
-                          const Text('Passwords',
-                              style: TextStyle(fontSize: 16)),
-                          const SizedBox(height: 10),
-                          TextFields(
-                            hintText: 'Passwords',
-                            icon: const Icon(Icons.lock_outline),
-                            isPassword: true,
-                            controller: passwordController,
-                          ),
-                          const SizedBox(height: 10),
-                          const Text('Confirm Passwords',
-                              style: TextStyle(fontSize: 16)),
-                          const SizedBox(height: 10),
-                          TextFields(
-                            hintText: 'Confirm Passwords',
-                            icon: const Icon(Icons.lock_outline),
-                            isPassword: true,
-                            controller: confirmPasswordController,
-                          ),
-                          const SizedBox(height: 10),
-                          _buildCheckBox(),
-                          const SizedBox(height: 30),
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
+                            const SizedBox(height: 10),
+                            GetBuilder<SelectedImageNameController>(
+                                builder: (selectedImageNameController) {
+                              return Text(
+                                selectedImageNameController.pickedImageName,
+                                style: TextStyle(color: textColor),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              );
+                            }),
+                            const SizedBox(height: 10),
+                            GetBuilder<SelectedImageNameController>(
+                                builder: (selectedImageNameController) {
+                              return _buildSelectPicture(
+                                onTapFunc: () async {
+                                  ImagePicker imagePicker = ImagePicker();
+                                  profileImage = await imagePicker.pickImage(
+                                    source: ImageSource.gallery,
+                                  );
+                                  if (profileImage != null) {
+                                    selectedImageNameController.provideFileName(
+                                      pickedImage: profileImage,
+                                    );
+                                  } else {
+                                    Get.snackbar(
+                                      "Error",
+                                      "No image selected",
+                                      backgroundColor: Colors.red,
+                                      colorText: Colors.white,
+                                    );
+                                  }
+                                },
+                              );
+                            }),
+                            const SizedBox(height: 10),
+                            Text('Full Name',
+                                style:
+                                    TextStyle(fontSize: 16, color: textColor)),
+                            const SizedBox(height: 10),
+                            TextFields(
+                              hintText: "Your name",
+                              controller: nameTeController,
+                              icon: const Icon(Icons.person),
+                            ),
+                            const SizedBox(height: 10),
+                            Text('Email',
+                                style:
+                                    TextStyle(fontSize: 16, color: textColor)),
+                            const SizedBox(height: 10),
+                            TextField(
+                              decoration: InputDecoration(
+                                  prefixIcon: const Icon(Icons.email_outlined),
+                                  hintText:
+                                      FirebaseAuth.instance.currentUser?.email,
+                                  enabled: false,
+                                  border: const OutlineInputBorder()),
+                            ),
+                            const SizedBox(height: 10),
+                            Text('Passwords',
+                                style:
+                                    TextStyle(fontSize: 16, color: textColor)),
+                            const SizedBox(height: 10),
+                            TextFields(
+                              hintText: 'Passwords',
+                              icon: const Icon(Icons.lock_outline),
+                              isPassword: true,
+                              controller: passwordController,
+                            ),
+                            const SizedBox(height: 10),
+                            Text('Confirm Passwords',
+                                style:
+                                    TextStyle(fontSize: 16, color: textColor)),
+                            const SizedBox(height: 10),
+                            TextFields(
+                              hintText: 'Confirm Passwords',
+                              icon: const Icon(Icons.lock_outline),
+                              isPassword: true,
+                              controller: confirmPasswordController,
+                            ),
+                            const SizedBox(height: 10),
+                            _buildCheckBox(textColor),
+                            const SizedBox(height: 30),
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
                                 onPressed: () async {
                                   FocusScope.of(context).unfocus();
 
                                   if (_formKey.currentState!.validate()) {
-                                    String? newName = nameTeController.text.trim().isEmpty
-                                        ? null
-                                        : nameTeController.text.trim();
+                                    String? newName =
+                                        nameTeController.text.trim().isEmpty
+                                            ? null
+                                            : nameTeController.text.trim();
 
-                                    String? newPassword = passwordController.text.trim().isEmpty
-                                        ? null
-                                        : passwordController.text.trim();
+                                    String? newPassword =
+                                        passwordController.text.trim().isEmpty
+                                            ? null
+                                            : passwordController.text.trim();
 
                                     // If passwords do not match
                                     if (newPassword != null &&
-                                        newPassword == confirmPasswordController.text.trim()) {
-
+                                        newPassword ==
+                                            confirmPasswordController.text
+                                                .trim()) {
                                       // Passwords match and are not empty
-                                      bool updateStatus = await updateProfileController.updateUserProfile(
+                                      bool updateStatus =
+                                          await updateProfileController
+                                              .updateUserProfile(
                                         userName: newName,
                                         profilePicturePath: profileImage?.path,
                                         password: newPassword,
@@ -183,7 +198,9 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                                       }
                                     } else if (newPassword == null) {
                                       // No password provided, update without changing the password
-                                      bool updateStatus = await updateProfileController.updateUserProfile(
+                                      bool updateStatus =
+                                          await updateProfileController
+                                              .updateUserProfile(
                                         userName: newName,
                                         profilePicturePath: profileImage?.path,
                                       );
@@ -214,19 +231,18 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                                     }
                                   }
                                 },
-
-                              child: const Text('Update Profile'),
+                                child: const Text('Update Profile'),
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 10),
-                        ],
+                            const SizedBox(height: 10),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          }),
+                  ],
+                ),
+              );
+      }),
     );
   }
 
@@ -272,7 +288,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
     );
   }
 
-  Widget _buildCheckBox() {
+  Widget _buildCheckBox(Color textColor) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -287,17 +303,17 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                 });
               },
             ),
-            const Text(
+            Text(
               'Save password',
-              style: TextStyle(fontSize: 16),
+              style: TextStyle(fontSize: 16, color: textColor),
             ),
           ],
         ),
         TextButton(
           onPressed: () {},
-          child: const Text(
+          child: Text(
             'Forget Password?',
-            style: TextStyle(fontSize: 16),
+            style: TextStyle(fontSize: 16, color: Colors.blue),
           ),
         ),
       ],

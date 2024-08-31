@@ -13,6 +13,8 @@ class _CheckBoxState extends State<CheckBox> {
 
   @override
   Widget build(BuildContext context) {
+    final customColor = AppColor.lightOrDark(context);
+
     return Row(
       children: [
         Checkbox(
@@ -25,9 +27,10 @@ class _CheckBoxState extends State<CheckBox> {
           },
         ),
         const SizedBox(width: 5),
-        const Text(
+        Text(
           "Save password",
-          style: TextStyle(fontWeight: FontWeight.w500, fontSize: 13),
+          style: TextStyle(
+              fontWeight: FontWeight.w500, fontSize: 13, color: customColor),
         )
       ],
     );

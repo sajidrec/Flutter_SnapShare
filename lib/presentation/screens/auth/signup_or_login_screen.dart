@@ -14,6 +14,8 @@ class SignupOrLoginScreen extends StatefulWidget {
 class _SignupOrLoginScreenState extends State<SignupOrLoginScreen> {
   @override
   Widget build(BuildContext context) {
+    final customColor = AppColor.lightOrDark(context);
+
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: Get.width / 10),
@@ -22,7 +24,7 @@ class _SignupOrLoginScreenState extends State<SignupOrLoginScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              _buildHeaderLogo(),
+              _buildHeaderLogo(customColor),
               const SizedBox(height: 22),
               _buildCreateAccountButton(),
               const SizedBox(height: 14),
@@ -34,14 +36,14 @@ class _SignupOrLoginScreenState extends State<SignupOrLoginScreen> {
     );
   }
 
-  Widget _buildHeaderLogo() {
-    return const Text(
+  Widget _buildHeaderLogo(Color color) {
+    return Text(
       "SnapShare",
       style: TextStyle(
-        fontFamily: "Lobster",
-        fontSize: 24,
-        fontWeight: FontWeight.w400,
-      ),
+          fontFamily: "Lobster",
+          fontSize: 24,
+          fontWeight: FontWeight.w400,
+          color: color),
     );
   }
 

@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:snapshare/presentation/controller/get_userinfo_by_username_controller.dart';
-import 'package:snapshare/utils/assets_path.dart';
 
 class CommentBottomSheet {
   static void show(String postId) {
@@ -93,7 +92,7 @@ class _CommentBottomSheetWidgetState extends State<CommentBottomSheetWidget> {
                     return ListTile(
                       leading: CircleAvatar(
                         backgroundImage:
-                            NetworkImage('${_auth.currentUser!.photoURL}'),
+                            NetworkImage('${commentData['photoURL']}'),
                         radius: 20,
                       ),
                       title: Row(
@@ -103,7 +102,7 @@ class _CommentBottomSheetWidgetState extends State<CommentBottomSheetWidget> {
                                 fontWeight: FontWeight.bold,
                                 color: isDarkTheme
                                     ? Colors.grey[400]
-                                    : Colors.grey,
+                                    : Colors.black,
                               )),
                           const SizedBox(width: 5),
                           Text(
@@ -120,23 +119,19 @@ class _CommentBottomSheetWidgetState extends State<CommentBottomSheetWidget> {
                             commentData['text'],
                             style: TextStyle(
                               color:
-                                  isDarkTheme ? Colors.grey[400] : Colors.grey,
+                                  isDarkTheme ? Colors.grey[400] : Colors.black,
                             ),
                           ),
-                          // TextButton(
-                          //   onPressed: () {
-                          //     _deleteComment(comment.id);
-                          //   },
-                          //   child: const Text('Delete',
-                          //       style: TextStyle(color: Colors.red)),
-                          // ),
+                          if (_auth.currentUser!.uid == commentData['userId'])
+                            TextButton(
+                              onPressed: () {
+                                _deleteComment(comment.id);
+                              },
+                              child: const Text('Delete',
+                                  style: TextStyle(color: Colors.red)),
+                            ),
                         ],
                       ),
-                      // trailing: IconButton(
-                      //   icon: const Icon(Icons.favorite_border,
-                      //       color: Colors.grey),
-                      //   onPressed: () {},
-                      // ),
                     );
                   },
                 );
@@ -154,8 +149,8 @@ class _CommentBottomSheetWidgetState extends State<CommentBottomSheetWidget> {
       padding: const EdgeInsets.all(10),
       child: Row(
         children: [
-          const CircleAvatar(
-            backgroundImage: AssetImage(AssetsPath.photo4),
+          CircleAvatar(
+            backgroundImage: NetworkImage('${_auth.currentUser!.photoURL}'),
             radius: 20,
           ),
           const SizedBox(width: 10),
@@ -197,6 +192,8 @@ class _CommentBottomSheetWidgetState extends State<CommentBottomSheetWidget> {
           .add({
         'username': currentUser.displayName ?? 'Anonymous',
         'text': text,
+        'photoURL': currentUser.photoURL,
+        'userId': currentUser.uid,
         'timestamp': FieldValue.serverTimestamp(),
       });
 

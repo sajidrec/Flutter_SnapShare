@@ -77,6 +77,10 @@ class ChatScreenController extends GetxController {
     required String message,
     required String oppositeUsername,
   }) async {
+    if (message.trim().isEmpty) {
+      return;
+    }
+
     await Get.find<GetUserinfoByEmailController>()
         .fetchUserData(email: FirebaseAuth.instance.currentUser?.email ?? "");
 

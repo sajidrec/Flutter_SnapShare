@@ -41,13 +41,14 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final customColor = AppColor.lightOrDark(context);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {
             Get.to(() => const SignupOrLoginScreen());
           },
-          icon: const Icon(Icons.arrow_back_ios_new),
+          icon: Icon(Icons.arrow_back_ios_new, color: customColor),
         ),
       ),
       body: GetBuilder<RegistrationController>(builder: (
@@ -71,9 +72,10 @@ class _SignupScreenState extends State<SignupScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const SizedBox(height: 60),
-                            const Text(
+                            Text(
                               'Enter your details',
-                              style: TextStyle(fontSize: 24),
+                              style:
+                                  TextStyle(fontSize: 24, color: customColor),
                             ),
                             const SizedBox(height: 10),
                             GetBuilder<SelectedImageNameController>(
@@ -82,6 +84,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                 selectedImageNameController.pickedImageName,
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 1,
+                                style: TextStyle(color: customColor),
                               );
                             }),
                             const SizedBox(height: 10),
@@ -100,9 +103,10 @@ class _SignupScreenState extends State<SignupScreen> {
                               );
                             }),
                             const SizedBox(height: 10),
-                            const Text(
+                            Text(
                               'Username',
-                              style: TextStyle(fontSize: 16),
+                              style:
+                                  TextStyle(fontSize: 16, color: customColor),
                             ),
                             const SizedBox(height: 10),
                             TextFields(
@@ -121,9 +125,10 @@ class _SignupScreenState extends State<SignupScreen> {
                               icon: const Icon(Icons.person_outline),
                             ),
                             const SizedBox(height: 10),
-                            const Text(
+                            Text(
                               'Full Name',
-                              style: TextStyle(fontSize: 16),
+                              style:
+                                  TextStyle(fontSize: 16, color: customColor),
                             ),
                             const SizedBox(height: 10),
                             TextFields(
@@ -138,7 +143,9 @@ class _SignupScreenState extends State<SignupScreen> {
                               icon: const Icon(Icons.person),
                             ),
                             const SizedBox(height: 10),
-                            const Text('Email', style: TextStyle(fontSize: 16)),
+                            Text('Email',
+                                style: TextStyle(
+                                    fontSize: 16, color: customColor)),
                             const SizedBox(height: 10),
                             TextFields(
                               hintText: 'Email',
@@ -155,8 +162,9 @@ class _SignupScreenState extends State<SignupScreen> {
                               },
                             ),
                             const SizedBox(height: 10),
-                            const Text('Passwords',
-                                style: TextStyle(fontSize: 16)),
+                            Text('Passwords',
+                                style: TextStyle(
+                                    fontSize: 16, color: customColor)),
                             const SizedBox(height: 10),
                             TextFields(
                               hintText: 'Passwords',
@@ -171,8 +179,9 @@ class _SignupScreenState extends State<SignupScreen> {
                               },
                             ),
                             const SizedBox(height: 10),
-                            const Text('Confirm Passwords',
-                                style: TextStyle(fontSize: 16)),
+                            Text('Confirm Passwords',
+                                style: TextStyle(
+                                    fontSize: 16, color: customColor)),
                             const SizedBox(height: 10),
                             TextFields(
                               hintText: 'Confirm Passwords',
@@ -188,7 +197,7 @@ class _SignupScreenState extends State<SignupScreen> {
                               },
                             ),
                             const SizedBox(height: 10),
-                            _buildCheckBox(_savePassword),
+                            _buildCheckBox(_savePassword, customColor),
                             const SizedBox(height: 30),
                             SizedBox(
                               width: double.infinity,
@@ -216,7 +225,6 @@ class _SignupScreenState extends State<SignupScreen> {
                                                       ?.validate() ??
                                                   false) &&
                                               profileImage != null) {
-
                                             bool userInfoUploaded =
                                                 await uploadUserInfoDbController
                                                     .uploadUserInfo(
@@ -279,7 +287,11 @@ class _SignupScreenState extends State<SignupScreen> {
                                           }
                                         }
                                       : null,
-                                  child: const Text('Sign Up'),
+                                  style: ElevatedButton.styleFrom(),
+                                  child: Text(
+                                    'Sign Up',
+                                    style: TextStyle(color: customColor),
+                                  ),
                                 );
                               }),
                             ),
@@ -349,7 +361,7 @@ class _SignupScreenState extends State<SignupScreen> {
     });
   }
 
-  Widget _buildCheckBox(bool savePassword) {
+  Widget _buildCheckBox(bool savePassword, Color color) {
     return Row(
       children: [
         GestureDetector(
@@ -366,9 +378,9 @@ class _SignupScreenState extends State<SignupScreen> {
                   _savePassword = value ?? false;
                 },
               ),
-              const Text(
+              Text(
                 'Save Password',
-                style: TextStyle(fontSize: 16),
+                style: TextStyle(fontSize: 16, color: color),
               ),
             ],
           ),
