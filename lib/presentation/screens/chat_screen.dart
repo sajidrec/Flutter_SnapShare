@@ -90,37 +90,40 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildMessageSection() {
     return Expanded(
-      child: GetBuilder<ChatScreenController>(builder: (chatScreenController) {
-        return chatScreenController.inProgress
-            ? const Center(
-                child: CircularProgressIndicator(
-                  color: AppColor.themeColor,
-                ),
-              )
-            : ListView.separated(
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  if (chatScreenController.getChattingData[index].senderName ==
-                      (currentUserUsername)) {
-                    return _buildMessageFromCurrentUser(
-                      msg: chatScreenController
-                              .getChattingData[index].messageText ??
-                          "",
-                    );
-                  } else {
-                    return _buildMessageFromOtherUser(
-                      msg: chatScreenController
-                              .getChattingData[index].messageText ??
-                          "",
-                    );
-                  }
-                },
-                itemCount: chatScreenController.getChattingData.length,
-                separatorBuilder: (BuildContext context, int index) {
-                  return const Padding(padding: EdgeInsets.all(5.0));
-                },
-              );
-      }),
+      child: GetBuilder<ChatScreenController>(
+        builder: (chatScreenController) {
+          return chatScreenController.inProgress
+              ? const Center(
+                  child: CircularProgressIndicator(
+                    color: AppColor.themeColor,
+                  ),
+                )
+              : ListView.separated(
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    if (chatScreenController
+                            .getChattingData[index].senderName ==
+                        (currentUserUsername)) {
+                      return _buildMessageFromCurrentUser(
+                        msg: chatScreenController
+                                .getChattingData[index].messageText ??
+                            "",
+                      );
+                    } else {
+                      return _buildMessageFromOtherUser(
+                        msg: chatScreenController
+                                .getChattingData[index].messageText ??
+                            "",
+                      );
+                    }
+                  },
+                  itemCount: chatScreenController.getChattingData.length,
+                  separatorBuilder: (BuildContext context, int index) {
+                    return const Padding(padding: EdgeInsets.all(5.0));
+                  },
+                );
+        },
+      ),
     );
   }
 
