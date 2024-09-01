@@ -103,6 +103,7 @@ class _ChatScreenState extends State<ChatScreen> {
           );
         }),
       ),
+      style: TextStyle(color: customColor),
     );
   }
 
