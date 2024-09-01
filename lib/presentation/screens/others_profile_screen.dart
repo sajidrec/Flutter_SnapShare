@@ -350,10 +350,10 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
                 const SizedBox(height: 5),
                 Text(
                   "@${widget.username}",
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                  ),
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: customColor),
                 ),
                 Row(
                   children: [

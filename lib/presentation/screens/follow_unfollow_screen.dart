@@ -84,15 +84,18 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
                 );
               }
             },
+            style: TextStyle(color: customColor),
             decoration: InputDecoration(
               enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: customColor)),
+                borderSide: BorderSide(color: customColor),
+              ),
               hintText: 'Search',
               prefixIcon: Icon(
                 Icons.search,
                 color: customColor,
               ),
             ),
+            cursorColor: customColor,
           );
         },
       ),
@@ -330,9 +333,11 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
                   title: Text(
                     followUnfollowScreenController
                         .searchedFollowerUser["fullName"],
+                    style: TextStyle(color: customColor),
                   ),
                   subtitle: Text(
                     "@${followUnfollowScreenController.searchedFollowerUser["username"]}",
+                    style: TextStyle(color: customColor),
                   ),
                 ),
               )
