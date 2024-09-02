@@ -27,4 +27,10 @@ class AppColor {
     final color = isDarkMode ? Colors.white70 : Colors.black;
     return color;
   }
+
+  static Color forStory(context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final color = isDarkMode ? Colors.white70 : Colors.black;
+    return color;
+  }
 }
