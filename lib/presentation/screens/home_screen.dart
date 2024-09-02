@@ -7,11 +7,11 @@ import 'package:snapshare/presentation/controller/post_controller/new_post_contr
 import 'package:snapshare/presentation/models/post_models.dart';
 import 'package:snapshare/presentation/screens/chat_screens/chat_list_screen.dart';
 import 'package:snapshare/presentation/screens/profile_screen.dart';
+import 'package:snapshare/presentation/screens/story_section.dart';
 import 'package:snapshare/presentation/screens/update_profile_screen.dart';
 import 'package:snapshare/utils/app_colors.dart';
 import 'package:snapshare/widgets/comment_bottom_sheet.dart';
 import 'package:snapshare/widgets/profile_image_button.dart';
-import 'package:snapshare/widgets/story_section.dart';
 
 import 'notification_screen.dart';
 
@@ -83,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-          const Padding(
+          Padding(
             padding: EdgeInsets.all(8.0),
             child: StorySection(),
           )

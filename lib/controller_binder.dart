@@ -16,6 +16,7 @@ import 'package:snapshare/presentation/controller/others_profile_screen_controll
 import 'package:snapshare/presentation/controller/post_controller/get_post_images_by_username_controller.dart';
 import 'package:snapshare/presentation/controller/post_controller/get_post_info_controller.dart';
 import 'package:snapshare/presentation/controller/search_screen_controller.dart';
+import 'package:snapshare/presentation/controller/story_controller.dart';
 
 import 'presentation/controller/post_controller/get_post_images_by_uid_controller.dart';
 
@@ -40,5 +41,6 @@ class ControllerBinder extends Bindings {
     Get.put(NotificationScreenController());
     Get.put(ChatListScreenController());
     Get.put(ChatScreenController());
+    Get.put(StoryController());
   }
 }
