@@ -5,6 +5,7 @@ import 'package:snapshare/presentation/controller/follow_unfollow_screen_control
 import 'package:snapshare/presentation/controller/follow_unfollow_toggle_controller.dart';
 import 'package:snapshare/presentation/controller/get_userinfo_by_email_controller.dart';
 import 'package:snapshare/presentation/screens/others_profile_screen.dart';
+import 'package:snapshare/utils/app_colors.dart';
 
 class FollowUnfollowScreen extends StatefulWidget {
   final bool showFollowingList;
@@ -45,17 +46,19 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final customColor = AppColor.forText(context);
+
     return SafeArea(
       child: Scaffold(
-        appBar: _buildAppBar(),
+        appBar: _buildAppBar(customColor),
         body: Column(
           children: [
             _buildTabs(),
-            _buildSearchInput(),
+            _buildSearchInput(customColor),
             Expanded(
               child: showFollowingList
-                  ? _buildFollowingList()
-                  : _buildFollowerList(),
+                  ? _buildFollowingList(customColor)
+                  : _buildFollowerList(customColor),
             ),
           ],
         ),
@@ -63,7 +66,7 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
     );
   }
 
-  Widget _buildSearchInput() {
+  Widget _buildSearchInput(Color customColor) {
     return Padding(
       padding: const EdgeInsets.all(15.0),
       child: GetBuilder<FollowUnfollowScreenController>(
@@ -81,27 +84,36 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
                 );
               }
             },
-            decoration: const InputDecoration(
+            style: TextStyle(color: customColor),
+            decoration: InputDecoration(
+              enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: customColor),
+              ),
               hintText: 'Search',
-              prefixIcon: Icon(Icons.search),
+              prefixIcon: Icon(
+                Icons.search,
+                color: customColor,
+              ),
             ),
+            cursorColor: customColor,
           );
         },
       ),
     );
   }
 
-  AppBar _buildAppBar() {
+  AppBar _buildAppBar(Color customColor) {
     return AppBar(
       title: Text(
         widget.userFullName,
-        style: const TextStyle(
-          fontWeight: FontWeight.w700,
-          fontSize: 18,
-        ),
+        style: TextStyle(
+            fontWeight: FontWeight.w700, fontSize: 18, color: customColor),
       ),
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios),
+        icon: Icon(
+          Icons.arrow_back_ios,
+          color: customColor,
+        ),
         onPressed: () => Get.back(),
       ),
     );
@@ -136,7 +148,7 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
             style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
-                color: isSelected ? Colors.black : Colors.grey),
+                color: isSelected ? Colors.blue : Colors.grey),
           ),
           Container(
               margin: const EdgeInsets.only(top: 8.0),
@@ -148,7 +160,7 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
     );
   }
 
-  Widget _buildFollowingList() {
+  Widget _buildFollowingList(Color customColor) {
     return GetBuilder<FollowUnfollowScreenController>(
       builder: (followUnfollowScreenController) {
         return followUnfollowScreenController.searchedFollowingUser.isNotEmpty
@@ -256,9 +268,11 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
                     title: Text(
                       followUnfollowScreenController
                           .getFollowingUserDataList[index]["fullName"],
+                      style: TextStyle(color: customColor),
                     ),
                     subtitle: Text(
                       "@${followUnfollowScreenController.getFollowingUserDataList[index]["username"]}",
+                      style: TextStyle(color: customColor),
                     ),
                   ),
                 ),
@@ -267,7 +281,7 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
     );
   }
 
-  Widget _buildFollowerList() {
+  Widget _buildFollowerList(Color customColor) {
     return GetBuilder<FollowUnfollowScreenController>(
       builder: (followUnfollowScreenController) {
         return followUnfollowScreenController.searchedFollowerUser.isNotEmpty
@@ -319,9 +333,11 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
                   title: Text(
                     followUnfollowScreenController
                         .searchedFollowerUser["fullName"],
+                    style: TextStyle(color: customColor),
                   ),
                   subtitle: Text(
                     "@${followUnfollowScreenController.searchedFollowerUser["username"]}",
+                    style: TextStyle(color: customColor),
                   ),
                 ),
               )
@@ -375,10 +391,11 @@ class _FollowUnfollowScreenState extends State<FollowUnfollowScreen> {
                     title: Text(
                       followUnfollowScreenController
                           .getFollowersUserDataList[index]["fullName"],
+                      style: TextStyle(color: customColor),
                     ),
                     subtitle: Text(
-                      "@${followUnfollowScreenController.getFollowersUserDataList[index]["username"]}",
-                    ),
+                        "@${followUnfollowScreenController.getFollowersUserDataList[index]["username"]}",
+                        style: TextStyle(color: customColor)),
                   ),
                 ),
               );

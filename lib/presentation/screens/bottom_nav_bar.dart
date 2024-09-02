@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:snapshare/presentation/controller/new_post_controller.dart';
+import 'package:snapshare/presentation/controller/post_controller/new_post_controller.dart';
 import 'package:snapshare/presentation/screens/home_screen.dart';
 import 'package:snapshare/presentation/screens/profile_screen.dart';
 import 'package:snapshare/presentation/screens/search_screen.dart';

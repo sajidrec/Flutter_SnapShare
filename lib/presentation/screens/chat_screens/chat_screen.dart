@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:snapshare/presentation/controller/chat_screen_controller.dart';
+import 'package:snapshare/presentation/controller/chat_controller/chat_screen_controller.dart';
 import 'package:snapshare/presentation/controller/get_userinfo_by_email_controller.dart';
 import 'package:snapshare/utils/app_colors.dart';
 
@@ -36,21 +36,33 @@ class _ChatScreenState extends State<ChatScreen> {
     await Get.find<ChatScreenController>().fetchData(widget.otherUsername);
   }
 
-  late final String currentUserUsername;
+  late String currentUserUsername = '';
 
   final TextEditingController _messageSentTEController =
       TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    final customColor = AppColor.forText(context);
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'Message',
+            style: TextStyle(color: customColor),
+          ),
+          centerTitle: true,
+          automaticallyImplyLeading: true,
+          iconTheme: IconThemeData(
+            color: customColor,
+          ),
+        ),
         body: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
               _buildMessageSection(),
-              _buildMessageInput(context),
+              _buildMessageInput(context, customColor),
               const SizedBox(
                 height: 10,
               )
@@ -61,10 +73,16 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget _buildMessageInput(BuildContext context) {
+  Widget _buildMessageInput(BuildContext context, Color customColor) {
     return TextField(
       controller: _messageSentTEController,
       decoration: InputDecoration(
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(
+            color: customColor,
+            width: 2.0,
+          ),
+        ),
         suffixIcon: GetBuilder<ChatScreenController>(builder: (
           chatScreenController,
         ) {
@@ -85,6 +103,7 @@ class _ChatScreenState extends State<ChatScreen> {
           );
         }),
       ),
+      style: TextStyle(color: customColor),
     );
   }
 

@@ -49,6 +49,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         : ListView.builder(
                             shrinkWrap: true,
                             itemBuilder: (context, index) => _buildNotification(
+                              textColor: textColor,
                               photoUrl: notificationScreenController
                                       .getNotificationList[index].photoUrl ??
                                   "",
@@ -76,6 +77,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
     required String photoUrl,
     required String notificationMsg,
     required String fromNotificationUserName,
+    required Color textColor,
   }) {
     return Column(
       children: [
@@ -99,10 +101,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
                       width: Get.width / 1.35,
                       child: Text(
                         "$fromNotificationUserName loves your post $notificationMsg",
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                        ),
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: textColor),
                       ),
                     ),
                   ),

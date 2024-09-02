@@ -4,12 +4,13 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:get/get.dart';
 import 'package:get/get_rx/src/rx_typedefs/rx_typedefs.dart';
 import 'package:snapshare/presentation/controller/follow_unfollow_toggle_controller.dart';
-import 'package:snapshare/presentation/controller/get_post_images_by_username_controller.dart';
 import 'package:snapshare/presentation/controller/get_userinfo_by_username_controller.dart';
 import 'package:snapshare/presentation/controller/grid_or_listview_switch_controller.dart';
 import 'package:snapshare/presentation/controller/others_profile_screen_controller.dart';
-import 'package:snapshare/presentation/screens/chat_screen.dart';
+import 'package:snapshare/presentation/controller/post_controller/get_post_images_by_username_controller.dart';
+import 'package:snapshare/presentation/screens/chat_screens/chat_screen.dart';
 import 'package:snapshare/presentation/screens/follow_unfollow_screen.dart';
+import 'package:snapshare/utils/app_colors.dart';
 
 class OthersProfileScreen extends StatefulWidget {
   final String username;
@@ -45,14 +46,15 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final customColor = AppColor.forText(context);
     return SafeArea(
       child: Scaffold(
-        appBar: _buildAppbar(),
+        appBar: _buildAppbar(customColor),
         body: Column(
           children: [
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: _buildProfileHeader(),
+              child: _buildProfileHeader(customColor),
             ),
             Container(
               color: const Color(0xFFF5F5F6),
@@ -66,7 +68,7 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
                   Stack(
                     children: [
                       _buildHorizontalLine(),
-                      _buildNavbar(),
+                      _buildNavbar(customColor),
                     ],
                   ),
                   const SizedBox(height: 5),
@@ -74,7 +76,7 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
               ),
             ),
             Expanded(
-              child: _buildPostSection(),
+              child: _buildPostSection(customColor),
             ),
           ],
         ),
@@ -82,7 +84,7 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
     );
   }
 
-  Widget _buildPostSection() {
+  Widget _buildPostSection(Color customColor) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: GetBuilder<GridOrListviewSwitchController>(
@@ -92,7 +94,10 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
                 builder: (getPostImagesByUsernameController) {
               return (getPostImagesByUsernameController
                       .getPostImageList.isEmpty)
-                  ? const Text("No post yet")
+                  ? Text(
+                      "No post yet",
+                      style: TextStyle(color: customColor),
+                    )
                   : StaggeredGrid.count(
                       crossAxisCount:
                           gridOrListViewController.gridViewActive ? 4 : 1,
@@ -196,35 +201,35 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
     );
   }
 
-  Widget _buildNavbar() {
+  Widget _buildNavbar(Color customColor) {
     return GetBuilder<GridOrListviewSwitchController>(
         builder: (gridOrListviewController) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           _buildNavViewButton(
-            buttonText: "Grid view",
-            buttonIcon: const Icon(Icons.grid_view_outlined),
-            callbackFunction: () {
-              gridOrListviewController.changeView(
-                activateGridView: true,
-              );
-            },
-            active: gridOrListviewController.gridViewActive,
-          ),
+              buttonText: "Grid view",
+              buttonIcon: const Icon(Icons.grid_view_outlined),
+              callbackFunction: () {
+                gridOrListviewController.changeView(
+                  activateGridView: true,
+                );
+              },
+              active: gridOrListviewController.gridViewActive,
+              textColor: customColor),
           const SizedBox(
             width: 12,
           ),
           _buildNavViewButton(
-            buttonText: "List view",
-            buttonIcon: const Icon(Icons.list),
-            callbackFunction: () {
-              gridOrListviewController.changeView(
-                activateGridView: false,
-              );
-            },
-            active: !gridOrListviewController.gridViewActive,
-          ),
+              buttonText: "List view",
+              buttonIcon: const Icon(Icons.list),
+              callbackFunction: () {
+                gridOrListviewController.changeView(
+                  activateGridView: false,
+                );
+              },
+              active: !gridOrListviewController.gridViewActive,
+              textColor: customColor),
         ],
       );
     });
@@ -235,6 +240,7 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
     required Icon buttonIcon,
     required Callback callbackFunction,
     required bool active,
+    required Color textColor,
   }) {
     return InkWell(
       onTap: callbackFunction,
@@ -249,7 +255,10 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     buttonIcon,
-                    Text(buttonText),
+                    Text(
+                      buttonText,
+                      style: TextStyle(color: textColor),
+                    ),
                   ],
                 ),
                 const SizedBox(
@@ -270,18 +279,18 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
     );
   }
 
-  Widget _buildProfileHeader() {
+  Widget _buildProfileHeader(Color customColor) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildProfilePicture(),
         const SizedBox(width: 12),
-        _buildProfileStatusSection(),
+        _buildProfileStatusSection(customColor),
       ],
     );
   }
 
-  Widget _buildProfileStatusSection() {
+  Widget _buildProfileStatusSection(Color customColor) {
     return GetBuilder<GetUserinfoByUsernameController>(
         builder: (getUserinfoByUsernameController) {
       return getUserinfoByUsernameController.inProgress
@@ -296,55 +305,55 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     _buildStatus(
-                      statusTitle: "Post",
-                      statusQuantity: getUserinfoByUsernameController
-                              .getUserData["posts"].length ??
-                          0,
-                      placeDotTrailing: true,
-                      onTap: () {},
-                    ),
+                        statusTitle: "Post",
+                        statusQuantity: getUserinfoByUsernameController
+                                .getUserData["posts"].length ??
+                            0,
+                        placeDotTrailing: true,
+                        onTap: () {},
+                        textColor: customColor),
                     _buildStatus(
-                      statusTitle: "Following",
-                      statusQuantity: getUserinfoByUsernameController
-                              .getUserData["following"].length ??
-                          0,
-                      placeDotTrailing: true,
-                      onTap: () async {
-                        await Get.to(
-                          () => FollowUnfollowScreen(
-                            showFollowingList: true,
-                            userFullName: widget.userFullName,
-                            userName: widget.username,
-                          ),
-                        );
-                        await fetchUserData();
-                      },
-                    ),
+                        statusTitle: "Following",
+                        statusQuantity: getUserinfoByUsernameController
+                                .getUserData["following"].length ??
+                            0,
+                        placeDotTrailing: true,
+                        onTap: () async {
+                          await Get.to(
+                            () => FollowUnfollowScreen(
+                              showFollowingList: true,
+                              userFullName: widget.userFullName,
+                              userName: widget.username,
+                            ),
+                          );
+                          await fetchUserData();
+                        },
+                        textColor: customColor),
                     _buildStatus(
-                      statusTitle: "Follower",
-                      statusQuantity: getUserinfoByUsernameController
-                              .getUserData["followers"].length ??
-                          0,
-                      placeDotTrailing: false,
-                      onTap: () {
-                        Get.to(
-                          () => FollowUnfollowScreen(
-                            showFollowingList: false,
-                            userFullName: widget.userFullName,
-                            userName: widget.username,
-                          ),
-                        );
-                      },
-                    ),
+                        statusTitle: "Follower",
+                        statusQuantity: getUserinfoByUsernameController
+                                .getUserData["followers"].length ??
+                            0,
+                        placeDotTrailing: false,
+                        onTap: () {
+                          Get.to(
+                            () => FollowUnfollowScreen(
+                              showFollowingList: false,
+                              userFullName: widget.userFullName,
+                              userName: widget.username,
+                            ),
+                          );
+                        },
+                        textColor: customColor),
                   ],
                 ),
                 const SizedBox(height: 5),
                 Text(
                   "@${widget.username}",
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
-                  ),
+                  style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                      color: customColor),
                 ),
                 Row(
                   children: [
@@ -416,6 +425,7 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
     required int statusQuantity,
     required bool placeDotTrailing,
     required VoidCallback onTap,
+    required Color textColor,
   }) {
     return GestureDetector(
       onTap: onTap,
@@ -423,13 +433,14 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
         children: [
           Text(
             statusQuantity.toString(),
-            style: const TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 14,
-            ),
+            style: TextStyle(
+                fontWeight: FontWeight.w600, fontSize: 14, color: textColor),
           ),
-          const Text(" "),
-          Text(statusTitle),
+          Text(
+            " ",
+            style: TextStyle(color: textColor),
+          ),
+          Text(statusTitle, style: TextStyle(color: textColor)),
           if (placeDotTrailing) ...[
             const SizedBox(width: 8),
             Container(
@@ -465,20 +476,18 @@ class _OthersProfileScreenState extends State<OthersProfileScreen> {
     });
   }
 
-  AppBar _buildAppbar() {
+  AppBar _buildAppbar(Color customColor) {
     return AppBar(
       backgroundColor: Colors.transparent,
       leading: IconButton(
           onPressed: () {
             Get.back();
           },
-          icon: const Icon(Icons.arrow_back_ios)),
+          icon: Icon(Icons.arrow_back_ios, color: customColor)),
       title: Text(
         widget.userFullName,
-        style: const TextStyle(
-          fontWeight: FontWeight.w700,
-          fontSize: 20,
-        ),
+        style: TextStyle(
+            fontWeight: FontWeight.w700, fontSize: 20, color: customColor),
       ),
     );
   }

@@ -76,7 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 10),
                       TextFields(
                           hintText: 'Email',
-                          icon: const Icon(Icons.email_outlined),
+                          icon: Icon(Icons.email_outlined, color: customColor),
                           controller: emailController),
                       const SizedBox(height: 15),
                       Text('Password',
@@ -88,7 +88,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       TextFields(
                         isPassword: true,
                         hintText: 'Password',
-                        icon: const Icon(Icons.lock_open_outlined),
+                        icon:
+                            Icon(Icons.lock_open_outlined, color: customColor),
                         controller: passwordController,
                       ),
                       const SizedBox(height: 10),

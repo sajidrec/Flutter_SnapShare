@@ -2,24 +2,23 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:snapshare/presentation/controller/story_controller.dart';
 import 'package:snapshare/presentation/screens/location_screen.dart';
 import 'package:snapshare/utils/app_colors.dart';
 
-import '../controller/post_controller/new_post_controller.dart';
-
-class NewPostScreen extends StatefulWidget {
+class StoryPostScreen extends StatefulWidget {
   final String imagePath;
 
-  const NewPostScreen({super.key, required this.imagePath});
+  const StoryPostScreen({super.key, required this.imagePath});
 
   @override
-  State<NewPostScreen> createState() => _NewPostScreenState();
+  State<StoryPostScreen> createState() => _StoryPostScreenState();
 }
 
-class _NewPostScreenState extends State<NewPostScreen> {
+class _StoryPostScreenState extends State<StoryPostScreen> {
   List<String> selectedLocations = [];
   final TextEditingController _captionController = TextEditingController();
-  final NewPostController _newPostController = Get.put(NewPostController());
+  final StoryController _storyController = Get.put(StoryController());
 
   void _openLocationScreen() async {
     final result = await Get.to(() => const LocationScreen());
@@ -38,13 +37,14 @@ class _NewPostScreenState extends State<NewPostScreen> {
 
   void _postToFireStore() async {
     String? imageUrl =
-        await _newPostController.uploadImage(File(widget.imagePath));
+        await _storyController.uploadStoryImage(File(widget.imagePath));
     if (imageUrl != null) {
-      await _newPostController.createPost(
+      await _storyController.createStoryPost(
         imageUrl: imageUrl,
         caption: _captionController.text,
         locations: selectedLocations,
       );
+      _storyController.refreshPosts();
     } else {
       Get.snackbar('Failed', 'Post failed');
     }
@@ -165,7 +165,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
         icon: Icon(Icons.arrow_back_ios, color: textColor),
       ),
       title: Text(
-        'New Post',
+        'Post Story',
         style: TextStyle(fontWeight: FontWeight.w600, color: textColor),
       ),
       actions: [

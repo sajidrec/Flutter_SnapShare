@@ -122,7 +122,8 @@ class _SignupScreenState extends State<SignupScreen> {
 
                                 return "Enter valid username";
                               },
-                              icon: const Icon(Icons.person_outline),
+                              icon: Icon(Icons.person_outline,
+                                  color: customColor),
                             ),
                             const SizedBox(height: 10),
                             Text(
@@ -140,7 +141,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                 }
                                 return null;
                               },
-                              icon: const Icon(Icons.person),
+                              icon: Icon(Icons.person, color: customColor),
                             ),
                             const SizedBox(height: 10),
                             Text('Email',
@@ -149,7 +150,8 @@ class _SignupScreenState extends State<SignupScreen> {
                             const SizedBox(height: 10),
                             TextFields(
                               hintText: 'Email',
-                              icon: const Icon(Icons.email_outlined),
+                              icon: Icon(Icons.email_outlined,
+                                  color: customColor),
                               controller: emailController,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
@@ -168,7 +170,8 @@ class _SignupScreenState extends State<SignupScreen> {
                             const SizedBox(height: 10),
                             TextFields(
                               hintText: 'Passwords',
-                              icon: const Icon(Icons.lock_outline),
+                              icon:
+                                  Icon(Icons.lock_outline, color: customColor),
                               isPassword: true,
                               controller: passwordController,
                               validator: (value) {
@@ -185,7 +188,8 @@ class _SignupScreenState extends State<SignupScreen> {
                             const SizedBox(height: 10),
                             TextFields(
                               hintText: 'Confirm Passwords',
-                              icon: const Icon(Icons.lock_outline),
+                              icon:
+                                  Icon(Icons.lock_outline, color: customColor),
                               isPassword: true,
                               controller: confirmPasswordController,
                               validator: (value) {
