@@ -1,30 +1,71 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:snapshare/presentation/controller/notification_screen_controller.dart';
+import 'package:snapshare/utils/app_colors.dart';
 
-class NotificationScreen extends StatelessWidget {
+class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});
 
   @override
+  State<NotificationScreen> createState() => _NotificationScreenState();
+}
+
+class _NotificationScreenState extends State<NotificationScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (timeStamp) async {
+        return await Get.find<NotificationScreenController>()
+            .fetchNotification();
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final textColor = AppColor.forText(context);
     return SafeArea(
       child: Scaffold(
         body: Column(
           children: [
-            _buildAppbar(),
+            _buildAppbar(textColor),
             _buildHorizontalLine(),
             const SizedBox(height: 10),
             Expanded(
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemBuilder: (context, index) => _buildNotification(
-                  photoUrl:
-                      "https://thumbs.dreamstime.com/b/hacker-looking-camera-face-mask-dark-theme-wallpaper-hacker-looking-camera-face-mask-dark-theme-wallpaper-291465611.jpg",
-                  notificationMsg:
-                      "Sajid commented on someones photo click for more",
-                  notificationTime: "12/12/12 10:30 AM",
-                ),
-                itemCount: 20,
-              ),
+              child: GetBuilder<NotificationScreenController>(
+                  builder: (notificationScreenController) {
+                return notificationScreenController.inProgress
+                    ? const Center(
+                        child: CircularProgressIndicator(
+                          color: AppColor.themeColor,
+                        ),
+                      )
+                    : notificationScreenController.getNotificationList.isEmpty
+                        ? Text(
+                            "No notification yet",
+                            style: TextStyle(color: textColor),
+                          )
+                        : ListView.builder(
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) => _buildNotification(
+                              textColor: textColor,
+                              photoUrl: notificationScreenController
+                                      .getNotificationList[index].photoUrl ??
+                                  "",
+                              notificationMsg: notificationScreenController
+                                      .getNotificationList[index]
+                                      .notificationMessage ??
+                                  "",
+                              fromNotificationUserName:
+                                  notificationScreenController
+                                          .getNotificationList[index].name ??
+                                      "",
+                            ),
+                            itemCount: notificationScreenController
+                                .getNotificationList.length,
+                          );
+              }),
             ),
           ],
         ),
@@ -35,7 +76,8 @@ class NotificationScreen extends StatelessWidget {
   Widget _buildNotification({
     required String photoUrl,
     required String notificationMsg,
-    required String notificationTime,
+    required String fromNotificationUserName,
+    required Color textColor,
   }) {
     return Column(
       children: [
@@ -58,20 +100,11 @@ class NotificationScreen extends StatelessWidget {
                     child: SizedBox(
                       width: Get.width / 1.35,
                       child: Text(
-                        notificationMsg,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: Text(
-                      notificationTime,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w500,
+                        "$fromNotificationUserName loves your post $notificationMsg",
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: textColor),
                       ),
                     ),
                   ),
@@ -95,7 +128,7 @@ class NotificationScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAppbar() {
+  Widget _buildAppbar(Color textColor) {
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Row(
@@ -104,14 +137,15 @@ class NotificationScreen extends StatelessWidget {
             onPressed: () {
               Get.back();
             },
-            icon: const Icon(Icons.arrow_back_ios),
+            icon: Icon(
+              Icons.arrow_back_ios,
+              color: textColor,
+            ),
           ),
-          const Text(
+          Text(
             "Notification",
             style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w700,
-            ),
+                fontSize: 20, fontWeight: FontWeight.w700, color: textColor),
           ),
         ],
       ),

@@ -1,9 +1,11 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_rx/src/rx_typedefs/rx_typedefs.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:snapshare/presentation/controller/auth_controller/registration_controller.dart';
 import 'package:snapshare/presentation/controller/auth_controller/selected_image_name_controller.dart';
+import 'package:snapshare/presentation/controller/auth_controller/upload_user_info_db_controller.dart';
 import 'package:snapshare/presentation/screens/auth/login_screen.dart';
 import 'package:snapshare/presentation/screens/auth/signup_or_login_screen.dart';
 import 'package:snapshare/utils/app_colors.dart';
@@ -24,6 +26,7 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController confirmPasswordController =
       TextEditingController();
   final TextEditingController nameTeController = TextEditingController();
+  final TextEditingController usernameTeController = TextEditingController();
   late bool _savePassword = false;
   bool _passwordValid = false;
 
@@ -38,13 +41,14 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final customColor = AppColor.lightOrDark(context);
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {
             Get.to(() => const SignupOrLoginScreen());
           },
-          icon: const Icon(Icons.arrow_back_ios_new),
+          icon: Icon(Icons.arrow_back_ios_new, color: customColor),
         ),
       ),
       body: GetBuilder<RegistrationController>(builder: (
@@ -52,7 +56,7 @@ class _SignupScreenState extends State<SignupScreen> {
       ) {
         return registrationController.inProgress
             ? const Center(
-                child: CircularProgressIndicator(
+                child: CupertinoActivityIndicator(
                   color: AppColor.themeColor,
                 ),
               )
@@ -68,9 +72,10 @@ class _SignupScreenState extends State<SignupScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const SizedBox(height: 60),
-                            const Text(
+                            Text(
                               'Enter your details',
-                              style: TextStyle(fontSize: 24),
+                              style:
+                                  TextStyle(fontSize: 24, color: customColor),
                             ),
                             const SizedBox(height: 10),
                             GetBuilder<SelectedImageNameController>(
@@ -79,6 +84,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                 selectedImageNameController.pickedImageName,
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 1,
+                                style: TextStyle(color: customColor),
                               );
                             }),
                             const SizedBox(height: 10),
@@ -97,8 +103,34 @@ class _SignupScreenState extends State<SignupScreen> {
                               );
                             }),
                             const SizedBox(height: 10),
-                            const Text('Full Name',
-                                style: TextStyle(fontSize: 16)),
+                            Text(
+                              'Username',
+                              style:
+                                  TextStyle(fontSize: 16, color: customColor),
+                            ),
+                            const SizedBox(height: 10),
+                            TextFields(
+                              hintText: "Only lowercase letter allowed",
+                              controller: usernameTeController,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "Can't be empty";
+                                } else if (RegExp(r'^[a-z]+$')
+                                    .hasMatch(value)) {
+                                  return null;
+                                }
+
+                                return "Enter valid username";
+                              },
+                              icon: Icon(Icons.person_outline,
+                                  color: customColor),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(
+                              'Full Name',
+                              style:
+                                  TextStyle(fontSize: 16, color: customColor),
+                            ),
                             const SizedBox(height: 10),
                             TextFields(
                               hintText: "Your name",
@@ -109,14 +141,17 @@ class _SignupScreenState extends State<SignupScreen> {
                                 }
                                 return null;
                               },
-                              icon: const Icon(Icons.person),
+                              icon: Icon(Icons.person, color: customColor),
                             ),
                             const SizedBox(height: 10),
-                            const Text('Email', style: TextStyle(fontSize: 16)),
+                            Text('Email',
+                                style: TextStyle(
+                                    fontSize: 16, color: customColor)),
                             const SizedBox(height: 10),
                             TextFields(
                               hintText: 'Email',
-                              icon: const Icon(Icons.email_outlined),
+                              icon: Icon(Icons.email_outlined,
+                                  color: customColor),
                               controller: emailController,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
@@ -129,12 +164,14 @@ class _SignupScreenState extends State<SignupScreen> {
                               },
                             ),
                             const SizedBox(height: 10),
-                            const Text('Passwords',
-                                style: TextStyle(fontSize: 16)),
+                            Text('Passwords',
+                                style: TextStyle(
+                                    fontSize: 16, color: customColor)),
                             const SizedBox(height: 10),
                             TextFields(
                               hintText: 'Passwords',
-                              icon: const Icon(Icons.lock_outline),
+                              icon:
+                                  Icon(Icons.lock_outline, color: customColor),
                               isPassword: true,
                               controller: passwordController,
                               validator: (value) {
@@ -145,12 +182,14 @@ class _SignupScreenState extends State<SignupScreen> {
                               },
                             ),
                             const SizedBox(height: 10),
-                            const Text('Confirm Passwords',
-                                style: TextStyle(fontSize: 16)),
+                            Text('Confirm Passwords',
+                                style: TextStyle(
+                                    fontSize: 16, color: customColor)),
                             const SizedBox(height: 10),
                             TextFields(
                               hintText: 'Confirm Passwords',
-                              icon: const Icon(Icons.lock_outline),
+                              icon:
+                                  Icon(Icons.lock_outline, color: customColor),
                               isPassword: true,
                               controller: confirmPasswordController,
                               validator: (value) {
@@ -162,64 +201,103 @@ class _SignupScreenState extends State<SignupScreen> {
                               },
                             ),
                             const SizedBox(height: 10),
-                            _buildCheckBox(_savePassword),
+                            _buildCheckBox(_savePassword, customColor),
                             const SizedBox(height: 30),
                             SizedBox(
                               width: double.infinity,
-                              child: ElevatedButton(
-                                onPressed: _passwordValid != false
-                                    ? () async {
-                                        FocusScope.of(context)
-                                            .requestFocus(FocusNode());
+                              child: GetBuilder<UploadUserInfoDbController>(
+                                  builder: (uploadUserInfoDbController) {
+                                return ElevatedButton(
+                                  onPressed: _passwordValid != false
+                                      ? () async {
+                                          FocusScope.of(context)
+                                              .requestFocus(FocusNode());
 
-                                        if (profileImage == null) {
-                                          Get.snackbar(
-                                            "Select profile picture",
-                                            "",
-                                          );
-                                        }
-
-                                        if ((_formKey.currentState
-                                                    ?.validate() ??
-                                                false) &&
-                                            profileImage != null) {
-                                          bool registrationStatus =
-                                              await registrationController
-                                                  .registerNewUser(
-                                            userName:
-                                                nameTeController.text.trim(),
-                                            profilePicturePath:
-                                                profileImage!.path,
-                                            email: emailController.text.trim(),
-                                            password: passwordController.text,
-                                          );
-
-                                          if (registrationStatus) {
-                                            if (mounted) {
-                                              Get.snackbar(
-                                                "Sucess",
-                                                "Registration successful please login",
-                                                backgroundColor: Colors.green,
-                                                colorText: Colors.white,
-                                              );
-                                              Get.offAll(
-                                                () => const LoginScreen(),
-                                              );
-                                            }
-                                          } else {
+                                          if (profileImage == null) {
                                             Get.snackbar(
-                                              "Failed",
-                                              registrationController
-                                                  .errorMessage,
-                                              backgroundColor: Colors.red,
-                                              colorText: Colors.white,
+                                              "Select profile picture",
+                                              "",
                                             );
+                                            usernameTeController.text = "";
+                                            nameTeController.text = "";
+                                            emailController.text = "";
+                                            passwordController.text = "";
+                                            confirmPasswordController.text = "";
+                                          }
+
+                                          if ((_formKey.currentState
+                                                      ?.validate() ??
+                                                  false) &&
+                                              profileImage != null) {
+                                            bool userInfoUploaded =
+                                                await uploadUserInfoDbController
+                                                    .uploadUserInfo(
+                                              username: usernameTeController
+                                                  .text
+                                                  .trim(),
+                                              userFullName:
+                                                  nameTeController.text.trim(),
+                                              userEmail:
+                                                  emailController.text.trim(),
+                                            );
+
+                                            if (!userInfoUploaded) {
+                                              usernameTeController.text = "";
+                                              Get.snackbar(
+                                                "Failed",
+                                                "try different username",
+                                              );
+                                            } else {
+                                              bool registrationStatus =
+                                                  await registrationController
+                                                      .registerNewUser(
+                                                userFullName: nameTeController
+                                                    .text
+                                                    .trim(),
+                                                profilePicturePath:
+                                                    profileImage!.path,
+                                                email:
+                                                    emailController.text.trim(),
+                                                password:
+                                                    passwordController.text,
+                                                userName: usernameTeController
+                                                    .text
+                                                    .trim(),
+                                              );
+
+                                              if (registrationStatus) {
+                                                if (mounted) {
+                                                  Get.snackbar(
+                                                    "Sucess",
+                                                    "Registration successful please login",
+                                                    backgroundColor:
+                                                        Colors.green,
+                                                    colorText: Colors.white,
+                                                  );
+                                                  Get.offAll(
+                                                    () => const LoginScreen(),
+                                                  );
+                                                }
+                                              } else {
+                                                Get.snackbar(
+                                                  "Failed",
+                                                  registrationController
+                                                      .errorMessage,
+                                                  backgroundColor: Colors.red,
+                                                  colorText: Colors.white,
+                                                );
+                                              }
+                                            }
                                           }
                                         }
-                                      }
-                                    : null,
-                                child: const Text('Sign Up'),
-                              ),
+                                      : null,
+                                  style: ElevatedButton.styleFrom(),
+                                  child: Text(
+                                    'Sign Up',
+                                    style: TextStyle(color: customColor),
+                                  ),
+                                );
+                              }),
                             ),
                             const SizedBox(height: 10),
                             _buildTextButton()
@@ -287,7 +365,7 @@ class _SignupScreenState extends State<SignupScreen> {
     });
   }
 
-  Widget _buildCheckBox(bool savePassword) {
+  Widget _buildCheckBox(bool savePassword, Color color) {
     return Row(
       children: [
         GestureDetector(
@@ -304,9 +382,9 @@ class _SignupScreenState extends State<SignupScreen> {
                   _savePassword = value ?? false;
                 },
               ),
-              const Text(
+              Text(
                 'Save Password',
-                style: TextStyle(fontSize: 16),
+                style: TextStyle(fontSize: 16, color: color),
               ),
             ],
           ),
@@ -347,5 +425,6 @@ class _SignupScreenState extends State<SignupScreen> {
     emailController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
+    usernameTeController.dispose();
   }
 }

@@ -1,12 +1,19 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:snapshare/presentation/screens/notification_screen.dart';
+import 'package:snapshare/presentation/controller/post_controller/new_post_controller.dart';
+import 'package:snapshare/presentation/models/post_models.dart';
+import 'package:snapshare/presentation/screens/chat_screens/chat_list_screen.dart';
 import 'package:snapshare/presentation/screens/profile_screen.dart';
-import 'package:snapshare/utils/assets_path.dart';
+import 'package:snapshare/presentation/screens/story_section.dart';
+import 'package:snapshare/presentation/screens/update_profile_screen.dart';
+import 'package:snapshare/utils/app_colors.dart';
 import 'package:snapshare/widgets/comment_bottom_sheet.dart';
 import 'package:snapshare/widgets/profile_image_button.dart';
-import 'package:snapshare/widgets/story_section.dart';
+
+import 'notification_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,40 +23,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  NewPostController newPostController = Get.put(NewPostController());
   final TextEditingController _commentController = TextEditingController();
-
-  final List<Map<String, String>> userData = const [
-    {
-      'image': AssetsPath.photo5,
-      'title': 'You',
-      'username': '@you',
-      'profileImage': AssetsPath.photo5
-    },
-    {
-      'image': AssetsPath.photo2,
-      'title': 'John Doe',
-      'username': '@johndoe',
-      'profileImage': AssetsPath.photo2
-    },
-    {
-      'image': AssetsPath.photo3,
-      'title': 'John Lite',
-      'username': '@johnlite',
-      'profileImage': AssetsPath.photo3
-    },
-    {
-      'image': AssetsPath.photo4,
-      'title': 'Alia Kane',
-      'username': '@aliakane',
-      'profileImage': AssetsPath.photo4
-    },
-    {
-      'image': AssetsPath.profileImage,
-      'title': 'Alex Cary',
-      'username': '@alexcary',
-      'profileImage': AssetsPath.profileImage
-    },
-  ];
 
   @override
   void initState() {
@@ -62,13 +37,15 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade200,
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildTopSection(),
-            _buildPostSection(),
-          ],
+        child: Container(
+          color: Theme.of(context).colorScheme.primary,
+          child: Column(
+            children: [
+              _buildTopSection(),
+              _buildPostSection(),
+            ],
+          ),
         ),
       ),
     );
@@ -76,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildTopSection() {
     return Container(
-      color: Colors.white,
+      color: Theme.of(context).colorScheme.primary,
       child: Column(
         children: [
           const SizedBox(height: 30),
@@ -85,8 +62,12 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                ProfileImageButton(
-                  profileImage: userData[0]['profileImage'],
+                GestureDetector(
+                  onTap: () => Get.to(() => const ProfileScreen()),
+                  child: ProfileImageButton(
+                    profileImage:
+                        FirebaseAuth.instance.currentUser?.photoURL ?? "",
+                  ),
                 ),
                 _buildHeaderLogo(),
                 Row(
@@ -94,13 +75,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     _buildCircularIconButton(Icons.notifications_none, () {
                       Get.to(const NotificationScreen());
                     }),
-                    _buildCircularIconButton(Icons.message_outlined, () {})
+                    _buildCircularIconButton(Icons.message_outlined, () {
+                      Get.to(() => const ChatListScreen());
+                    })
                   ],
                 )
               ],
             ),
           ),
-          const Padding(
+          Padding(
             padding: EdgeInsets.all(8.0),
             child: StorySection(),
           )
@@ -110,52 +93,71 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildPostSection() {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: userData.length,
-      itemBuilder: (BuildContext context, index) {
-        final user = userData[index];
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black12,
-                  offset: Offset(0, 3),
-                  blurRadius: 6,
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance.collection('posts').snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Center(
+            child: CupertinoActivityIndicator(),
+          );
+        }
+
+        final posts =
+            snapshot.data!.docs.map((doc) => Post.fromDocument(doc)).toList();
+
+        return ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: posts.length,
+          itemBuilder: (BuildContext context, index) {
+            final post = posts[index];
+            return Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.secondary,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black12,
+                      offset: Offset(0, 3),
+                      blurRadius: 6,
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            child: _buildPostSectionBody(user),
-          ),
+                child: _buildPostSectionBody(post),
+              ),
+            );
+          },
         );
       },
     );
   }
 
-  Widget _buildPostSectionBody(Map<String, String> user) {
+  Widget _buildPostSectionBody(Post post) {
+    final String imageUrl = post.imageUrl;
+    final bool isLiked =
+        post.likes.contains(FirebaseAuth.instance.currentUser!.uid);
+
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildPostTitleAndIcon(user),
+          _buildPostTitleAndIcon(post),
           const SizedBox(height: 12),
-          _buildPostImageSection(user['image']!),
+          _buildPostImageSection(imageUrl, post.caption),
           const SizedBox(height: 12),
-          _buildReactAndComment(),
+          _buildReactAndComment(post.postId, isLiked),
           const SizedBox(height: 8),
           Row(
             children: [
               ProfileImageButton(
-                profileImage: user['profileImage'],
+                profileImage: FirebaseAuth.instance.currentUser?.photoURL ?? "",
               ),
               const SizedBox(width: 8),
-              _buildComment(),
+              _buildComment(post.postId),
             ],
           ),
         ],
@@ -163,115 +165,194 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildComment() {
+  Widget _buildComment(String postId) {
     return Expanded(
-        child: TextFormField(
-      decoration: const InputDecoration(
-        hintText: 'Your Comments',
-        border: InputBorder.none,
-        focusedBorder: InputBorder.none,
-        enabledBorder: InputBorder.none,
-        disabledBorder: InputBorder.none,
+      child: TextFormField(
+        onTap: () {
+          CommentBottomSheet.show(postId);
+        },
+        decoration: const InputDecoration(
+            hintText: 'Your Comments',
+            border: InputBorder.none,
+            suffixIcon: Icon(Icons.send_outlined)),
+        controller: _commentController,
       ),
-      controller: _commentController,
-    ));
+    );
   }
 
-  Widget _buildReactAndComment() {
+  Widget _buildReactAndComment(String postId, bool isLiked) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        _buildReactAndCommentRow(),
-        IconButton(onPressed: () {}, icon: const Icon(CupertinoIcons.bookmark))
+        _buildReactAndCommentRow(postId, isLiked),
+        IconButton(
+          onPressed: () {},
+          icon: const Icon(CupertinoIcons.bookmark),
+        ),
       ],
     );
   }
 
-  Widget _buildReactAndCommentRow() {
+  Widget _buildReactAndCommentRow(String postId, bool isLiked) {
     return Row(
       children: [
-        Container(
-          padding: const EdgeInsets.all(4.0),
-          child: const Icon(
+        IconButton(
+          icon: const Icon(
             CupertinoIcons.suit_heart_fill,
             size: 30,
-            color: Colors.red,
           ),
+          color: isLiked ? Colors.red : Colors.grey,
+          onPressed: () async {
+            final postDetails = await FirebaseFirestore.instance
+                .collection("posts")
+                .doc(postId)
+                .get();
+
+            if (isLiked) {
+              await FirebaseFirestore.instance
+                  .collection('posts')
+                  .doc(postId)
+                  .update({
+                'likes': FieldValue.arrayRemove(
+                    [FirebaseAuth.instance.currentUser!.uid]),
+              });
+
+              if (postDetails["userId"] !=
+                  FirebaseAuth.instance.currentUser?.uid) {
+                await FirebaseFirestore.instance
+                    .collection("userInfo")
+                    .doc(postDetails["username"])
+                    .update({
+                  "notifications": FieldValue.arrayRemove([
+                    {
+                      FirebaseAuth.instance.currentUser?.email ?? "": postId,
+                    },
+                  ]),
+                });
+              }
+            } else {
+              await FirebaseFirestore.instance
+                  .collection('posts')
+                  .doc(postId)
+                  .update({
+                'likes': FieldValue.arrayUnion(
+                    [FirebaseAuth.instance.currentUser!.uid]),
+              });
+
+              if (postDetails["userId"] !=
+                  FirebaseAuth.instance.currentUser?.uid) {
+                await FirebaseFirestore.instance
+                    .collection("userInfo")
+                    .doc(postDetails["username"])
+                    .update({
+                  "notifications": FieldValue.arrayUnion([
+                    {
+                      FirebaseAuth.instance.currentUser?.email ?? "": postId,
+                    },
+                  ]),
+                });
+              }
+            }
+
+            setState(() {});
+          },
         ),
         IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              CupertinoIcons.chat_bubble,
-              size: 22,
-            )),
+          onPressed: () {
+            CommentBottomSheet.show(postId);
+          },
+          icon: const Icon(
+            CupertinoIcons.chat_bubble,
+            size: 22,
+          ),
+        ),
         TextButton(
           onPressed: () {
-            CommentBottomSheet.show();
+            CommentBottomSheet.show(postId);
           },
           child: const Text(
-            '20 Comments',
+            'Comments',
             style: TextStyle(
-                fontSize: 17,
-                color: Colors.black87,
-                fontWeight: FontWeight.w400),
+              fontSize: 17,
+              color: Colors.black87,
+              fontWeight: FontWeight.w400,
+            ),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildPostImageSection(String image) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(10),
-      child: Image.asset(
-        image,
-        fit: BoxFit.cover,
-        width: double.infinity,
-        height: 200,
-      ),
+  Widget _buildPostImageSection(String image, String text) {
+    return Column(
+      children: [
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            text,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+          ),
+        ),
+        const SizedBox(height: 10),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(10),
+          child: Image.network(
+            image,
+            fit: BoxFit.cover,
+            width: double.infinity,
+            height: 350,
+          ),
+        ),
+      ],
     );
   }
 
-  Widget _buildPostTitleAndIcon(Map<String, String> user) {
+  Widget _buildPostTitleAndIcon(Post post) {
     return Row(
       children: [
         ProfileImageButton(
-          profileImage: user['profileImage'],
+          profileImage: post.userProfilePic,
         ),
         const SizedBox(width: 10),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              user['title']!,
+              post.userFullName,
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
               ),
             ),
             Text(
-              user['username']!,
+              post.locations.join(',\n '),
               style: const TextStyle(
                 fontWeight: FontWeight.w400,
-                fontSize: 14,
-                color: Colors.grey,
+                fontSize: 15,
+                color: Colors.black87,
               ),
             ),
           ],
         ),
         const Spacer(),
         IconButton(
-            onPressed: () {},
-            icon: const Icon(CupertinoIcons.ellipsis_vertical)),
+          onPressed: () {},
+          icon: const Icon(CupertinoIcons.ellipsis_vertical),
+        ),
       ],
     );
   }
 
   Widget _buildHeaderLogo() {
-    return const Text(
+    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+    final textColor = isDarkTheme ? Colors.white : Colors.black;
+    return Text(
       'SnapShare',
       style: TextStyle(
-          fontSize: 28, fontWeight: FontWeight.w500, fontFamily: 'Lobster'),
+          fontSize: 28,
+          fontWeight: FontWeight.w500,
+          fontFamily: 'Lobster',
+          color: textColor),
     );
   }
 
@@ -291,9 +372,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void showProfileUpdateDialog(BuildContext context) {
+    final customColor = AppColor.lightOrDark(context);
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        backgroundColor: Theme.of(context).colorScheme.primary,
         contentPadding: EdgeInsets.zero,
         content: Padding(
           padding: const EdgeInsets.all(10.0),
@@ -305,20 +389,26 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Image.network('https://i.imgur.com/BgdbRIQ.png'),
                 const SizedBox(height: 16),
-                const Text(
+                Text(
                   'Profile Created',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: customColor),
                 ),
                 const SizedBox(height: 16),
-                const Text(
+                Text(
                   'Update your name, profile image,\nadditional number',
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: customColor),
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
-                    Get.to(() => const ProfileScreen());
+                    Get.to(() => const UpdateProfileScreen());
                   },
                   style: ElevatedButton.styleFrom(
                     minimumSize: const Size(double.infinity, 36),

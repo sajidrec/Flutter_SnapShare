@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:snapshare/utils/app_colors.dart';
 
 class TextFields extends StatefulWidget {
   const TextFields({
@@ -25,11 +26,13 @@ class _TextFieldsState extends State<TextFields> {
 
   @override
   Widget build(BuildContext context) {
+    final customColor = AppColor.lightOrDark(context);
+
     return TextFormField(
       validator: widget.validator,
       controller: widget.controller,
       obscureText: widget.isPassword ? _isObscured : false,
-      style: TextStyle(color: Colors.grey.shade700),
+      style: TextStyle(color: customColor),
       decoration: InputDecoration(
           hintText: widget.hintText,
           hintStyle: TextStyle(color: Colors.grey.shade500),

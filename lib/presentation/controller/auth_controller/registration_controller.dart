@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
@@ -16,6 +17,7 @@ class RegistrationController extends GetxController {
   Future<bool> registerNewUser({
     required String email,
     required String password,
+    required String userFullName,
     required String userName,
     required String profilePicturePath,
   }) async {
@@ -28,7 +30,7 @@ class RegistrationController extends GetxController {
         password: password,
       );
 
-      await fAuth.currentUser?.updateDisplayName(userName);
+      await fAuth.currentUser?.updateDisplayName(userFullName);
 
       final storageRef = FirebaseStorage.instance.ref();
       final profileImageRef =
@@ -40,13 +42,23 @@ class RegistrationController extends GetxController {
         await profileImageRef.getDownloadURL(),
       );
 
+      FirebaseFirestore firebaseFirestore = FirebaseFirestore.instance;
+      final docRef = firebaseFirestore.collection("userInfo").doc(userName);
+
+      await docRef.update(
+        {
+          "profilePic": await profileImageRef.getDownloadURL(),
+          "uid": fAuth.currentUser?.uid,
+        },
+      );
+
       _inProgress = false;
       update();
 
       return true;
     } on FirebaseAuthException catch (e) {
       _inProgress = false;
-      _errorMessage = e.message?.toString() ?? "Reason unkown";
+      _errorMessage = e.message?.toString() ?? "Reason unknown";
       update();
       return false;
     }
